@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="920" viewBox="0 0 1600 920" role="img" aria-labelledby="title desc">
+  <title id="title">Dynamics randomization enters several boundaries of the closed control loop</title>
+  <desc id="desc">A closed robot-control loop flows from observation at time t through a fixed policy or expert, action, an actuation and timing channel, the simulator state transition, next state, a sensor mapping, and next observation, which feeds back to the policy. A sampled domain distribution can alter actuation, physics and contact, sensor mapping, or external disturbances. Teal highlights the lesson 11 implementation: per-object mass ratio and shared contact-surface friction ratio. Motor properties, controller timing, inertia, damping, restitution, solver settings, sensor corruption, and disturbances are shown as conceptual parameters that are not implemented in this lab. This is a course-created schematic based on examples in Peng and colleagues in 2018 and OpenAI and colleagues in 2019, not a reproduction of a paper figure.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="injectArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b5cf6"/>
+    </marker>
+    <marker id="disturbArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f97316"/>
+    </marker>
+    <style>
+      .title { font: 700 30px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .section { font: 700 18px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .heading { font: 700 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .tiny { font: 700 11px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f766e; }
+      .code { font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .flow { stroke: #475569; stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
+      .feedback { stroke: #0891b2; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .inject { stroke: #8b5cf6; stroke-width: 2; stroke-dasharray: 7 5; fill: none; marker-end: url(#injectArrow); }
+      .disturb { stroke: #f97316; stroke-width: 2.2; fill: none; marker-end: url(#disturbArrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="920" rx="24" fill="#f8fafc"/>
+  <text x="800" y="44" text-anchor="middle" class="title">Dynamics randomization changes the closed-loop transition</text>
+  <text x="800" y="74" text-anchor="middle" class="subtitle">The same policy command can produce a different next state and next observation under a different sampled domain.</text>
+
+  <rect x="600" y="104" width="400" height="96" rx="48" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="800" y="135" text-anchor="middle" class="heading">Sample a domain</text>
+  <text x="800" y="162" text-anchor="middle" class="code">xi ~ p_phi(xi)</text>
+  <text x="800" y="184" text-anchor="middle" class="small">apply each parameter at its declared lifetime</text>
+
+  <path d="M690 200 C690 247 765 252 765 300" class="inject"/>
+  <path d="M800 200 C800 250 1055 246 1055 300" class="inject"/>
+  <path d="M910 200 C1040 225 1325 450 1325 600" class="inject"/>
+  <text x="662" y="248" class="small">actuation</text>
+  <text x="980" y="248" class="small">physics</text>
+  <text x="1284" y="510" class="small">sensing</text>
+
+  <rect x="40" y="360" width="170" height="120" rx="18" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.8"/>
+  <text x="125" y="395" text-anchor="middle" class="section">Observation t</text>
+  <text x="125" y="425" text-anchor="middle" class="code">o_t</text>
+  <text x="125" y="453" text-anchor="middle" class="small">images · robot state</text>
+
+  <path d="M210 420 H250" class="flow"/>
+  <rect x="265" y="360" width="180" height="120" rx="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="355" y="395" text-anchor="middle" class="section">Policy / expert</text>
+  <text x="355" y="425" text-anchor="middle" class="code">a_t = pi(o_t)</text>
+  <text x="355" y="453" text-anchor="middle" class="small">task intent stays fixed</text>
+
+  <path d="M445 420 H480" class="flow"/>
+  <rect x="495" y="375" width="115" height="90" rx="18" fill="#fefce8" stroke="#facc15" stroke-width="1.8"/>
+  <text x="552" y="407" text-anchor="middle" class="section">Action</text>
+  <text x="552" y="438" text-anchor="middle" class="code">a_t</text>
+
+  <path d="M610 420 H640" class="flow"/>
+  <rect x="655" y="300" width="230" height="250" rx="20" fill="#ffffff" stroke="#94a3b8" stroke-width="1.6"/>
+  <text x="770" y="335" text-anchor="middle" class="section">Actuation / control / timing</text>
+  <text x="770" y="367" text-anchor="middle" class="code">u_t = g_xi(a_t)</text>
+  <rect x="675" y="391" width="190" height="72" rx="13" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="770" y="417" text-anchor="middle" class="body">motor strength · PD gains</text>
+  <text x="770" y="440" text-anchor="middle" class="body">backlash · delay · action hold</text>
+  <rect x="690" y="486" width="160" height="35" rx="17" fill="#e2e8f0"/>
+  <text x="770" y="509" text-anchor="middle" class="small">NOT IN L11 LAB</text>
+
+  <path d="M885 420 H920" class="flow"/>
+  <rect x="935" y="300" width="270" height="250" rx="20" fill="#ecfeff" stroke="#22d3ee" stroke-width="2"/>
+  <text x="1070" y="335" text-anchor="middle" class="section">Physics / contact / numerics</text>
+  <text x="1070" y="367" text-anchor="middle" class="code">s_t+1 ~ P_xi(s_t, u_t)</text>
+  <rect x="955" y="389" width="230" height="55" rx="13" fill="#ccfbf1"/>
+  <text x="1070" y="412" text-anchor="middle" class="tiny">L11 IMPLEMENTED</text>
+  <text x="1070" y="432" text-anchor="middle" class="body">object mass · shared friction ratio</text>
+  <rect x="955" y="458" width="230" height="65" rx="13" fill="#e2e8f0"/>
+  <text x="1070" y="483" text-anchor="middle" class="small">concept only</text>
+  <text x="1070" y="505" text-anchor="middle" class="small">inertia · CoM · damping · solver</text>
+
+  <path d="M1205 420 H1240" class="flow"/>
+  <rect x="1255" y="360" width="180" height="120" rx="18" fill="#ecfdf5" stroke="#34d399" stroke-width="1.8"/>
+  <text x="1345" y="395" text-anchor="middle" class="section">Next state</text>
+  <text x="1345" y="425" text-anchor="middle" class="code">s_t+1</text>
+  <text x="1345" y="453" text-anchor="middle" class="small">pose · velocity · contact</text>
+
+  <rect x="1240" y="214" width="250" height="85" rx="16" fill="#fff7ed" stroke="#fb923c" stroke-width="1.8"/>
+  <text x="1365" y="246" text-anchor="middle" class="heading">External disturbance</text>
+  <text x="1365" y="271" text-anchor="middle" class="body">force · impact · payload · wind</text>
+  <path d="M1240 272 C1195 275 1168 286 1155 310" class="disturb"/>
+
+  <path d="M1345 480 V590" class="flow"/>
+  <rect x="1210" y="605" width="270" height="150" rx="20" fill="#ffffff" stroke="#94a3b8" stroke-width="1.6"/>
+  <text x="1345" y="638" text-anchor="middle" class="section">Sensor / observation mapping</text>
+  <text x="1345" y="669" text-anchor="middle" class="code">o_t+1 = h_xi(s_t+1)</text>
+  <text x="1345" y="699" text-anchor="middle" class="body">noise · bias · dropout · latency</text>
+  <rect x="1265" y="718" width="160" height="25" rx="12" fill="#e2e8f0"/>
+  <text x="1345" y="735" text-anchor="middle" class="small">NOT IN L11 LAB</text>
+
+  <path d="M1210 680 H1135" class="flow"/>
+  <rect x="870" y="625" width="250" height="110" rx="18" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.8"/>
+  <text x="995" y="660" text-anchor="middle" class="section">Next observation</text>
+  <text x="995" y="691" text-anchor="middle" class="code">o_t+1</text>
+  <text x="995" y="717" text-anchor="middle" class="small">becomes the policy's next input</text>
+
+  <path d="M870 680 H355 V495" class="feedback"/>
+  <text x="610" y="705" text-anchor="middle" class="small">feedback: a changed transition changes the next decision context</text>
+
+  <rect x="40" y="790" width="20" height="20" rx="5" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.5"/>
+  <text x="72" y="805" class="small">teal = current L11 implementation</text>
+  <rect x="305" y="790" width="20" height="20" rx="5" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="337" y="805" class="small">gray = conceptual parameter, not implemented</text>
+  <rect x="650" y="790" width="20" height="20" rx="5" fill="#fff7ed" stroke="#fb923c"/>
+  <text x="682" y="805" class="small">orange = disturbance enters the state transition directly</text>
+  <rect x="40" y="835" width="1510" height="50" rx="15" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="795" y="856" text-anchor="middle" class="small">Course-created schematic based on dynamics-randomization examples in Peng et al. (2018) and OpenAI et al. (2019); not a reproduced paper figure.</text>
+  <text x="795" y="875" text-anchor="middle" class="small">A parameter draw changes the transition model; useful robustness still requires controlled training and closed-loop evaluation.</text>
+</svg>

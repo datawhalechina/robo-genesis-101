@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1040" viewBox="0 0 1600 1040" role="img" aria-labelledby="title desc">
+  <title id="title">域随机化包含三条独立设计轴</title>
+  <desc id="desc">固定的机器人任务在从域分布 p phi 中采样 xi 后，进入多个具体环境。第一条轴询问什么发生变化，包括 rendering 与 appearance、camera 与 sensor、geometry 与 kinematics、physics contact 与 numerics、actuation control 与 timing，以及 disturbance 与 system variation 六类参数。第二条轴询问如何选择分布，包括 static manual、measurement-informed、automatic、adaptive 和 adversarial 方法。第三条轴询问何时采样，包括 build、episode、step 和 event time。青色标出第 11 讲实践的子集：颜色、camera FOV 与 world-camera pose、friction 和 mass；使用 static manual 分布，并在 build 或 episode 时采样。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+    <style>
+      .title { font: 700 30px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .axis { font: 700 20px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .heading { font: 700 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .tiny { font: 600 11px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f766e; }
+      .code { font: 600 15px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .codeSmall { font: 600 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #334155; }
+      .flow { stroke: #64748b; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 5; fill: none; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1040" rx="24" fill="#f8fafc"/>
+  <text x="800" y="44" text-anchor="middle" class="title">域随机化：三条独立设计轴</text>
+  <text x="800" y="74" text-anchor="middle" class="subtitle">保持任务含义不变；有目的地采样环境 domain，并记录实际发生了什么。</text>
+
+  <rect x="40" y="104" width="1520" height="222" rx="20" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="65" y="136" class="axis">核心思想 · 一个任务，一族环境分布</text>
+
+  <rect x="75" y="169" width="250" height="105" rx="15" fill="#fefce8" stroke="#facc15" stroke-width="1.8"/>
+  <text x="200" y="199" text-anchor="middle" class="heading">固定的任务语义</text>
+  <text x="200" y="225" text-anchor="middle" class="body">相同 goal · observation · action</text>
+  <text x="200" y="249" text-anchor="middle" class="body">相同 success 含义</text>
+
+  <path d="M325 221 H405" class="flow"/>
+  <rect x="420" y="159" width="270" height="126" rx="63" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="555" y="199" text-anchor="middle" class="heading">Domain distribution</text>
+  <text x="555" y="231" text-anchor="middle" class="code">xi ~ p_phi(xi)</text>
+  <text x="555" y="258" text-anchor="middle" class="small">有边界的建模选择</text>
+  <path d="M690 221 H760" class="flow"/>
+
+  <rect x="775" y="159" width="220" height="126" rx="15" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.8"/>
+  <text x="885" y="192" text-anchor="middle" class="heading">Domain xi_0</text>
+  <text x="885" y="220" text-anchor="middle" class="body">camera · appearance</text>
+  <text x="885" y="245" text-anchor="middle" class="body">contact · mass · ...</text>
+  <text x="885" y="269" text-anchor="middle" class="small">一个具体环境</text>
+
+  <rect x="1015" y="159" width="220" height="126" rx="15" fill="#f0fdfa" stroke="#2dd4bf" stroke-width="1.8"/>
+  <text x="1125" y="192" text-anchor="middle" class="heading">Domain xi_1</text>
+  <text x="1125" y="220" text-anchor="middle" class="body">另一组有效 draw</text>
+  <text x="1125" y="245" text-anchor="middle" class="body">相同定性任务</text>
+  <text x="1125" y="269" text-anchor="middle" class="small">另一个环境</text>
+
+  <rect x="1255" y="159" width="260" height="126" rx="15" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.8"/>
+  <text x="1385" y="192" text-anchor="middle" class="heading">Domain xi_2 ... xi_n</text>
+  <text x="1385" y="220" text-anchor="middle" class="body">coverage 取决于 p_phi</text>
+  <text x="1385" y="245" text-anchor="middle" class="body">不只取决于 seed 数量</text>
+  <text x="1385" y="269" text-anchor="middle" class="small">真实系统不保证落在其中</text>
+
+  <path d="M760 221 C748 221 748 141 775 141 H1385 V159" class="dash"/>
+
+  <rect x="40" y="350" width="810" height="625" rx="20" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="65" y="385" class="axis">1 · 什么发生变化？</text>
+  <text x="65" y="410" class="subtitle">六类参数；类别之间可以重叠。</text>
+
+  <rect x="65" y="438" width="365" height="142" rx="14" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.8"/>
+  <text x="85" y="469" class="heading">Rendering 与 appearance</text>
+  <text x="85" y="496" class="body">颜色 · texture · material · lighting</text>
+  <text x="85" y="520" class="body">background · clutter · distractor</text>
+  <rect x="85" y="540" width="299" height="25" rx="12" fill="#ccfbf1"/>
+  <text x="234" y="557" text-anchor="middle" class="tiny">L11：桌面 + 受约束物体颜色</text>
+
+  <rect x="455" y="438" width="370" height="142" rx="14" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.8"/>
+  <text x="475" y="469" class="heading">Camera 与 sensor</text>
+  <text x="475" y="496" class="body">intrinsics · extrinsics · noise · bias</text>
+  <text x="475" y="520" class="body">dropout · distortion · latency</text>
+  <rect x="475" y="540" width="320" height="25" rx="12" fill="#ccfbf1"/>
+  <text x="635" y="557" text-anchor="middle" class="tiny">L11：FOV + world-camera pos/lookat</text>
+
+  <rect x="65" y="603" width="365" height="142" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="85" y="634" class="heading">Geometry 与 kinematics</text>
+  <text x="85" y="661" class="body">shape · scale · collision geometry</text>
+  <text x="85" y="685" class="body">link length · joint zero · mount tolerance</text>
+  <rect x="85" y="705" width="132" height="25" rx="12" fill="#e2e8f0"/>
+  <text x="151" y="722" text-anchor="middle" class="small">L11 未实践</text>
+
+  <rect x="455" y="603" width="370" height="142" rx="14" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.8"/>
+  <text x="475" y="634" class="heading">Physics、contact 与 numerics</text>
+  <text x="475" y="661" class="body">mass · inertia · friction · restitution</text>
+  <text x="475" y="685" class="body">damping · gravity · solver · timestep</text>
+  <rect x="475" y="705" width="208" height="25" rx="12" fill="#ccfbf1"/>
+  <text x="579" y="722" text-anchor="middle" class="tiny">L11：friction + mass</text>
+
+  <rect x="65" y="768" width="365" height="142" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="85" y="799" class="heading">Actuation、control 与 timing</text>
+  <text x="85" y="826" class="body">motor strength · gain · limit · backlash</text>
+  <text x="85" y="850" class="body">action noise · delay · control rate</text>
+  <rect x="85" y="870" width="132" height="25" rx="12" fill="#e2e8f0"/>
+  <text x="151" y="887" text-anchor="middle" class="small">L11 未实践</text>
+
+  <rect x="455" y="768" width="370" height="142" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="475" y="799" class="heading">Disturbance 与 system variation</text>
+  <text x="475" y="826" class="body">外力 · 冲击 · payload · 磨损</text>
+  <text x="475" y="850" class="body">terrain · 损坏 · 通信 jitter</text>
+  <rect x="475" y="870" width="132" height="25" rx="12" fill="#e2e8f0"/>
+  <text x="541" y="887" text-anchor="middle" class="small">L11 未实践</text>
+
+  <rect x="875" y="350" width="330" height="625" rx="20" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="900" y="385" class="axis">2 · 怎样选择？</text>
+  <text x="900" y="410" class="subtitle">如何设定或更新 p_phi。</text>
+
+  <rect x="900" y="440" width="280" height="82" rx="13" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.8"/>
+  <text x="1040" y="471" text-anchor="middle" class="heading">Static / manual</text>
+  <text x="1040" y="496" text-anchor="middle" class="tiny">已实现 · 固定的有界范围</text>
+
+  <rect x="900" y="540" width="280" height="82" rx="13" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="1040" y="571" text-anchor="middle" class="heading">Measurement-informed</text>
+  <text x="1040" y="596" text-anchor="middle" class="small">规格 · system ID · posterior</text>
+
+  <rect x="900" y="640" width="280" height="82" rx="13" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="1040" y="671" text-anchor="middle" class="heading">Curriculum / ADR</text>
+  <text x="1040" y="696" text-anchor="middle" class="small">根据 performance 更新分布边界</text>
+
+  <rect x="900" y="740" width="280" height="82" rx="13" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="1040" y="771" text-anchor="middle" class="heading">Adaptive</text>
+  <text x="1040" y="796" text-anchor="middle" class="small">根据 target feedback 更新 p_phi</text>
+
+  <rect x="900" y="840" width="280" height="82" rx="13" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="1040" y="871" text-anchor="middle" class="heading">Adversarial / active</text>
+  <text x="1040" y="896" text-anchor="middle" class="small">寻找困难或信息量高的有效 domain</text>
+
+  <rect x="1230" y="350" width="330" height="625" rx="20" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="1255" y="385" class="axis">3 · 何时采样？</text>
+  <text x="1255" y="410" class="subtitle">让生命周期服从物理意义。</text>
+
+  <rect x="1255" y="440" width="280" height="105" rx="13" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.8"/>
+  <text x="1395" y="471" text-anchor="middle" class="heading">Build time</text>
+  <text x="1395" y="496" text-anchor="middle" class="body">scene structure · material · FOV</text>
+  <text x="1395" y="522" text-anchor="middle" class="tiny">L11 LAYER A</text>
+
+  <path d="M1395 545 V575" class="flow"/>
+  <rect x="1255" y="586" width="280" height="105" rx="13" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.8"/>
+  <text x="1395" y="617" text-anchor="middle" class="heading">Episode / reset time</text>
+  <text x="1395" y="642" text-anchor="middle" class="body">friction · mass · 固定 camera offset</text>
+  <text x="1395" y="668" text-anchor="middle" class="tiny">L11 LAYER B</text>
+
+  <path d="M1395 691 V721" class="flow"/>
+  <rect x="1255" y="732" width="280" height="82" rx="13" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="1395" y="763" text-anchor="middle" class="heading">Step time</text>
+  <text x="1395" y="788" text-anchor="middle" class="small">noise · jitter · 外部 disturbance</text>
+
+  <path d="M1395 814 V844" class="flow"/>
+  <rect x="1255" y="855" width="280" height="67" rx="13" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="1395" y="883" text-anchor="middle" class="heading">Event time</text>
+  <text x="1395" y="906" text-anchor="middle" class="small">已声明 trigger 或 fault</text>
+
+  <rect x="40" y="995" width="20" height="20" rx="5" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.5"/>
+  <text x="72" y="1010" class="small">青色 = L11 实践</text>
+  <rect x="235" y="995" width="20" height="20" rx="5" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="267" y="1010" class="small">灰色 = 只做概念介绍</text>
+  <text x="1560" y="1010" text-anchor="end" class="small">三轴彼此独立；Layer A/B 是仓库生命周期标签，不是领域通用 taxonomy。</text>
+</svg>

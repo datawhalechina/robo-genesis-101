@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="820" viewBox="0 0 1600 820" role="img" aria-labelledby="title desc">
+  <title id="title">同一个机器人任务中的四类视觉 domain variation</title>
+  <desc id="desc">固定香蕉放入碗中的操作任务，同时采样 visual domain parameter。四幅自制示意场景分别展示 appearance 变化，例如颜色、纹理和材质；camera 变化，例如位姿和视场角；scene 与 lighting 变化，例如照明、背景、clutter 和 distractor；以及 sensor 或 image pipeline 变化，例如噪声、模糊、dropout 和曝光。青色标签表示第 11 讲当前实现了桌面与物体纯色、视场角和静态 world-camera pose。纹理、材质、灯光、背景、clutter 与 sensor corruption 仅作概念介绍。本图依据 Tobin 等人在 2017 年描述的参数类别由课程原创绘制，不是对论文图片的复制。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+    <marker id="taskArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f766e"/>
+    </marker>
+    <filter id="softBlur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+    <style>
+      .title { font: 700 30px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .section { font: 700 19px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .heading { font: 700 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .tiny { font: 600 11px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f766e; }
+      .code { font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .flow { stroke: #64748b; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .taskFlow { stroke: #0f766e; stroke-width: 2; stroke-dasharray: 6 4; fill: none; marker-end: url(#taskArrow); }
+      .arm { stroke: #64748b; stroke-width: 11; stroke-linecap: round; fill: none; }
+      .joint { fill: #e2e8f0; stroke: #475569; stroke-width: 2; }
+      .table { stroke: #475569; stroke-width: 5; stroke-linecap: round; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="820" rx="24" fill="#f8fafc"/>
+  <text x="800" y="44" text-anchor="middle" class="title">视觉域随机化保持任务不变，改变 observation</text>
+  <text x="800" y="74" text-anchor="middle" class="subtitle">同一个香蕉入碗任务 · 多个采样 visual domain · 明确的实现边界</text>
+
+  <rect x="35" y="108" width="290" height="576" rx="20" fill="#ffffff" stroke="#facc15" stroke-width="2"/>
+  <text x="180" y="145" text-anchor="middle" class="section">固定的任务语义</text>
+  <text x="180" y="174" text-anchor="middle" class="body">抓起香蕉 → 放入碗中</text>
+
+  <rect x="60" y="204" width="240" height="270" rx="15" fill="#fefce8" stroke="#fde047"/>
+  <line x1="78" y1="408" x2="282" y2="408" class="table"/>
+  <line x1="96" y1="408" x2="88" y2="452" stroke="#64748b" stroke-width="5"/>
+  <line x1="264" y1="408" x2="272" y2="452" stroke="#64748b" stroke-width="5"/>
+  <rect x="76" y="356" width="28" height="52" rx="5" fill="#94a3b8"/>
+  <path d="M90 355 L118 318 L154 300" class="arm"/>
+  <circle cx="118" cy="318" r="10" class="joint"/>
+  <circle cx="154" cy="300" r="10" class="joint"/>
+  <path d="M154 300 L183 332" class="arm"/>
+  <line x1="178" y1="327" x2="190" y2="338" stroke="#475569" stroke-width="4"/>
+  <line x1="184" y1="322" x2="196" y2="333" stroke="#475569" stroke-width="4"/>
+  <path d="M132 383 C143 365 167 366 181 381 C167 391 145 394 132 383 Z" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
+  <path d="M223 375 Q244 394 265 375 L257 405 H231 Z" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>
+  <path d="M180 366 C197 340 220 344 234 361" class="taskFlow"/>
+  <text x="180" y="445" text-anchor="middle" class="small">相同 object · goal · success predicate</text>
+
+  <rect x="60" y="500" width="240" height="70" rx="13" fill="#ecfdf5" stroke="#34d399"/>
+  <text x="180" y="528" text-anchor="middle" class="heading">不变量</text>
+  <text x="180" y="552" text-anchor="middle" class="body">怎样才算任务成功</text>
+  <rect x="60" y="590" width="240" height="62" rx="13" fill="#fff7ed" stroke="#fb923c"/>
+  <text x="180" y="616" text-anchor="middle" class="heading">检查每一次 draw</text>
+  <text x="180" y="639" text-anchor="middle" class="small">身份 · 可见性 · 可行性</text>
+
+  <path d="M325 396 H360" class="flow"/>
+  <rect x="375" y="288" width="175" height="216" rx="87" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="462" y="350" text-anchor="middle" class="heading">采样一个</text>
+  <text x="462" y="376" text-anchor="middle" class="heading">visual domain</text>
+  <text x="462" y="416" text-anchor="middle" class="code">xi_visual</text>
+  <text x="462" y="442" text-anchor="middle" class="code">~ p_phi</text>
+  <text x="462" y="474" text-anchor="middle" class="small">记录这次 draw</text>
+
+  <path d="M550 396 H573" class="flow"/>
+  <path d="M561 396 V104 H1440 V118" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 5" fill="none"/>
+
+  <rect x="585" y="108" width="230" height="576" rx="20" fill="#ffffff" stroke="#22d3ee" stroke-width="1.8"/>
+  <text x="700" y="145" text-anchor="middle" class="section">1 · Appearance</text>
+  <text x="700" y="171" text-anchor="middle" class="small">表面与渲染响应</text>
+  <rect x="605" y="198" width="190" height="220" rx="13" fill="#f5f3ff" stroke="#c4b5fd"/>
+  <rect x="620" y="342" width="160" height="42" rx="4" fill="#a78bfa"/>
+  <line x1="632" y1="384" x2="628" y2="404" stroke="#64748b" stroke-width="4"/>
+  <line x1="768" y1="384" x2="772" y2="404" stroke="#64748b" stroke-width="4"/>
+  <path d="M635 337 C646 319 668 320 683 335 C668 347 646 348 635 337 Z" fill="#f59e0b" stroke="#b45309" stroke-width="2"/>
+  <line x1="645" y1="328" x2="649" y2="343" stroke="#7c2d12" stroke-width="2"/>
+  <line x1="656" y1="325" x2="661" y2="344" stroke="#7c2d12" stroke-width="2"/>
+  <line x1="668" y1="327" x2="672" y2="341" stroke="#7c2d12" stroke-width="2"/>
+  <path d="M724 329 Q744 347 764 329 L757 359 H731 Z" fill="#67e8f9" stroke="#0891b2" stroke-width="2"/>
+  <text x="700" y="451" text-anchor="middle" class="heading">颜色 · texture · material</text>
+  <text x="700" y="477" text-anchor="middle" class="body">roughness · reflectance</text>
+  <text x="700" y="511" text-anchor="middle" class="small">相同 geometry 与 task</text>
+  <rect x="610" y="548" width="180" height="34" rx="17" fill="#ccfbf1"/>
+  <text x="700" y="570" text-anchor="middle" class="tiny">L11：FLAT COLOR</text>
+  <rect x="610" y="596" width="180" height="44" rx="13" fill="#e2e8f0"/>
+  <text x="700" y="614" text-anchor="middle" class="small">只作概念介绍</text>
+  <text x="700" y="631" text-anchor="middle" class="small">texture · material</text>
+
+  <rect x="830" y="108" width="230" height="576" rx="20" fill="#ffffff" stroke="#22d3ee" stroke-width="1.8"/>
+  <text x="945" y="145" text-anchor="middle" class="section">2 · Camera</text>
+  <text x="945" y="171" text-anchor="middle" class="small">视点与图像几何</text>
+  <rect x="850" y="198" width="190" height="220" rx="13" fill="#eff6ff" stroke="#93c5fd"/>
+  <rect x="858" y="292" width="36" height="26" rx="5" fill="#60a5fa" stroke="#2563eb" stroke-width="2"/>
+  <path d="M894 296 L908 290 L908 320 L894 314 Z" fill="#93c5fd" stroke="#2563eb" stroke-width="2"/>
+  <line x1="908" y1="290" x2="920" y2="216" stroke="#60a5fa" stroke-width="2"/>
+  <line x1="908" y1="290" x2="1018" y2="216" stroke="#60a5fa" stroke-width="2"/>
+  <line x1="908" y1="320" x2="920" y2="394" stroke="#60a5fa" stroke-width="2"/>
+  <line x1="908" y1="320" x2="1018" y2="394" stroke="#60a5fa" stroke-width="2"/>
+  <line x1="930" y1="352" x2="1016" y2="352" class="table"/>
+  <path d="M936 343 C947 325 969 326 984 341 C970 352 948 353 936 343 Z" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
+  <path d="M979 334 Q996 350 1013 334 L1007 359 H985 Z" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>
+  <rect x="920" y="216" width="98" height="178" rx="8" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="7 5"/>
+  <text x="945" y="451" text-anchor="middle" class="heading">pose · FOV · intrinsics</text>
+  <text x="945" y="477" text-anchor="middle" class="body">构图 · calibration</text>
+  <text x="945" y="511" text-anchor="middle" class="small">工作区必须保持可见</text>
+  <rect x="855" y="548" width="180" height="34" rx="17" fill="#ccfbf1"/>
+  <text x="945" y="570" text-anchor="middle" class="tiny">L11：FOV + WORLD POSE</text>
+  <rect x="855" y="596" width="180" height="44" rx="13" fill="#e2e8f0"/>
+  <text x="945" y="614" text-anchor="middle" class="small">只作概念介绍</text>
+  <text x="945" y="631" text-anchor="middle" class="small">distortion · exposure</text>
+
+  <rect x="1075" y="108" width="230" height="576" rx="20" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="1190" y="145" text-anchor="middle" class="section">3 · Scene 与 lighting</text>
+  <text x="1190" y="171" text-anchor="middle" class="small">任务周围的 context</text>
+  <rect x="1095" y="198" width="190" height="220" rx="13" fill="#e0f2fe" stroke="#7dd3fc"/>
+  <circle cx="1250" cy="230" r="23" fill="#fde047" stroke="#f59e0b" stroke-width="2"/>
+  <line x1="1219" y1="246" x2="1175" y2="288" stroke="#f59e0b" stroke-width="3" opacity="0.65"/>
+  <line x1="1236" y1="255" x2="1208" y2="302" stroke="#f59e0b" stroke-width="3" opacity="0.65"/>
+  <line x1="1110" y1="352" x2="1270" y2="352" class="table"/>
+  <ellipse cx="1172" cy="359" rx="42" ry="10" fill="#64748b" opacity="0.35"/>
+  <path d="M1136 343 C1147 325 1169 326 1184 341 C1170 352 1148 353 1136 343 Z" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
+  <path d="M1215 334 Q1232 350 1249 334 L1243 359 H1221 Z" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>
+  <circle cx="1122" cy="310" r="14" fill="#f472b6" stroke="#be185d"/>
+  <rect x="1250" y="291" width="22" height="22" rx="3" fill="#34d399" stroke="#047857"/>
+  <text x="1190" y="451" text-anchor="middle" class="heading">lighting · background</text>
+  <text x="1190" y="477" text-anchor="middle" class="body">shadow · clutter · distractor</text>
+  <text x="1190" y="511" text-anchor="middle" class="small">task object 含义保持不变</text>
+  <rect x="1100" y="548" width="180" height="34" rx="17" fill="#e2e8f0"/>
+  <text x="1190" y="570" text-anchor="middle" class="small">L11 未实践</text>
+  <rect x="1100" y="596" width="180" height="44" rx="13" fill="#e2e8f0"/>
+  <text x="1190" y="614" text-anchor="middle" class="small">只作概念介绍</text>
+  <text x="1190" y="631" text-anchor="middle" class="small">lighting · background</text>
+
+  <rect x="1320" y="108" width="245" height="576" rx="20" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="1442" y="145" text-anchor="middle" class="section">4 · Sensor pipeline</text>
+  <text x="1442" y="171" text-anchor="middle" class="small">scene rendering 后的 corruption</text>
+  <rect x="1340" y="198" width="205" height="220" rx="13" fill="#f1f5f9" stroke="#94a3b8"/>
+  <g filter="url(#softBlur)" opacity="0.78">
+    <line x1="1355" y1="352" x2="1530" y2="352" class="table"/>
+    <path d="M1381 343 C1392 325 1414 326 1429 341 C1415 352 1393 353 1381 343 Z" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
+    <path d="M1470 334 Q1487 350 1504 334 L1498 359 H1476 Z" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>
+  </g>
+  <circle cx="1370" cy="226" r="3" fill="#475569"/>
+  <circle cx="1415" cy="246" r="2" fill="#94a3b8"/>
+  <circle cx="1468" cy="219" r="3" fill="#64748b"/>
+  <circle cx="1517" cy="262" r="2" fill="#334155"/>
+  <circle cx="1393" cy="298" r="2" fill="#334155"/>
+  <circle cx="1444" cy="283" r="3" fill="#94a3b8"/>
+  <circle cx="1525" cy="319" r="3" fill="#64748b"/>
+  <rect x="1352" y="369" width="35" height="26" fill="#cbd5e1" opacity="0.9"/>
+  <rect x="1433" y="207" width="42" height="31" fill="#ffffff" opacity="0.85"/>
+  <line x1="1348" y1="278" x2="1537" y2="278" stroke="#64748b" stroke-width="2" opacity="0.5"/>
+  <text x="1442" y="451" text-anchor="middle" class="heading">noise · blur · dropout</text>
+  <text x="1442" y="477" text-anchor="middle" class="body">exposure · quantization · latency</text>
+  <text x="1442" y="511" text-anchor="middle" class="small">定义 temporal noise process</text>
+  <rect x="1352" y="548" width="180" height="34" rx="17" fill="#e2e8f0"/>
+  <text x="1442" y="570" text-anchor="middle" class="small">L11 未实践</text>
+  <rect x="1352" y="596" width="180" height="44" rx="13" fill="#e2e8f0"/>
+  <text x="1442" y="614" text-anchor="middle" class="small">只作概念介绍</text>
+  <text x="1442" y="631" text-anchor="middle" class="small">sensor corruption</text>
+
+  <rect x="35" y="714" width="20" height="20" rx="5" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.5"/>
+  <text x="67" y="729" class="small">青色 = 当前 L11 实践已实现</text>
+  <rect x="367" y="714" width="20" height="20" rx="5" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="399" y="729" class="small">灰色 = 领域概念，本实验未实现</text>
+  <text x="800" y="767" text-anchor="middle" class="small">课程原创示意图，参数类别参考 Tobin et al.（2017）的视觉随机化工作；并非对论文图片的复制。</text>
+  <text x="800" y="793" text-anchor="middle" class="small">像素变化只能证明 observation knob 已运行，不能证明采样分布真实、充分或有效。</text>
+</svg>

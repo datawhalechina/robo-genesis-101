@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Attempt seeds and appearance domains follow different counters</title>
+  <desc id="desc">For dr rebuild every one committed episode, appearance domain zero with seed A plus zero is built once. Attempt zero uses runtime seed S plus zero and fails; its frames are discarded and committed success remains zero, but the attempt stays in provenance. Attempt one remains in appearance domain zero, uses runtime seed S plus one, succeeds, and commits dataset episode zero. That success advances the appearance counter, so appearance domain one with seed A plus one is rebuilt. Attempt two uses runtime seed S plus two, succeeds, and commits dataset episode one. Runtime seeds advance on every attempt, while appearance seeds and domains advance only after committed successes.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+    <style>
+      .title { font: 700 30px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .section { font: 700 19px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .heading { font: 700 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 400 14px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .good { font: 700 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #047857; }
+      .bad { font: 700 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #b91c1c; }
+      .code { font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .flow { stroke: #64748b; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .domainFlow { stroke: #0f766e; stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 5; fill: none; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" rx="24" fill="#f8fafc"/>
+  <text x="800" y="44" text-anchor="middle" class="title">Attempts and appearance domains use different counters</text>
+  <text x="800" y="74" text-anchor="middle" class="subtitle">Example: dr_rebuild_every = 1 · S = runtime base seed · A = appearance base seed</text>
+
+  <rect x="35" y="105" width="995" height="390" rx="22" fill="#f0fdfa" stroke="#2dd4bf" stroke-width="1.8"/>
+  <text x="60" y="139" class="section">Appearance domain 0 · appearance seed A+0</text>
+  <text x="1005" y="139" text-anchor="end" class="small">reused until one episode commits</text>
+
+  <rect x="65" y="170" width="230" height="250" rx="16" fill="#ffffff" stroke="#14b8a6" stroke-width="1.8"/>
+  <text x="180" y="204" text-anchor="middle" class="heading">Build scene</text>
+  <text x="180" y="234" text-anchor="middle" class="code">domain_index = 0</text>
+  <text x="180" y="260" text-anchor="middle" class="code">appearance_seed = A+0</text>
+  <path d="M95 289 H265" class="dash"/>
+  <text x="180" y="319" text-anchor="middle" class="body">sample color + FOV</text>
+  <text x="180" y="345" text-anchor="middle" class="body">then scene.build()</text>
+  <text x="180" y="382" text-anchor="middle" class="small">committed successes = 0</text>
+
+  <path d="M295 295 H350" class="domainFlow"/>
+  <rect x="365" y="170" width="275" height="250" rx="16" fill="#fff7ed" stroke="#fb923c" stroke-width="1.8"/>
+  <text x="502" y="204" text-anchor="middle" class="heading">Attempt 0</text>
+  <text x="502" y="234" text-anchor="middle" class="code">runtime_seed = S+0</text>
+  <text x="502" y="262" text-anchor="middle" class="body">reset · rollout · evaluate</text>
+  <rect x="417" y="285" width="170" height="39" rx="19" fill="#fee2e2" stroke="#f87171"/>
+  <text x="502" y="310" text-anchor="middle" class="bad">FAILED ATTEMPT</text>
+  <text x="502" y="350" text-anchor="middle" class="body">discard buffered frames</text>
+  <text x="502" y="377" text-anchor="middle" class="small">dataset episode: none</text>
+  <text x="502" y="400" text-anchor="middle" class="small">committed successes stays 0</text>
+
+  <path d="M640 295 H695" class="domainFlow"/>
+  <rect x="710" y="170" width="285" height="250" rx="16" fill="#ecfdf5" stroke="#34d399" stroke-width="1.8"/>
+  <text x="852" y="204" text-anchor="middle" class="heading">Attempt 1</text>
+  <text x="852" y="234" text-anchor="middle" class="code">runtime_seed = S+1</text>
+  <text x="852" y="262" text-anchor="middle" class="body">reset · rollout · evaluate</text>
+  <rect x="767" y="285" width="170" height="39" rx="19" fill="#d1fae5" stroke="#34d399"/>
+  <text x="852" y="310" text-anchor="middle" class="good">SUCCESS</text>
+  <text x="852" y="350" text-anchor="middle" class="body">commit dataset episode 0</text>
+  <text x="852" y="377" text-anchor="middle" class="small">committed successes: 0 → 1</text>
+  <text x="852" y="400" text-anchor="middle" class="small">appearance quota reached</text>
+
+  <path d="M995 295 H1065" class="flow"/>
+  <text x="1030" y="274" text-anchor="middle" class="small">rebuild</text>
+
+  <rect x="1080" y="105" width="485" height="390" rx="22" fill="#ecfeff" stroke="#22d3ee" stroke-width="1.8"/>
+  <text x="1105" y="139" class="section">Appearance domain 1 · appearance seed A+1</text>
+
+  <rect x="1110" y="170" width="175" height="250" rx="16" fill="#ffffff" stroke="#0891b2" stroke-width="1.8"/>
+  <text x="1197" y="204" text-anchor="middle" class="heading">Rebuild</text>
+  <text x="1197" y="234" text-anchor="middle" class="code">index = 1</text>
+  <text x="1197" y="260" text-anchor="middle" class="code">seed = A+1</text>
+  <path d="M1135 289 H1260" class="dash"/>
+  <text x="1197" y="319" text-anchor="middle" class="body">new color + FOV</text>
+  <text x="1197" y="345" text-anchor="middle" class="body">new built scene</text>
+  <text x="1197" y="382" text-anchor="middle" class="small">successes = 1</text>
+
+  <path d="M1285 295 H1320" class="domainFlow"/>
+  <rect x="1335" y="170" width="200" height="250" rx="16" fill="#ecfdf5" stroke="#34d399" stroke-width="1.8"/>
+  <text x="1435" y="204" text-anchor="middle" class="heading">Attempt 2</text>
+  <text x="1435" y="234" text-anchor="middle" class="code">runtime_seed = S+2</text>
+  <text x="1435" y="262" text-anchor="middle" class="body">reset · rollout</text>
+  <rect x="1360" y="285" width="150" height="39" rx="19" fill="#d1fae5" stroke="#34d399"/>
+  <text x="1435" y="310" text-anchor="middle" class="good">SUCCESS</text>
+  <text x="1435" y="350" text-anchor="middle" class="body">commit episode 1</text>
+  <text x="1435" y="377" text-anchor="middle" class="small">successes: 1 → 2</text>
+  <text x="1435" y="400" text-anchor="middle" class="small">next index would be 2</text>
+
+  <rect x="35" y="525" width="1530" height="122" rx="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="60" y="558" class="section">Counter rule</text>
+  <rect x="245" y="548" width="575" height="70" rx="13" fill="#fff7ed" stroke="#fb923c"/>
+  <text x="532" y="575" text-anchor="middle" class="heading">Runtime seed advances on every attempt</text>
+  <text x="532" y="601" text-anchor="middle" class="code">attempt 0: S+0  →  attempt 1: S+1  →  attempt 2: S+2</text>
+  <rect x="845" y="548" width="690" height="70" rx="13" fill="#ecfeff" stroke="#22d3ee"/>
+  <text x="1190" y="575" text-anchor="middle" class="heading">Appearance domain advances on committed success</text>
+  <text x="1190" y="601" text-anchor="middle" class="code">successes 0: A+0  →  commit episode 0  →  successes 1: A+1</text>
+
+  <rect x="35" y="675" width="1530" height="165" rx="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="60" y="709" class="section">Provenance keeps all three attempts</text>
+  <rect x="60" y="730" width="440" height="76" rx="13" fill="#fff7ed" stroke="#fb923c"/>
+  <text x="280" y="758" text-anchor="middle" class="code">attempt 0 · S+0 · domain 0 / A+0</text>
+  <text x="280" y="784" text-anchor="middle" class="bad">failed · not committed · frames discarded</text>
+  <rect x="525" y="730" width="440" height="76" rx="13" fill="#ecfdf5" stroke="#34d399"/>
+  <text x="745" y="758" text-anchor="middle" class="code">attempt 1 · S+1 · domain 0 / A+0</text>
+  <text x="745" y="784" text-anchor="middle" class="good">success · committed as episode 0</text>
+  <rect x="990" y="730" width="545" height="76" rx="13" fill="#ecfdf5" stroke="#34d399"/>
+  <text x="1262" y="758" text-anchor="middle" class="code">attempt 2 · S+2 · domain 1 / A+1</text>
+  <text x="1262" y="784" text-anchor="middle" class="good">success · committed as episode 1</text>
+
+  <text x="800" y="871" text-anchor="middle" class="small">The training dataset contains only committed episodes; the audit trace still records the failed domain draw and its consumed runtime seed.</text>
+</svg>
