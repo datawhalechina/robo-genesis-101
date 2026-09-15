@@ -149,9 +149,11 @@ class EnvRandomizer:
 
         # Last per-episode DR draw (populated by _randomize_dynamics), exposed for diagnostics/logging.
         # ``last_friction_ratio`` is the single shared friction multiplier; ``last_mass_ratio`` maps
-        # object name -> the multiplicative mass ratio sampled this episode.
+        # object name -> the multiplicative mass ratio sampled this episode.  The camera mapping
+        # records the actual static world-camera extrinsics after reset for dataset provenance.
         self.last_friction_ratio: float | None = None
         self.last_mass_ratio: dict[str, float] = {}
+        self.last_world_camera_pose: dict[str, list[float]] | None = None
 
     def _compute_safe_jitter(self) -> dict[str, float]:
         safe: dict[str, float] = {}
@@ -181,6 +183,10 @@ class EnvRandomizer:
         # applied after settling.
         if self.cfg.dr.enabled:
             self._randomize_dynamics()
+        else:
+            self.last_friction_ratio = None
+            self.last_mass_ratio = {}
+            self.last_world_camera_pose = None
         self._settle()
         if self.cfg.dr.enabled:
             self._randomize_cameras()
@@ -232,17 +238,18 @@ class EnvRandomizer:
 
         self.last_mass_ratio = {}
         mlo, mhi = dr.mass_ratio_range
-        if not (mlo == 1.0 and mhi == 1.0):
-            for name in self.names:
-                base = self._object_base_mass(name)  # per-link base mass (kg)
-                mass_ratio = float(self.rng.uniform(mlo, mhi))
-                self._set_mass_shift(b.ycb[name], base * (mass_ratio - 1.0))
-                self.last_mass_ratio[name] = mass_ratio
+        fixed_mass = mlo == 1.0 and mhi == 1.0
+        for name in self.names:
+            base = self._object_base_mass(name)  # per-link base mass (kg)
+            mass_ratio = 1.0 if fixed_mass else float(self.rng.uniform(mlo, mhi))
+            self._set_mass_shift(b.ycb[name], base * (mass_ratio - 1.0))
+            self.last_mass_ratio[name] = mass_ratio
 
     def _randomize_cameras(self) -> None:
         """Jitter the static world-camera extrinsics around the config baseline."""
         dr = self.cfg.dr
-        if self.bundle.world_cam is None or (dr.cam_pos_jitter <= 0.0 and dr.cam_lookat_jitter <= 0.0):
+        if self.bundle.world_cam is None:
+            self.last_world_camera_pose = None
             return
         pos = self._base_cam_pos.copy()
         lookat = self._base_cam_lookat.copy()
@@ -251,6 +258,10 @@ class EnvRandomizer:
         if dr.cam_lookat_jitter > 0.0:
             lookat = lookat + self.rng.uniform(-dr.cam_lookat_jitter, dr.cam_lookat_jitter, size=3)
         self.bundle.world_cam.set_pose(pos=pos.tolist(), lookat=lookat.tolist())
+        self.last_world_camera_pose = {
+            "pos": [float(value) for value in pos],
+            "lookat": [float(value) for value in lookat],
+        }
 
     def _batch_shape(self, n_links: int) -> tuple[int, ...]:
         """Return the (per-env) shape expected by set_friction_ratio / set_mass_shift.

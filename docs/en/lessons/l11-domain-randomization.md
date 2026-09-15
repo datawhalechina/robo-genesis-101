@@ -66,7 +66,7 @@ Before starting, you should be able to:
 | 38–50 min | Course Layer A | Explain build-time color/FOV variation and its limits |
 | 50–62 min | Course Layer B | Explain reset-time friction, mass, and world-camera variation |
 | 62–72 min | Seeds, attempts, successes, and provenance | Trace each saved episode to its appearance seed, runtime seed, and sampled parameters |
-| 72–84 min | Fixed-seed preview and two-episode DR smoke | Produce inspectable images and a readable local dataset |
+| 72–84 min | Fixed-seed preview and four-episode DR smoke | Produce inspectable images and a readable local dataset |
 | 84–90 min | Splits, selection effects, diagnostics, and evidence limits | Design a defensible follow-up comparison |
 
 Rendering, scene rebuilding, and successful recording may take longer than the
@@ -563,8 +563,18 @@ split by collection order may put an entire appearance group on one side—or
 split correlated episodes from that group across both sides. Preserve the
 mapping from episode to appearance domain before selecting IDs.
 
-Two smoke episodes are sufficient to test the mapping logic. They are not
-enough to estimate coverage, compare policies, or form a meaningful benchmark.
+The lab records four smoke episodes with `dr_rebuild_every=2`, so their
+appearance-domain IDs are `0, 0, 1, 1`. This small repeated-group structure
+makes the two split plans visibly different:
+
+| Plan | Train episodes | Evaluation episodes | Domain relation |
+|---|---|---|---|
+| In-distribution | `0, 2` | `1, 3` | both sides contain domains 0 and 1 |
+| Held-out domain | `0, 1` | `2, 3` | domain 0 is train-only; domain 1 is evaluation-only |
+
+Four smoke episodes demonstrate grouping and split mechanics. They are still
+not enough to estimate coverage, compare policies, or form a meaningful
+benchmark.
 
 ## Companion lab workflow
 
@@ -577,7 +587,7 @@ timing, disturbance, or adaptive-distribution families.
 - Complete L09 first or set the notebook's explicit baseline dataset root to a
   compatible local copy.
 - The normal path uses `ROBO_GENESIS_RENDER=1`. It builds cameras, renders a
-  fixed-seed preview, records two successful episodes, and reads both videos.
+  fixed-seed preview, records four successful episodes, and reads both videos.
 - `ROBO_GENESIS_RENDER=0` is a constrained diagnostic. It checks configuration,
   scheduling, friction/mass arithmetic, and command construction without
   initializing Genesis or creating a dataset.
@@ -630,30 +640,30 @@ The full path then reads the actual sampled ratios and camera pose from the
 runtime objects. Reimplementing a second random sampler in the notebook would
 only test the notebook against itself.
 
-### Step 4: record a two-episode combined smoke
+### Step 4: record a four-episode combined smoke
 
 The compact experiment uses:
 
 | Setting | Lab value | Reason |
 |---|---:|---|
-| Successful episodes | 2 | integration smoke, not a coverage study |
+| Successful episodes | 4 | gives each of two appearance domains two episodes |
 | Maximum attempts | 10 | bounded failure behavior |
 | Dataset FPS | 5 | matches the small L09 baseline |
-| Image size | `160×120` | keeps two-camera H.264 output small |
+| Image size | `640×360` | restores the recorder's default 16:9 output for a clearer visual review |
 | Pick task | banana to bowl | preserves the L09 comparison |
-| Layer-A rebuild interval | 1 accepted episode | exposes two appearance seeds if both episodes succeed |
+| Layer-A rebuild interval | 2 accepted episodes | makes both in-domain and held-out-domain splits observable |
 | Layer B | bounded friction, mass, and world-camera jitter | tests the current runtime subset |
 
 An explicit command equivalent to the notebook's subprocess is:
 
 ```sh
 .venv/bin/python -m robo_genesis.record_dataset \
-  --episodes 2 \
+  --episodes 4 \
   --max-attempts 10 \
   --seed 1100 \
   --fps 5 \
-  --img-width 160 \
-  --img-height 120 \
+  --img-width 640 \
+  --img-height 360 \
   --vcodec h264 \
   --pick 011_banana \
   --repo-id local/l11_banana_dr \
@@ -662,7 +672,7 @@ An explicit command equivalent to the notebook's subprocess is:
   --dr-object-color \
   --dr-table-jitter 0.15 \
   --dr-fov-jitter 2.0 \
-  --dr-rebuild-every 1 \
+  --dr-rebuild-every 2 \
   --dr-runtime \
   --dr-friction 0.7 1.3 \
   --dr-mass 0.8 1.2 \
@@ -672,7 +682,7 @@ An explicit command equivalent to the notebook's subprocess is:
 
 The final lab will stop rather than overwrite an existing root unless the
 learner explicitly opts in, and it will fail clearly if ten attempts do not
-produce the two requested successes. Those safeguards must be verified against
+produce the four requested successes. Those safeguards must be verified against
 the final recorder implementation before this lesson leaves `planned`.
 
 ### Step 5: audit data and provenance together
@@ -692,7 +702,7 @@ be able to answer:
 - Did two split groups accidentally share an appearance domain?
 
 A descriptive per-episode image statistic may accompany the frames, but no
-two-episode statistic should be called a diversity, generalization, or
+four-episode statistic should be called a diversity, generalization, or
 robustness result.
 
 ## Evidence ladder
@@ -702,7 +712,7 @@ robustness result.
 | A fixed seed reproduces one configuration and preview | configuration and seed path are traceable | pixel-identical rendering across all platforms |
 | Baseline and sampled-domain images differ | selected knobs affect rendered observations | realism, sufficient coverage, or policy benefit |
 | Ratios and poses are finite and inside bounds | the Layer-B application path is usable | monotonic contact or grasp difficulty |
-| Two successful DR episodes reopen with both videos | recorder, writer, codec, sidecar, and reader connect | adequate data or training convergence |
+| Four successful DR episodes reopen with both videos | recorder, writer, codec, sidecar, and reader connect; repeated domain groups make split mechanics visible | adequate data or training convergence |
 | Attempt and success counts agree with provenance | the smoke run's selection is observable | population expert success rate |
 | A frozen policy improves on a declared simulated holdout | evidence for that simulator protocol | real-world transfer |
 | A frozen policy improves on a physical robot protocol | evidence for that robot, task, and condition set | universal robustness |
@@ -764,8 +774,13 @@ performs closed-loop evaluation. Do not move claims upward in this ladder.
 
 ### One-variable exercise: isolate a domain parameter
 
-Choose exactly one of table color, constrained object color, FOV, or runtime
-world-camera pose. Keep the task seed and all other DR knobs fixed.
+Return to `l11-appearance-preview` in notebook Section 2. Change only
+`PREVIEW_PROFILE` from `combined` to `table_color`, `object_color`, or `fov`,
+then rerun Sections 2 and 3. Each profile fixes the unselected knobs at zero,
+keeps seeds 0 and 1, and writes into an isolated preview subdirectory. Runtime
+world-camera pose is deliberately excluded: it is a reset-time Layer-B
+parameter and requires episode recording rather than this quick build-time
+preview.
 
 Before running, predict:
 

@@ -35,10 +35,17 @@ import genesis as gs
 from lerobot.configs.video import RGBEncoderConfig
 from lerobot.datasets.lerobot_dataset import LeRobotDataset
 
+from . import __version__
 from .build_scene import SceneDomainRandomizationConfig, build_scene
+from .domain_provenance import (
+    DOMAIN_PROVENANCE_SCHEMA_VERSION,
+    validate_dr_collection_config,
+    write_domain_provenance,
+)
 from .grasp_demo import TaskSpec, run_pick_place
 from .paths import DATASETS_DIR, resolve_cli_path
 from .randomize import DomainRandomizationConfig, EnvRandomizer, RandomizationConfig
+from .scene_config import WORLD_CAM_FOV, WRIST_CAM_FOV
 
 # The sim runs at dt=0.01 (see build_scene): 100 control steps per second.
 CONTROL_FPS = 100
@@ -285,6 +292,22 @@ def main() -> None:
     args = parser.parse_args()
 
     img_wh = (args.img_width, args.img_height)
+    max_attempts = args.max_attempts if args.max_attempts > 0 else args.episodes * 5
+    normalized_config = validate_dr_collection_config(
+        episodes=args.episodes,
+        max_attempts=max_attempts,
+        fps=args.fps,
+        image_width=args.img_width,
+        image_height=args.img_height,
+        dr_rebuild_every=args.dr_rebuild_every,
+        table_color_jitter=args.dr_table_jitter,
+        fov_jitter_deg=args.dr_fov_jitter,
+        camera_fovs_deg=(WORLD_CAM_FOV, WRIST_CAM_FOV),
+        friction_ratio_range=args.dr_friction,
+        mass_ratio_range=args.dr_mass,
+        cam_pos_jitter=args.dr_cam_pos,
+        cam_lookat_jitter=args.dr_cam_lookat,
+    )
     root = resolve_cli_path(
         args.output_dir,
         default=DATASETS_DIR / args.repo_id.split("/")[-1],
@@ -296,8 +319,6 @@ def main() -> None:
             raise SystemExit(
                 f"[record] {root} already exists. Use --overwrite or pass a new --output-dir."
             )
-
-    max_attempts = args.max_attempts if args.max_attempts > 0 else args.episodes * 5
 
     backend = gs.cpu if args.cpu else gs.gpu
     gs.init(backend=backend)
@@ -329,7 +350,10 @@ def main() -> None:
 
     n_success = 0
     n_failed_saved = 0
+    n_dataset_episodes = 0
     attempts = 0
+    attempt_records: list[dict] = []
+    appearance_base_seed = args.dr_seed if args.dr_seed is not None else args.seed
     while n_success < args.episodes and attempts < max_attempts:
         # Rebuild into the next appearance domain once this shard's success quota is met.
         target_domain = n_success // args.dr_rebuild_every
@@ -343,7 +367,11 @@ def main() -> None:
             recorder = EpisodeRecorder(bundle, fps=args.fps, img_wh=img_wh)
             print(f"[record] rebuilt scene for appearance domain {domain_index} (seed={scene_dr.seed})")
 
-        episode_seed = args.seed + attempts
+        attempt_index = attempts
+        episode_seed = args.seed + attempt_index
+        appearance_seed = (
+            appearance_base_seed + domain_index if args.dr_appearance else None
+        )
         randomizer.reset(seed=episode_seed)
         pick_object = str(pick_rng.choice(pick_choices))
         task = TaskSpec(pick_object=pick_object, place_target="024_bowl")
@@ -352,23 +380,101 @@ def main() -> None:
         success, _ = run_pick_place(bundle, task, recorder=recorder)
         attempts += 1
 
+        committed = False
+        committed_episode_index = None
         if success and len(recorder) > 0:
+            committed_episode_index = n_dataset_episodes
             recorder.flush_to(dataset, task_description(pick_object))
+            committed = True
+            n_dataset_episodes += 1
             n_success += 1
             print(f"[record] episode {n_success}/{args.episodes} saved "
                   f"(attempt {attempts}, seed {episode_seed}, pick={pick_object}, {len(recorder)} frames)")
         elif args.keep_failures and len(recorder) > 0:
+            committed_episode_index = n_dataset_episodes
             recorder.flush_to(dataset, "FAILED: " + task_description(pick_object))
+            committed = True
+            n_dataset_episodes += 1
             n_failed_saved += 1
             print(f"[record] attempt {attempts} (seed {episode_seed}, pick={pick_object}) "
                   f"failed -> saved for debug ({len(recorder)} frames)")
         else:
             print(f"[record] attempt {attempts} (seed {episode_seed}, pick={pick_object}) failed -> discarded")
 
+        attempt_records.append(
+            {
+                "attempt_index": attempt_index,
+                "runtime_seed": episode_seed,
+                "appearance_domain_index": domain_index,
+                "appearance_seed": appearance_seed,
+                "pick_object": pick_object,
+                "actual": {
+                    "friction_ratio": randomizer.last_friction_ratio,
+                    "mass_ratios": dict(randomizer.last_mass_ratio),
+                    "world_camera_pose": randomizer.last_world_camera_pose,
+                },
+                "success": bool(success),
+                "committed": committed,
+                "committed_episode_index": committed_episode_index,
+                "frame_count": len(recorder),
+            }
+        )
+
     dataset.finalize()
+    if args.dr_appearance or args.dr_runtime:
+        complete = n_success == args.episodes
+        provenance = {
+            "schema_version": DOMAIN_PROVENANCE_SCHEMA_VERSION,
+            "implementation_version": __version__,
+            "requested": {
+                "repo_id": args.repo_id,
+                "successful_episodes": args.episodes,
+                "max_attempts": max_attempts,
+                "pick_objects": pick_choices,
+                "dataset": {
+                    "fps": normalized_config["fps"],
+                    "image_width": normalized_config["image_width"],
+                    "image_height": normalized_config["image_height"],
+                    "video_codec": args.vcodec,
+                },
+                "appearance": {
+                    "enabled": bool(args.dr_appearance),
+                    "base_seed": appearance_base_seed,
+                    "rebuild_every": normalized_config["dr_rebuild_every"],
+                    "table_color_jitter": normalized_config["table_color_jitter"],
+                    "randomize_object_color": bool(args.dr_object_color),
+                    "fov_jitter_deg": normalized_config["fov_jitter_deg"],
+                },
+                "runtime": {
+                    "enabled": bool(args.dr_runtime),
+                    "base_seed": args.seed,
+                    "friction_ratio_range": normalized_config["friction_ratio_range"],
+                    "mass_ratio_range": normalized_config["mass_ratio_range"],
+                    "cam_pos_jitter": normalized_config["cam_pos_jitter"],
+                    "cam_lookat_jitter": normalized_config["cam_lookat_jitter"],
+                },
+            },
+            "attempts": attempt_records,
+            "summary": {
+                "attempts": attempts,
+                "successful_attempts": sum(record["success"] for record in attempt_records),
+                "failed_attempts": sum(not record["success"] for record in attempt_records),
+                "committed_successful_episodes": n_success,
+                "committed_debug_failures": n_failed_saved,
+                "complete": complete,
+            },
+        }
+        provenance_path = write_domain_provenance(root, provenance)
+        print(f"[record] domain provenance -> {provenance_path}")
+
     print(f"[record] done: {n_success} success"
           + (f" + {n_failed_saved} failed (debug)" if args.keep_failures else "")
           + f" in {attempts} attempts -> {root}")
+    if n_success != args.episodes:
+        raise SystemExit(
+            f"[record] incomplete: requested {args.episodes} successful episodes, "
+            f"recorded {n_success} in {attempts} attempts"
+        )
 
 
 if __name__ == "__main__":

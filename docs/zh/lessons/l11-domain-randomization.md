@@ -476,8 +476,16 @@ L11 又增加了第二个 grouping variable：domain。
 appearance group 放到一侧，也可能把同组的相关 episode 拆到两侧。选择 ID 前应保留 episode 到
 appearance domain 的映射。
 
-两条 smoke episode 足以检查映射逻辑，却不足以估计 coverage、比较 policy 或形成有意义的
-benchmark。
+实验使用 `dr_rebuild_every=2` 录制四条 smoke episode，因此 appearance-domain ID 为
+`0, 0, 1, 1`。这个最小的重复分组可以让两种 split 直接表现出差别：
+
+| 计划 | Train episode | Evaluation episode | Domain 关系 |
+|---|---|---|---|
+| In-distribution | `0, 2` | `1, 3` | 两侧都包含 domain 0 和 1 |
+| Held-out domain | `0, 1` | `2, 3` | domain 0 只用于训练，domain 1 只用于评估 |
+
+四条 smoke episode 可以演示 grouping 和 split 机制，但仍不足以估计 coverage、比较 policy
+或形成有意义的 benchmark。
 
 ## 配套实验流程
 
@@ -487,7 +495,7 @@ actuator、timing、disturbance 或 adaptive-distribution 类别。
 ### 运行之前
 
 - 先完成 L09，或把 notebook 的显式 baseline dataset root 指向一份兼容本地副本。
-- 正常路径使用 `ROBO_GENESIS_RENDER=1`：构建 camera、渲染固定 seed 预览、录制两条成功
+- 正常路径使用 `ROBO_GENESIS_RENDER=1`：构建 camera、渲染固定 seed 预览、录制四条成功
   episode，再读取两路视频。
 - `ROBO_GENESIS_RENDER=0` 是受限诊断：它不初始化 Genesis 或创建 dataset，只检查配置、
   调度、friction/mass 算术和 command 构造。
@@ -536,30 +544,30 @@ observation，不能证明覆盖已经充分或有效。
 完整路径随后从 runtime object 读取实际采样 ratio 与 camera pose。在 notebook 中另写一套
 random sampler，只会变成 notebook 对自己的测试。
 
-### 第 4 步：录制两条 episode 的组合 smoke
+### 第 4 步：录制四条 episode 的组合 smoke
 
 紧凑实验使用：
 
 | 设置 | 实验值 | 原因 |
 |---|---:|---|
-| 成功 episode | 2 | integration smoke，不是 coverage study |
+| 成功 episode | 4 | 让两个 appearance domain 各有两条 episode |
 | 最大 attempt | 10 | 让失败行为有界 |
 | Dataset FPS | 5 | 与小型 L09 baseline 一致 |
-| 图像尺寸 | `160×120` | 控制双相机 H.264 输出大小 |
+| 图像尺寸 | `640×360` | 恢复 recorder 默认的 16:9 输出，便于清晰查看画面 |
 | Pick task | banana to bowl | 保留与 L09 的对照 |
-| Layer-A rebuild interval | 每 1 条 accepted episode | 两条 episode 都成功时暴露两个 appearance seed |
+| Layer-A rebuild interval | 每 2 条 accepted episode | 让同域与留出整域两种 split 都能直接观察 |
 | Layer B | 有界 friction、mass 和 world-camera jitter | 测试当前 runtime 子集 |
 
 下面是一条与 notebook subprocess 等价的显式命令：
 
 ```sh
 .venv/bin/python -m robo_genesis.record_dataset \
-  --episodes 2 \
+  --episodes 4 \
   --max-attempts 10 \
   --seed 1100 \
   --fps 5 \
-  --img-width 160 \
-  --img-height 120 \
+  --img-width 640 \
+  --img-height 360 \
   --vcodec h264 \
   --pick 011_banana \
   --repo-id local/l11_banana_dr \
@@ -568,7 +576,7 @@ random sampler，只会变成 notebook 对自己的测试。
   --dr-object-color \
   --dr-table-jitter 0.15 \
   --dr-fov-jitter 2.0 \
-  --dr-rebuild-every 1 \
+  --dr-rebuild-every 2 \
   --dr-runtime \
   --dr-friction 0.7 1.3 \
   --dr-mass 0.8 1.2 \
@@ -577,7 +585,7 @@ random sampler，只会变成 notebook 对自己的测试。
 ```
 
 最终实验会在未明确 opt in 时停止，而不是覆盖已有 root；如果 10 次 attempt 没能得到请求的
-两次成功，它也会明确失败。这些 safeguard 必须针对最终 recorder 实现完成验证，L11 才能离开
+四次成功，它也会明确失败。这些 safeguard 必须针对最终 recorder 实现完成验证，L11 才能离开
 `planned`。
 
 ### 第 5 步：同时审计 data 与 provenance
@@ -594,7 +602,7 @@ repository ID、schema version、FPS、episode/frame count、camera key、image 
 - 在它之前发生过哪些失败 attempt？
 - 两个 split group 是否意外共享 appearance domain？
 
-Frame 可以配合描述性的 per-episode image statistic，但任何基于两条 episode 的统计量都不应称作
+Frame 可以配合描述性的 per-episode image statistic，但任何基于四条 episode 的统计量都不应称作
 diversity、generalization 或 robustness 结果。
 
 ## 证据阶梯
@@ -604,7 +612,7 @@ diversity、generalization 或 robustness 结果。
 | 固定 seed 能重现一套配置和预览 | 配置与 seed path 可追溯 | 所有平台都能 pixel-identical rendering |
 | Baseline 与 sampled-domain 图像不同 | 选定 knob 影响 rendered observation | realism、充分 coverage 或 policy benefit |
 | Ratio 和 pose 有限且位于范围内 | Layer-B application path 可用 | contact 或 grasp difficulty 单调变化 |
-| 两条成功 DR episode 能以双路视频重新打开 | recorder、writer、codec、sidecar 与 reader 接通 | 数据充分或训练收敛 |
+| 四条成功 DR episode 能以双路视频重新打开 | recorder、writer、codec、sidecar 与 reader 接通；重复 domain group 让 split 机制可见 | 数据充分或训练收敛 |
 | Attempt/success count 与 provenance 一致 | smoke run 的 selection 可见 | 整体 expert success rate |
 | 冻结 policy 在已声明 simulated holdout 上改善 | 该 simulator protocol 下的证据 | 真实世界迁移 |
 | 冻结 policy 在真实机器人 protocol 上改善 | 针对该机器人、任务和条件集的证据 | 普遍鲁棒性 |
@@ -653,8 +661,11 @@ diversity、generalization 或 robustness 结果。
 
 ### 单变量练习：隔离一个 domain parameter
 
-只从 table color、受约束 object color、FOV 或 runtime world-camera pose 中选择一个。固定 task
-seed 和其他所有 DR knob。
+回到 notebook 第 2 节的 `l11-appearance-preview` code cell。只把 `PREVIEW_PROFILE` 从
+`combined` 改为 `table_color`、`object_color` 或 `fov`，然后重新运行第 2、3 节。每个 profile
+都会把未选中的 knob 固定为零，保持 seed 0 和 1，并写入隔离的 preview 子目录。Runtime
+world-camera pose 被有意排除：它属于 reset-time Layer B，需要录制 episode，而不是运行这个
+快速的 build-time preview。
 
 运行前，预测：
 
