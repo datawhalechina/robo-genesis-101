@@ -33,7 +33,7 @@ def test_repository_manifest_defines_the_canonical_learning_path() -> None:
         *([CourseStatus.CPU_VERIFIED] * 7),
         *([CourseStatus.GPU_VERIFIED] * 2),
         CourseStatus.CPU_VERIFIED,
-        CourseStatus.PLANNED,
+        CourseStatus.GPU_VERIFIED,
         CourseStatus.GPU_VERIFIED,
         CourseStatus.PLANNED,
     ]

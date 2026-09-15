@@ -53,7 +53,7 @@ def test_l11_notebooks_expose_the_domain_randomization_contract() -> None:
         "dataset_root.name != 'l11_banana_dr'",
         "preview_root.name != 'l11_dr_preview'",
         "No download or fallback dataset is attempted",
-        "lesson.status.value == 'planned'",
+        "lesson.status.value == 'gpu-verified'",
         "validate_dr_collection_config(",
         "plan_seed_schedule(",
         "[False, True, True, True, True]",
@@ -102,6 +102,7 @@ def test_l11_notebooks_expose_the_domain_randomization_contract() -> None:
         "lerobot_train",
         "eval_policy",
         "from transformers",
+        "lesson.status.value == 'planned'",
     )
     localized_code: dict[str, tuple[str, ...]] = {}
 
@@ -122,7 +123,7 @@ def test_l11_notebooks_expose_the_domain_randomization_contract() -> None:
             "locale": locale,
             "duration_minutes": 90,
             "hardware": "gpu-recommended",
-            "status": "planned",
+            "status": "gpu-verified",
         }
         assert all(cell["execution_count"] is None for cell in code_cells)
         assert all(cell["outputs"] == [] for cell in code_cells)

@@ -10,8 +10,9 @@
 > CPU+EGL path, and dual-camera recording and readback on a reference R9700 all passed.
 > The renumbered L12 training content is `gpu-verified` after ACT and SmolVLA GPU
 > smoke, checkpoint audit, and reload checks. L10 is `cpu-verified` after its
-> bilingual CPU-only data-readback and inspection paths passed. L11 and L13 remain
-> `planned`.
+> bilingual CPU-only data-readback and inspection paths passed. L11 is `gpu-verified`
+> after its bilingual diagnostics, CPU+EGL path, and bounded-DR recording, readback,
+> and provenance path on a reference R9700 passed. L13 remains `planned`.
 
 RoboGenesis 101 is a Datawhale open-source course for learners with basic Python experience who want a structured, hands-on introduction to robot learning. Using Genesis as its simulation platform, the course connects environment diagnostics, scenes, and rigid-body physics with robot control, inverse kinematics, grasping, demonstration data, imitation learning, policy training, and closed-loop evaluation.
 
@@ -61,7 +62,7 @@ Training loss or open-loop action prediction is not treated as task success. The
 | L08 | [Demonstration Acquisition and Scripted Experts](docs/en/lessons/l08-demonstration-acquisition-and-scripted-experts.md) | 120 min | `gpu-recommended` | `gpu-verified` |
 | L09 | [Synthetic Data Recording and Collection Throughput](docs/en/lessons/l09-synthetic-data-recording-and-throughput.md) | 120 min | `gpu-recommended` | `gpu-verified` |
 | L10 | [Dataset Anatomy and Imitation Learning 101](docs/en/lessons/l10-dataset-anatomy-and-imitation-learning.md) | 90 min | `gpu-recommended` | `cpu-verified` |
-| L11 | [Domain Randomization](docs/en/lessons/l11-domain-randomization.md) | 90 min | `gpu-recommended` | `planned` |
+| L11 | [Domain Randomization](docs/en/lessons/l11-domain-randomization.md) | 90 min | `gpu-recommended` | `gpu-verified` |
 | L12 | [Training ACT and SmolVLA Policies](docs/en/lessons/l12-act-and-smolvla-policy-training.md) | 150 min | `gpu-required` | `gpu-verified` |
 | L13 | [Closed-Loop Evaluation and Capstone](docs/en/lessons/l13-closed-loop-evaluation-and-capstone.md) | 120 min | `gpu-required` | `planned` |
 

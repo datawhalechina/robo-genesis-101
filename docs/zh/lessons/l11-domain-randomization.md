@@ -5,14 +5,14 @@ locale: zh
 title: "域随机化"
 duration_minutes: 90
 hardware: gpu-recommended
-status: planned
+status: gpu-verified
 ---
 
 # L11 · 域随机化
 
-> **课程状态：** L11 仍为 `planned`。本讲义界定了预期课程内容和实验，但双语 notebook 与
-> L11 专属运行证据尚未完成。正常实验需要相机渲染，因此推荐使用 GPU。无渲染路径可以检查
-> 配置和调度逻辑，却无法产出完成实验所需的视觉或数据集证据。
+> **课程状态：** `gpu-verified`。双语诊断路径、CPU+EGL 完整路径，以及参考 R9700 上的
+> bounded DR 录制、回读与 provenance 完整路径均已通过。正常实验需要相机渲染，因此仍推荐
+> 使用 GPU。无渲染路径只检查配置和调度逻辑，不能代替视觉与数据集实验。
 
 ## 本讲在课程中的位置
 
@@ -584,9 +584,8 @@ random sampler，只会变成 notebook 对自己的测试。
   --dr-cam-lookat 0.02
 ```
 
-最终实验会在未明确 opt in 时停止，而不是覆盖已有 root；如果 10 次 attempt 没能得到请求的
-四次成功，它也会明确失败。这些 safeguard 必须针对最终 recorder 实现完成验证，L11 才能离开
-`planned`。
+实验会在未明确 opt in 时停止，而不是覆盖已有 root；如果 10 次 attempt 没能得到请求的
+四次成功，它也会明确失败。这些 safeguard 已经针对最终 recorder 实现完成验证。
 
 ### 第 5 步：同时审计 data 与 provenance
 

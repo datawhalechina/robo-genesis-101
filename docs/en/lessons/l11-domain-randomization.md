@@ -5,17 +5,17 @@ locale: en
 title: "Domain Randomization"
 duration_minutes: 90
 hardware: gpu-recommended
-status: planned
+status: gpu-verified
 ---
 
 # L11 · Domain Randomization
 
-> **Course status:** L11 remains `planned`. This lecture defines the intended
-> lesson and lab, but the bilingual notebook and L11-specific runtime evidence
-> are not complete yet. The normal experiment needs camera rendering and is
-> therefore GPU-recommended. A non-rendering path can inspect configuration and
-> scheduling logic, but it cannot produce the visual or dataset evidence that
-> completes the lab.
+> **Course status:** `gpu-verified`. The bilingual diagnostic paths, the complete
+> CPU+EGL path, and the complete bounded-DR recording, readback, and provenance
+> path on a reference R9700 have passed. The normal experiment needs camera
+> rendering and remains GPU-recommended. The non-rendering path checks only
+> configuration and scheduling logic; it does not complete the visual or dataset
+> experiment.
 
 ## Where this lesson fits
 
@@ -680,10 +680,10 @@ An explicit command equivalent to the notebook's subprocess is:
   --dr-cam-lookat 0.02
 ```
 
-The final lab will stop rather than overwrite an existing root unless the
-learner explicitly opts in, and it will fail clearly if ten attempts do not
-produce the four requested successes. Those safeguards must be verified against
-the final recorder implementation before this lesson leaves `planned`.
+The lab stops rather than overwriting an existing root unless the learner
+explicitly opts in, and it fails clearly if ten attempts do not produce the
+four requested successes. These safeguards have been verified against the final
+recorder implementation.
 
 ### Step 5: audit data and provenance together
 

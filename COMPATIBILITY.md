@@ -1564,3 +1564,169 @@ files、26 notebooks、33 Python files），pytest 43 passed，compileall 通过
 以上证据支持 L10 的 `cpu-verified` 状态，同时继续保留第 21.5 节的数据充分性、训练、闭环与
 跨平台边界。`M3.L10.6` 已于 2026-09-10 通过项目负责人验收；L10 六个步骤至此全部完成并
 验收，未开始 L11。
+
+## 22. L11 / M3.L11.5 域随机化正式运行证据
+
+> 日期：2026-09-15（Asia/Shanghai）
+> 范围：L11 双语无渲染诊断、English CPU+EGL 与参考 R9700 AMD+EGL 的 Layer-A preview、
+> 4-episode DR 录制、H.264/PyAV readback、provenance、domain-aware split、失败路径和人工视觉
+> 检查。L11 的公开状态在本步继续为 `planned`；状态候选只在 `.6` 单独同步。
+
+### 22.1 环境、输入与执行隔离
+
+本轮使用仓库 `.venv`：Python 3.12.3、Genesis 1.3.3、LeRobot 0.6.0、PyAV 15.1.0、
+PyArrow 25.0.0，以及 PyTorch `2.9.1+rocm7.2.1.gitff65f5bc`。CPU 路径实际报告
+`AMD Ryzen Threadripper PRO 9995WX 96-Cores` 与 `gs.cpu`；AMD 路径只设置
+`ROCR_VISIBLE_DEVICES=1`，把一张物理 AMD Radeon AI PRO R9700 映射为进程内 `cuda:0`，
+PyTorch 报告 HIP `7.2.53211-e1a6bc5663`，Genesis 全程实际选择 `gs.amdgpu`，没有 CPU
+fallback。
+
+L11 只读复用了当前本地 L09 baseline。该输入与已验收 L09 smoke 身份一致：LeRobot
+`codebase_version=v3.0`、5 FPS、2 episodes、85 frames、1 task、world/wrist H.264，存储
+shape 均为 `(120,160,3)`。本轮没有重新录制或覆盖 L09，因此它只作为 L11 的 no-DR 对照，
+不计作 L11 DR 运行证据。
+
+所有执行副本、cache、preview 和新数据集均位于隔离的
+`/tmp/rg101-m3115.krycMW/` 子目录。CPU 与 AMD 使用不同 dataset、preview、output、Jupyter
+runtime、IPython 和 cache roots；没有设置 `RG101_L11_OVERWRITE=1`，也没有读取或覆盖仓库
+默认的 `datasets/l11_banana_dr`。
+
+### 22.2 Clean-kernel 矩阵与源码身份
+
+提交版 EN/ZH notebook 均为 20 cells / 9 code cells，code-cell ID/source 逐字一致，output
+为空且 `execution_count: null`。把 9 组 `(cell_id, source)` 规范化为紧凑 JSON 后，双语
+SHA-256 均为
+`4c4e14fb034d19c328a114738c84f84a4fe8a422f8d372b90641b8e7a9692d5a`；四份执行副本均与对应
+提交源逐 cell 一致。
+
+| Notebook / 路径 | 执行时间 | 结果 |
+| --- | ---: | --- |
+| EN CPU / `render=0` | 2.19 秒 | 9/9 cells，无 error；`L11 DIAGNOSTIC CHECK: PASSED` |
+| ZH CPU / `render=0` | 2.20 秒 | 独立 kernel 9/9 cells，无 error；相同受限诊断结论 |
+| EN CPU+EGL / `render=1` | 140.97 秒 | 实际 `gs.cpu`；preview、录制、readback、sidecar 与 split 全部通过；`L11 CHECK: PASSED` |
+| EN R9700 AMD+EGL / `render=1` | 256.57 秒 | 实际 `gs.amdgpu`；使用独立产物重复完整路径；`L11 CHECK: PASSED` |
+
+诊断路径没有初始化 Genesis、camera、preview、writer、dataset 或 provenance reader，并明确
+输出 `Core domain-randomization experiment: NOT COMPLETED`。以上耗时包含本机 kernel/scene
+编译与离屏渲染，只描述本次 smoke，不是 CPU/GPU 性能比较或跨平台基准。
+
+### 22.3 Dataset、provenance 与 split 证据
+
+CPU 与 AMD 两条完整路径均为 4 attempts / 4 successes / 0 failed attempts，episode frame
+数为 `[44,43,43,43]`，合计 173 frames、4 episodes、1 task。两路视频均由 LeRobot metadata
+和 PyAV 实际回读为 H.264、5 FPS、`(360,640,3)`，解码图 finite、非空且非全黑。CPU 数据集
+共 1,211,435 bytes，AMD 数据集共 1,212,005 bytes；差异来自平台运行与视频编码，不代表
+语义或质量排名。
+
+两份 sidecar 都在 `dataset.finalize()` 后保留并通过 validator。四次 attempt 的 runtime seed
+为 `[1100,1101,1102,1103]`，committed episode 为 `[0,1,2,3]`，appearance domain 为
+`[0,0,1,1]`。CPU/AMD 记录的实际随机参数相同：shared friction ratio 为
+`[1.252957,1.102112,0.927535,1.157427]`；逐对象 mass ratio 的总范围为
+`[0.803349,1.191421]`；world-camera position 各轴偏移不超过 0.01 m，look-at 各轴偏移不超过
+0.02 m。以上均落在声明范围内，且每个 attempt 都保留实际值，而不只保留请求配置。
+
+同一份 committed episode→domain 记录产生两个不同问题的 split：
+
+- `in_distribution`：train `[0,2]`、eval `[1,3]`，两侧 domain 都是 `[0,1]`，overlap
+  为 `[0,1]`；
+- `held_out_domain`：train `[0,1]` / domain `[0]`，eval `[2,3]` / domain `[1]`，overlap
+  为空。
+
+两者均覆盖全部 episode、没有 episode overlap；helper 只规划和验证 ID，没有复制 dataset、
+改写 LeRobot schema 或配置训练。
+
+### 22.4 人工视觉检查与失败路径
+
+CPU/AMD 的 preview montage 和 dataset frame montage 均已实际打开检查：
+
+- preview 源 frame 为 `1280×720`，三联图为 `1536×313`；baseline、seed 0、seed 1 标签可读，
+  桌面和物体 flat color 明显变化，任务对象、碗、机器人和工作区仍可辨识；
+- notebook 的 persisted-data 2×2 图真实比较 L09 baseline 与 L11 DR world/wrist frame。旧 L09
+  输入仍为 `160×120`，因此视觉上比 L11 的 `640×360` frame 模糊；本轮按已冻结输入合同如实
+  保留，没有把它误写成同分辨率对照；
+- 为两条完整路径额外检查 4×2 episode/domain world+wrist 中间帧。episode 0/1 共享 domain 0，
+  episode 2/3 共享 domain 1；world view 的静态外参随 runtime seed 小幅变化，wrist camera
+  仍固定在末端安装关系上。八幅图均构图完整、非空，banana 在夹爪附近，任务语义可读；
+- provenance 图准确显示四个 committed success、四个 friction 值和 domain 在两次成功后从
+  0 切换到 1。本次正式采集没有失败 attempt，因此图例中的 failed-attempt 类别没有实际点；
+  本节不虚构 selection effect 的实测发生。
+
+失败探针均在危险写入或错误成功声明前终止：缺失 baseline 在 setup 首 cell 抛出
+`FileNotFoundError`；已有 dataset/preview 且未授权 overwrite 时抛出 `FileExistsError`；
+`max_attempts < episodes`、非正 friction/mass ratio、负 camera jitter、零 rebuild interval 和
+超过 baseline FOV 的 jitter 均由 recorder 的纯配置 validator 非零拒绝。探针结束后对应
+dataset/preview roots 均不存在，已有 CPU 完整产物未被改写。
+
+### 22.5 Warning 与证据边界
+
+两条完整路径保留了此前课程已记录的 Genesis/Franka tendon approximation、neutral qpos、
+solver time-constant 调整、neutral self-collision filtering、Quadrants tuple weak-reference cache
+提示和 H.264 编码日志。另观察到只读 NumPy array 转 tensor 提示；AMD 首次编译还出现
+Quadrants 使用 `ast.Str` 的 Python 3.14 deprecation warning。它们没有导致 scene、EGL、
+录制、sidecar、PyAV 解码、split 或最终断言失败。
+
+本节证明当前固定任务上的 bounded DR 子集能够在 CPU 和一张参考 R9700 上生成、持久化、
+回读并审计 4 条成功 episode。它不证明随机化分布覆盖充分、真实失败选择效应、策略性能提升、
+闭环 robustness、统计显著性或 sim-to-real 改善；本轮没有训练 policy、运行闭环 evaluation、
+操作真实机器人，也不外推到其他 AMD/ROCm、NVIDIA、Apple Silicon、Windows 或 viewer 路径。
+
+### 22.6 仓库门禁与当前状态
+
+本轮在同一工作树完成：
+
+- L11 定向测试：24 passed；
+- `.venv/bin/python -m robo_genesis.course_validation`：通过，13 lessons、32 localized
+  Markdown files、26 notebooks、37 Python files；
+- `.venv/bin/python -m pytest`：67 passed；
+- `.venv/bin/python -m compileall -q src scripts tests`：通过；
+- `UV_CACHE_DIR=<tmp> uv lock --check`：通过，解析 235 packages；
+- `npm ci`：安装 190 个包并审计 191 个包，保留 11 项既有 advisory（4 low、1 moderate、
+  6 high），没有运行 `npm audit fix`；
+- `npm run docs:build` 与 `EDGEONE=1 npm run docs:build`：均通过，仅有既有 large-chunk warning；
+- EN/ZH notebook parity、提交版 clean output、四份执行副本 source identity、L11 链接/SVG、
+  learner-facing 开发编号以及旧 GLX/AV1/路径残留检查：通过；
+- `git diff --check` 与本地开发记录 trailing-whitespace 检查：通过。
+
+`M3.L11.5` 已于 2026-09-15 通过项目负责人验收。L11 的 `course.json`、双语讲义/notebook、
+README、首页和 sidebar 仍一致保持 `planned`；只有项目负责人明确启动 `.6` 后，才根据本节
+已验收的 R9700 完整路径讨论 `gpu-verified` 状态同步。
+
+### 22.7 M3.L11.6 状态同步后复验
+
+项目负责人验收 `.1`–`.5` 并明确启动 `.6` 后，L11 已原子同步为 `gpu-verified`：
+
+- `course.json`、双语讲义 frontmatter 与顶部课程状态说明；
+- EN/ZH notebook metadata，以及 setup/final-check 中的 manifest status 断言；
+- `README.md`、`README_en.md` 与双语首页的状态摘要和课程表；
+- manifest 顺序合同与 L11 notebook 状态合同。
+
+L11 的 90 分钟时长、`domain-randomization` slug、双语路径和 `gpu-recommended` hardware
+字段均未改变。公开状态 `gpu-verified` 对应第 22.1–22.6 节已验收的参考 R9700 AMD+EGL
+完整路径；它不把 GPU 变成阅读讲义或运行无渲染诊断的硬门槛，也不表示已经训练 policy、
+测量闭环性能或完成真实机器人 sim-to-real 验证。当前公开状态统计为 8 个 `cpu-verified`、
+4 个 `gpu-verified`、1 个 `planned` 和 0 个 `published`。
+
+状态 literal 更新后，双语 notebook 仍为 20 cells / 9 code cells，cell type、code-cell ID/source
+逐字一致，提交版 output 为空且 `execution_count: null`。按第 22.2 节相同方式规范化的 code
+SHA-256 从 `.5` 执行时的
+`4c4e14fb034d19c328a114738c84f84a4fe8a422f8d372b90641b8e7a9692d5a` 变为
+`e361fbc0c22b44b15a8155d3733ca99defefe4eee8b9af9e0cd4427ae5850e9b`；行为语义变化仅为
+setup 和两处分支 final-check 的 manifest status 从 `planned` 改为 `gpu-verified`。
+
+为验证最终源码，English notebook 在新的独立 CPU、`render=0` kernel 与 `/tmp` cache/output
+目录中从头执行。9/9 code cells 均完成、没有 error output，setup 读取到
+`status=gpu-verified`；配置、seed schedule、physics guardrail 与 recorder 命令合同通过，
+Genesis、preview、dataset、provenance reader 和 split 均明确跳过，最终输出
+`L11 DIAGNOSTIC CHECK: PASSED` 与 `Core domain-randomization experiment: NOT COMPLETED`。
+执行副本与当前提交版 code source 完全一致，隔离的 dataset/output 目录没有生成文件。
+
+状态同步后的仓库门禁结果为：course validation 通过（13 lessons、32 localized Markdown
+files、26 notebooks、37 Python files），pytest 67 passed，compileall 通过，`uv lock --check`
+解析 235 packages，普通与 `EDGEONE=1` 文档构建通过，双语 notebook parity、clean output、
+公开状态残留扫描和 `git diff --check` 均通过。`npm ci` 安装 190 个包并审计 191 个包，保留
+11 项既有 advisory（4 low、1 moderate、6 high），没有执行自动依赖升级。
+
+`.6` 没有改变随机化、场景、专家、recorder、schema、视频、持久化、readback 或 split 逻辑，
+因此第 22.1–22.6 节已验收的 CPU+EGL、R9700 AMD+EGL、失败路径和人工视觉证据继续适用。
+以上证据支持 L11 当前公开状态为 `gpu-verified`。`M3.L11.6` 已于 2026-09-15 通过项目负责人
+验收；L11 六个子步骤至此全部完成并验收，未开始 L13。
