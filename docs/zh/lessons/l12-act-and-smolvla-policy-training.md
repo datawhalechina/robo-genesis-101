@@ -49,21 +49,11 @@ LeRobot dataset
 
 完成 L12 后，你应当能够：
 
-1. 在分配模型之前，用一个真实训练样本检查 state、action、image、task 和时间
-   信息是否符合约定；
-2. 解释 ACT 的视觉主干、条件变分自编码器（CVAE）、Transformer 和 action queries
-   分别承担什么工作，以及训练和推理过程有何不同；
-3. 解释 SmolVLA 的视觉—语言主干、任务文本、动作专家和流匹配目标分别承担什么工作；
-4. 根据数据集 FPS、`chunk_size` 和 `n_action_steps` 计算名义预测时域与执行时域，
-   并拒绝不合法的配置；
-5. 审计生成的 ACT 与 SmolVLA `lerobot-train` 命令，包括初始化方式、batch size、
-   device、路径和相机键重命名；
-6. 分别为两种策略运行一次真实的 GPU 优化步骤，并找到解码、前向传播、有限 loss、
-   反向传播、优化器更新和 checkpoint 保存的证据；
-7. 检查并重新加载两个 checkpoint，要求它们针对同一个真实数据样本输出数值有限的
-   9 维 `float32` 动作；
-8. 准确说明为什么 dry-run、有限 loss、可加载的 checkpoint 和一次开环动作仍然不能
-   证明闭环任务成功。
+1. 解释并比较 ACT 与 SmolVLA 如何把多模态 observation（以及 SmolVLA 使用的任务
+   上下文）映射为动作块，包括训练与推理过程的差异；
+2. 分析数据、模型、时间语义和 checkpoint 之间的合同，并说明它们如何使策略训练能够
+   复现并重新加载；
+3. 为两种架构设计、执行并评估可复现的策略训练工作流。
 
 ## 先明确证据边界
 

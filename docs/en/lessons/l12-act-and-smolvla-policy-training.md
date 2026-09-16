@@ -53,24 +53,13 @@ Before starting, you should be able to:
 
 By the end of L12, you should be able to:
 
-1. validate the state, action, image, task, and timing contract of one real
-   training sample before allocating a model;
-2. explain the roles of ACT's visual backbone, conditional variational
-   autoencoder (CVAE), Transformer, and action queries, including the difference
-   between training and inference;
-3. explain the roles of SmolVLA's vision-language backbone, task text, action
-   expert, and flow-matching objective;
-4. calculate the nominal prediction and execution horizons from dataset FPS,
-   `chunk_size`, and `n_action_steps`, then reject an invalid configuration;
-5. audit the generated ACT and SmolVLA `lerobot-train` commands, including their
-   initialization mode, batch size, device, paths, and camera rename;
-6. run one real GPU optimization step for each policy and identify the evidence
-   for decoding, forward pass, finite loss, backward pass, optimizer update, and
-   checkpoint save;
-7. inspect and reload both checkpoints, then require a finite 9-D `float32`
-   action from the same real dataset sample; and
-8. state precisely why a dry-run, a finite loss, a loadable checkpoint, and one
-   open-loop action still do not establish closed-loop task success.
+1. explain and compare how ACT and SmolVLA learn to map multimodal observations
+   — and, for SmolVLA, task context — to action chunks, including how training
+   differs from inference;
+2. reason about the data, model, temporal, and checkpoint contracts that make a
+   policy-training run reproducible and reloadable;
+3. design, carry out, and evaluate a reproducible policy-training workflow for
+   both architectures.
 
 ## Start with the evidence boundary
 
