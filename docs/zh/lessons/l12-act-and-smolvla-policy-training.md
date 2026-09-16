@@ -131,6 +131,14 @@ policy(images_t, state_t, optional_task)
 ACT 是 **Action Chunking with Transformers** 的缩写。在本课程锁定的 LeRobot
 实现中，图像和机器人状态共同为 Transformer 提供条件，模型输出固定长度的动作块。
 
+下图把实现中同样带有“encoder”名称、但作用不同的两部分分开。橙色的 CVAE encoder
+只在训练时利用演示中的未来动作块估计 posterior；蓝色的主 Transformer 路径在训练和
+推理时都会负责预测动作。进入推理阶段后，绿色分支会用全零 latent 代替此时无法得到的
+posterior sample。每个 learned action query 表示预测动作块中的一个位置，并不是从
+数据集中复制过来的一条动作。
+
+![ACT 包含仅训练时使用的 CVAE posterior 路径，以及训练与推理共享的动作块预测器。训练时，state 和演示中的未来动作块产生 latent sample 与 KL loss；推理时跳过 CVAE encoder，并把 latent 置零。两种模式都会把相机特征、当前机器人状态和 latent 送入主 Transformer encoder，再由 learned action queries 驱动 decoder 预测完整动作块。](/diagrams/l12-act-architecture-zh.svg)
+
 ### 训练路径
 
 ACT 包含两条基于 Transformer 的路径，它们的名称很容易混淆：
@@ -139,16 +147,6 @@ ACT 包含两条基于 Transformer 的路径，它们的名称很容易混淆：
   mean 与 log variance；
 - 主 **Transformer encoder/decoder** 接收视觉特征、机器人状态、采样得到的潜变量
   和学习得到的 action queries，预测完整动作块，也是推理时保留的路径。
-
-信息流如下：
-
-```text
-ground-truth action chunk + state
-  → CVAE encoder → mean/log-variance → sampled latent
-
-camera features + state + sampled latent + action queries
-  → Transformer encoder/decoder → predicted action chunk
-```
 
 当前 loss 由两部分相加：一是仅对有效、非 padding 目标计算的平均绝对动作重建误差；
 二是 `kl_weight` 乘以学习到的潜变量分布与标准正态先验之间的 KL divergence。
@@ -185,6 +183,13 @@ checkpoint 是一个 **smoke 模型**，并不是有代表性的 ACT 训练配�
 SmolVLA 是一种紧凑的**视觉—语言—动作（vision-language-action，VLA）**策略。
 本课程微调 `lerobot/smolvla_base`，不会从头训练完整模型。
 
+下图按照本课程锁定的 cross-attention 配置展示信息流。蓝色 prefix 根据当前相机图像、
+task 文本和机器人状态计算一次；紫色动作路径接收一个带噪动作点及其连续时间，再由
+action expert 读取 prefix context 并预测速度。橙色部分表示训练时如何构造一个带监督的
+flow 采样点，绿色部分则表示推理如何反复复用同一个速度网络，把噪声逐步更新为动作块。
+
+![SmolVLA 根据相机图像、task token 和当前机器人状态形成条件 prefix。共享动作路径把带噪动作点与 time embedding 融合，让 action expert 通过 cross-attention 读取 prefix，并预测速度。训练时，这个速度与 noise 减演示动作块得到的目标比较；推理时，模型从噪声出发，反复执行 Euler update，最终得到动作块。](/diagrams/l12-smolvla-architecture-zh.svg)
+
 ### 前缀上下文与动作专家
 
 模型在概念上分成两条信息流：
@@ -205,9 +210,12 @@ SmolVLA 是一种紧凑的**视觉—语言—动作（vision-language-action，
 动作专家预测沿这条路径前进的速度。用紧凑的记法表示：
 
 ```text
-noisy point x_t = t × noise + (1 - t) × demonstrated_actions
-target velocity = noise - demonstrated_actions
-loss = mean squared error(predicted_velocity, target_velocity)
+demonstrated action chunk: a
+noise: ε ~ N(0, I)
+noisy point: x_t = t × ε + (1 - t) × a
+target velocity: u_t = ε - a
+predicted velocity: v_theta = v_theta(x_t, t | context)
+loss = mean squared error(v_theta, u_t)
 ```
 
 推理时，模型从噪声出发，将学习到的速度场积分回一个动作块。LeRobot 0.6.0 默认使用

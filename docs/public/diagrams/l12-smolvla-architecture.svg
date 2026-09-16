@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1040" viewBox="0 0 1600 1040" role="img" aria-labelledby="title desc">
+  <title id="title">SmolVLA architecture and flow-matching paths</title>
+  <desc id="desc">A shared conditioning prefix embeds two camera views with the SmolVLM vision encoder and connector, embeds the task text, and projects the current robot state. The pretrained VLM prefix stack turns those tokens into context for cross-attention and can cache that context during inference. In the shared action path, a noisy action point x at time t is projected and fused with a time embedding, then an action expert reads the prefix context and predicts a velocity field. During training, a demonstrated action chunk, Gaussian noise, and a sampled time produce x_t and the target velocity noise minus actions; mean squared error trains the velocity prediction. During inference, the model starts at Gaussian noise and applies ten Euler updates by default until it returns an action chunk. This is a course-created schematic based on the SmolVLA paper and the pinned LeRobot 0.6.0 implementation.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="trainArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ea580c"/>
+    </marker>
+    <marker id="inferArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
+    </marker>
+    <marker id="contextArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <style>
+      .title { font: 700 30px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .lane { font: 700 18px Inter, ui-sans-serif, system-ui, sans-serif; }
+      .heading { font: 700 17px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .tiny { font: 700 11px Inter, ui-sans-serif, system-ui, sans-serif; }
+      .code { font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .flow { stroke: #475569; stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
+      .context { stroke: #2563eb; stroke-width: 2.4; fill: none; marker-end: url(#contextArrow); }
+      .train { stroke: #ea580c; stroke-width: 2.4; fill: none; marker-end: url(#trainArrow); }
+      .infer { stroke: #059669; stroke-width: 2.4; stroke-dasharray: 8 6; fill: none; marker-end: url(#inferArrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1040" rx="24" fill="#f8fafc"/>
+  <text x="800" y="45" text-anchor="middle" class="title">SmolVLA learns a velocity field conditioned on vision, language, and state</text>
+  <text x="800" y="76" text-anchor="middle" class="subtitle">Training supervises one sampled point on the flow; inference integrates the same field from noise to an action chunk.</text>
+
+  <rect x="40" y="108" width="1520" height="265" rx="22" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+  <text x="68" y="140" class="lane" fill="#1d4ed8">SHARED CONDITIONING PREFIX · computed from the current observation and task</text>
+
+  <rect x="70" y="166" width="255" height="148" rx="17" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="197" y="195" text-anchor="middle" class="heading">Two camera views</text>
+  <text x="197" y="222" text-anchor="middle" class="body">resize / pad / normalize</text>
+  <rect x="94" y="238" width="207" height="48" rx="11" fill="#dbeafe"/>
+  <text x="197" y="258" text-anchor="middle" class="small">SmolVLM vision encoder</text>
+  <text x="197" y="277" text-anchor="middle" class="small">+ modality connector</text>
+  <text x="197" y="305" text-anchor="middle" class="tiny" fill="#1d4ed8">VISUAL TOKENS</text>
+
+  <rect x="365" y="166" width="255" height="148" rx="17" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="492" y="195" text-anchor="middle" class="heading">Task text</text>
+  <text x="492" y="222" text-anchor="middle" class="body">real dataset task string</text>
+  <rect x="389" y="238" width="207" height="48" rx="11" fill="#dbeafe"/>
+  <text x="492" y="258" text-anchor="middle" class="small">tokenizer + language</text>
+  <text x="492" y="277" text-anchor="middle" class="small">embedding table</text>
+  <text x="492" y="305" text-anchor="middle" class="tiny" fill="#1d4ed8">LANGUAGE TOKENS</text>
+
+  <rect x="660" y="166" width="255" height="148" rx="17" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="787" y="195" text-anchor="middle" class="heading">Current robot state</text>
+  <text x="787" y="222" text-anchor="middle" class="body">normalize + pad dimensions</text>
+  <rect x="684" y="238" width="207" height="48" rx="11" fill="#dbeafe"/>
+  <text x="787" y="258" text-anchor="middle" class="small">trainable state projection</text>
+  <text x="787" y="277" text-anchor="middle" class="small">into VLM hidden size</text>
+  <text x="787" y="305" text-anchor="middle" class="tiny" fill="#1d4ed8">STATE TOKEN</text>
+
+  <path d="M197 314 V344 H1078 Q1090 344 1090 332 V330" class="context"/>
+  <path d="M492 314 V352 H1168 Q1180 352 1180 340 V330" class="context"/>
+  <path d="M915 240 H980" class="context"/>
+  <rect x="980" y="155" width="530" height="175" rx="20" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+  <text x="1245" y="189" text-anchor="middle" class="heading">Pretrained SmolVLM prefix stack</text>
+  <text x="1245" y="216" text-anchor="middle" class="body">visual tokens · language tokens · state token</text>
+  <rect x="1020" y="236" width="450" height="42" rx="12" fill="#ffffff" stroke="#bfdbfe"/>
+  <text x="1245" y="262" text-anchor="middle" class="body">context for the action expert's cross-attention</text>
+  <text x="1245" y="300" text-anchor="middle" class="small">frozen in the pinned base preset · context K/V cached once at inference</text>
+
+  <rect x="40" y="418" width="430" height="205" rx="22" fill="#fff7ed" stroke="#fb923c" stroke-width="2"/>
+  <text x="68" y="450" class="lane" fill="#c2410c">TRAINING · construct one flow point</text>
+  <text x="255" y="487" text-anchor="middle" class="body">demonstrated chunk a · noise ε · sampled time t</text>
+  <rect x="76" y="506" width="358" height="54" rx="13" fill="#ffffff" stroke="#fdba74"/>
+  <text x="255" y="539" text-anchor="middle" class="code">x_t = t ε + (1 - t) a</text>
+  <rect x="76" y="570" width="358" height="36" rx="12" fill="#fed7aa"/>
+  <text x="255" y="594" text-anchor="middle" class="code">target u_t = ε - a</text>
+
+  <rect x="40" y="652" width="430" height="190" rx="22" fill="#ecfdf5" stroke="#34d399" stroke-width="2"/>
+  <text x="68" y="684" class="lane" fill="#047857">INFERENCE · integrate from noise</text>
+  <text x="255" y="721" text-anchor="middle" class="code">x_1 = ε ~ N(0, I)</text>
+  <rect x="76" y="741" width="358" height="50" rx="13" fill="#ffffff" stroke="#6ee7b7"/>
+  <text x="255" y="771" text-anchor="middle" class="body">t: 1 → 0 · reuse the same network each step</text>
+  <text x="255" y="817" text-anchor="middle" class="small">LeRobot 0.6.0 default: num_steps = 10</text>
+
+  <rect x="520" y="418" width="1040" height="424" rx="22" fill="#f5f3ff" stroke="#a78bfa" stroke-width="2"/>
+  <text x="548" y="450" class="lane" fill="#6d28d9">SHARED ACTION PATH · predict velocity v_theta(x_t, t | context)</text>
+
+  <rect x="555" y="526" width="185" height="104" rx="17" fill="#ffffff" stroke="#c4b5fd" stroke-width="1.6"/>
+  <text x="647" y="561" text-anchor="middle" class="heading">Current flow point</text>
+  <text x="647" y="591" text-anchor="middle" class="code">x_t, t</text>
+  <text x="647" y="616" text-anchor="middle" class="small">H noisy action slots</text>
+  <path d="M470 533 H555" class="train"/>
+  <path d="M470 747 C510 747 510 578 555 578" class="infer"/>
+
+  <path d="M740 578 H785" class="flow"/>
+  <rect x="785" y="503" width="240" height="150" rx="18" fill="#ffffff" stroke="#c4b5fd" stroke-width="1.6"/>
+  <text x="905" y="538" text-anchor="middle" class="heading">Action-time suffix</text>
+  <text x="905" y="567" text-anchor="middle" class="body">action input projection</text>
+  <text x="905" y="592" text-anchor="middle" class="body">sin/cos time embedding</text>
+  <text x="905" y="617" text-anchor="middle" class="body">fusion MLP per chunk slot</text>
+  <text x="905" y="642" text-anchor="middle" class="tiny" fill="#6d28d9">SUFFIX TOKENS</text>
+
+  <path d="M1025 578 H1070" class="flow"/>
+  <rect x="1070" y="484" width="270" height="235" rx="20" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="1205" y="521" text-anchor="middle" class="heading">Action expert</text>
+  <text x="1205" y="554" text-anchor="middle" class="body">suffix queries read prefix context</text>
+  <text x="1205" y="580" text-anchor="middle" class="body">through cross-attention</text>
+  <rect x="1100" y="605" width="210" height="48" rx="12" fill="#ffffff" stroke="#ddd6fe"/>
+  <text x="1205" y="625" text-anchor="middle" class="small">image/language prefix does not</text>
+  <text x="1205" y="644" text-anchor="middle" class="small">depend on noisy action tokens</text>
+  <text x="1205" y="686" text-anchor="middle" class="tiny" fill="#6d28d9">PRIMARY FINE-TUNING TARGET</text>
+  <path d="M1245 330 C1245 390 1205 427 1205 484" class="context"/>
+  <text x="1270" y="400" class="small">prefix context</text>
+
+  <path d="M1340 602 H1385" class="flow"/>
+  <rect x="1385" y="516" width="145" height="172" rx="18" fill="#ecfeff" stroke="#22d3ee" stroke-width="2"/>
+  <text x="1457" y="551" text-anchor="middle" class="heading">Velocity head</text>
+  <text x="1457" y="582" text-anchor="middle" class="body">linear projection</text>
+  <text x="1457" y="626" text-anchor="middle" class="code">v_theta</text>
+  <text x="1457" y="653" text-anchor="middle" class="small">shape: H × action dim</text>
+
+  <rect x="555" y="748" width="445" height="70" rx="17" fill="#fff7ed" stroke="#fb923c" stroke-width="1.7"/>
+  <text x="777" y="776" text-anchor="middle" class="heading">Training objective</text>
+  <text x="777" y="803" text-anchor="middle" class="code">MSE(v_theta, u_t) over valid action dimensions</text>
+  <path d="M434 588 C500 588 500 783 555 783" class="train"/>
+  <path d="M1457 688 C1457 748 1060 783 1000 783" class="train"/>
+
+  <rect x="520" y="882" width="1040" height="110" rx="20" fill="#ecfdf5" stroke="#34d399" stroke-width="1.8"/>
+  <text x="1040" y="914" text-anchor="middle" class="heading">Inference Euler update</text>
+  <text x="1040" y="944" text-anchor="middle" class="code">x_t+dt = x_t + dt · v_theta(x_t, t | context),  dt = -1 / num_steps</text>
+  <text x="1040" y="971" text-anchor="middle" class="body">repeat to t = 0 → predicted action chunk x_0; the runtime queue then consumes up to n_action_steps</text>
+  <path d="M1457 688 C1457 830 1040 830 1040 882" class="infer"/>
+  <path d="M720 882 C510 882 500 790 470 790" class="infer"/>
+
+  <text x="800" y="1022" text-anchor="middle" class="small">Course-created schematic based on the SmolVLA paper and the pinned LeRobot 0.6.0 cross-attention implementation.</text>
+</svg>

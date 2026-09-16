@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1040" viewBox="0 0 1600 1040" role="img" aria-labelledby="title desc">
+  <title id="title">SmolVLA 模型架构与流匹配路径</title>
+  <desc id="desc">共享条件 prefix 使用 SmolVLM vision encoder 和 connector 嵌入两路相机画面，嵌入 task 文本，并投影当前机器人状态。预训练 VLM prefix stack 将这些 token 转化为 action expert 可通过 cross-attention 读取的 context，推理时可以缓存该 context。共享动作路径把时刻 t 的带噪动作点 x 与 time embedding 融合，交给 action expert 读取 prefix context 并预测 velocity field。训练时，演示动作块、高斯噪声与采样时间产生 x_t，目标速度为 noise 减 actions，并用 mean squared error 监督速度预测。推理时，模型从高斯噪声开始，默认执行十次 Euler update，最终返回动作块。本图依据 SmolVLA 论文和课程锁定的 LeRobot 0.6.0 实现由课程原创绘制。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="trainArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ea580c"/>
+    </marker>
+    <marker id="inferArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
+    </marker>
+    <marker id="contextArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <style>
+      .title { font: 700 30px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .lane { font: 700 18px Inter, ui-sans-serif, system-ui, sans-serif; }
+      .heading { font: 700 17px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .tiny { font: 700 11px Inter, ui-sans-serif, system-ui, sans-serif; }
+      .code { font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .flow { stroke: #475569; stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
+      .context { stroke: #2563eb; stroke-width: 2.4; fill: none; marker-end: url(#contextArrow); }
+      .train { stroke: #ea580c; stroke-width: 2.4; fill: none; marker-end: url(#trainArrow); }
+      .infer { stroke: #059669; stroke-width: 2.4; stroke-dasharray: 8 6; fill: none; marker-end: url(#inferArrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1040" rx="24" fill="#f8fafc"/>
+  <text x="800" y="45" text-anchor="middle" class="title">SmolVLA 学习以视觉、语言和状态为条件的 velocity field</text>
+  <text x="800" y="76" text-anchor="middle" class="subtitle">训练监督 flow 上的一个采样点；推理则沿同一个速度场从噪声积分到动作块。</text>
+
+  <rect x="40" y="108" width="1520" height="265" rx="22" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+  <text x="68" y="140" class="lane" fill="#1d4ed8">共享条件 PREFIX · 根据当前 observation 与 task 计算</text>
+
+  <rect x="70" y="166" width="255" height="148" rx="17" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="197" y="195" text-anchor="middle" class="heading">两路相机画面</text>
+  <text x="197" y="222" text-anchor="middle" class="body">resize / pad / normalize</text>
+  <rect x="94" y="238" width="207" height="48" rx="11" fill="#dbeafe"/>
+  <text x="197" y="258" text-anchor="middle" class="small">SmolVLM vision encoder</text>
+  <text x="197" y="277" text-anchor="middle" class="small">+ modality connector</text>
+  <text x="197" y="305" text-anchor="middle" class="tiny" fill="#1d4ed8">视觉 TOKENS</text>
+
+  <rect x="365" y="166" width="255" height="148" rx="17" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="492" y="195" text-anchor="middle" class="heading">Task 文本</text>
+  <text x="492" y="222" text-anchor="middle" class="body">来自数据集的真实 task string</text>
+  <rect x="389" y="238" width="207" height="48" rx="11" fill="#dbeafe"/>
+  <text x="492" y="258" text-anchor="middle" class="small">tokenizer + language</text>
+  <text x="492" y="277" text-anchor="middle" class="small">embedding table</text>
+  <text x="492" y="305" text-anchor="middle" class="tiny" fill="#1d4ed8">语言 TOKENS</text>
+
+  <rect x="660" y="166" width="255" height="148" rx="17" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="787" y="195" text-anchor="middle" class="heading">当前机器人状态</text>
+  <text x="787" y="222" text-anchor="middle" class="body">归一化并 pad 到最大维度</text>
+  <rect x="684" y="238" width="207" height="48" rx="11" fill="#dbeafe"/>
+  <text x="787" y="258" text-anchor="middle" class="small">可训练的 state projection</text>
+  <text x="787" y="277" text-anchor="middle" class="small">投影到 VLM hidden size</text>
+  <text x="787" y="305" text-anchor="middle" class="tiny" fill="#1d4ed8">STATE TOKEN</text>
+
+  <path d="M197 314 V344 H1078 Q1090 344 1090 332 V330" class="context"/>
+  <path d="M492 314 V352 H1168 Q1180 352 1180 340 V330" class="context"/>
+  <path d="M915 240 H980" class="context"/>
+  <rect x="980" y="155" width="530" height="175" rx="20" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+  <text x="1245" y="189" text-anchor="middle" class="heading">预训练 SmolVLM prefix stack</text>
+  <text x="1245" y="216" text-anchor="middle" class="body">视觉 tokens · 语言 tokens · state token</text>
+  <rect x="1020" y="236" width="450" height="42" rx="12" fill="#ffffff" stroke="#bfdbfe"/>
+  <text x="1245" y="262" text-anchor="middle" class="body">供 action expert 通过 cross-attention 读取的 context</text>
+  <text x="1245" y="300" text-anchor="middle" class="small">锁定 base preset 中冻结 · 推理时只缓存一次 context K/V</text>
+
+  <rect x="40" y="418" width="430" height="205" rx="22" fill="#fff7ed" stroke="#fb923c" stroke-width="2"/>
+  <text x="68" y="450" class="lane" fill="#c2410c">训练 · 构造 flow 上的一个点</text>
+  <text x="255" y="487" text-anchor="middle" class="body">演示动作块 a · 噪声 ε · 采样时间 t</text>
+  <rect x="76" y="506" width="358" height="54" rx="13" fill="#ffffff" stroke="#fdba74"/>
+  <text x="255" y="539" text-anchor="middle" class="code">x_t = t ε + (1 - t) a</text>
+  <rect x="76" y="570" width="358" height="36" rx="12" fill="#fed7aa"/>
+  <text x="255" y="594" text-anchor="middle" class="code">目标 u_t = ε - a</text>
+
+  <rect x="40" y="652" width="430" height="190" rx="22" fill="#ecfdf5" stroke="#34d399" stroke-width="2"/>
+  <text x="68" y="684" class="lane" fill="#047857">推理 · 从噪声开始积分</text>
+  <text x="255" y="721" text-anchor="middle" class="code">x_1 = ε ~ N(0, I)</text>
+  <rect x="76" y="741" width="358" height="50" rx="13" fill="#ffffff" stroke="#6ee7b7"/>
+  <text x="255" y="771" text-anchor="middle" class="body">t: 1 → 0 · 每一步都复用同一个网络</text>
+  <text x="255" y="817" text-anchor="middle" class="small">LeRobot 0.6.0 默认：num_steps = 10</text>
+
+  <rect x="520" y="418" width="1040" height="424" rx="22" fill="#f5f3ff" stroke="#a78bfa" stroke-width="2"/>
+  <text x="548" y="450" class="lane" fill="#6d28d9">共享动作路径 · 预测 velocity v_theta(x_t, t | context)</text>
+
+  <rect x="555" y="526" width="185" height="104" rx="17" fill="#ffffff" stroke="#c4b5fd" stroke-width="1.6"/>
+  <text x="647" y="561" text-anchor="middle" class="heading">当前 flow 点</text>
+  <text x="647" y="591" text-anchor="middle" class="code">x_t、t</text>
+  <text x="647" y="616" text-anchor="middle" class="small">H 个带噪动作位置</text>
+  <path d="M470 533 H555" class="train"/>
+  <path d="M470 747 C510 747 510 578 555 578" class="infer"/>
+
+  <path d="M740 578 H785" class="flow"/>
+  <rect x="785" y="503" width="240" height="150" rx="18" fill="#ffffff" stroke="#c4b5fd" stroke-width="1.6"/>
+  <text x="905" y="538" text-anchor="middle" class="heading">Action-time suffix</text>
+  <text x="905" y="567" text-anchor="middle" class="body">action input projection</text>
+  <text x="905" y="592" text-anchor="middle" class="body">sin/cos time embedding</text>
+  <text x="905" y="617" text-anchor="middle" class="body">对每个动作位置做 fusion MLP</text>
+  <text x="905" y="642" text-anchor="middle" class="tiny" fill="#6d28d9">SUFFIX TOKENS</text>
+
+  <path d="M1025 578 H1070" class="flow"/>
+  <rect x="1070" y="484" width="270" height="235" rx="20" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="1205" y="521" text-anchor="middle" class="heading">Action expert</text>
+  <text x="1205" y="554" text-anchor="middle" class="body">suffix query 通过 cross-attention</text>
+  <text x="1205" y="580" text-anchor="middle" class="body">读取 prefix context</text>
+  <rect x="1100" y="605" width="210" height="48" rx="12" fill="#ffffff" stroke="#ddd6fe"/>
+  <text x="1205" y="625" text-anchor="middle" class="small">图像/语言 prefix 不依赖</text>
+  <text x="1205" y="644" text-anchor="middle" class="small">带噪 action token</text>
+  <text x="1205" y="686" text-anchor="middle" class="tiny" fill="#6d28d9">主要微调对象</text>
+  <path d="M1245 330 C1245 390 1205 427 1205 484" class="context"/>
+  <text x="1270" y="400" class="small">prefix context</text>
+
+  <path d="M1340 602 H1385" class="flow"/>
+  <rect x="1385" y="516" width="145" height="172" rx="18" fill="#ecfeff" stroke="#22d3ee" stroke-width="2"/>
+  <text x="1457" y="551" text-anchor="middle" class="heading">Velocity head</text>
+  <text x="1457" y="582" text-anchor="middle" class="body">线性 projection</text>
+  <text x="1457" y="626" text-anchor="middle" class="code">v_theta</text>
+  <text x="1457" y="653" text-anchor="middle" class="small">shape：H × action dim</text>
+
+  <rect x="555" y="748" width="445" height="70" rx="17" fill="#fff7ed" stroke="#fb923c" stroke-width="1.7"/>
+  <text x="777" y="776" text-anchor="middle" class="heading">训练目标</text>
+  <text x="777" y="803" text-anchor="middle" class="code">MSE(v_theta, u_t)，只计算有效 action 维度</text>
+  <path d="M434 588 C500 588 500 783 555 783" class="train"/>
+  <path d="M1457 688 C1457 748 1060 783 1000 783" class="train"/>
+
+  <rect x="520" y="882" width="1040" height="110" rx="20" fill="#ecfdf5" stroke="#34d399" stroke-width="1.8"/>
+  <text x="1040" y="914" text-anchor="middle" class="heading">推理时的 Euler update</text>
+  <text x="1040" y="944" text-anchor="middle" class="code">x_t+dt = x_t + dt · v_theta(x_t, t | context)，dt = -1 / num_steps</text>
+  <text x="1040" y="971" text-anchor="middle" class="body">重复到 t = 0 → 预测动作块 x_0；运行时 action queue 最多再消费 n_action_steps 个动作</text>
+  <path d="M1457 688 C1457 830 1040 830 1040 882" class="infer"/>
+  <path d="M720 882 C510 882 500 790 470 790" class="infer"/>
+
+  <text x="800" y="1022" text-anchor="middle" class="small">课程原创示意图，架构依据 SmolVLA 论文及课程锁定的 LeRobot 0.6.0 cross-attention 实现。</text>
+</svg>

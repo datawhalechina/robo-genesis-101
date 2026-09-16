@@ -148,6 +148,16 @@ ACT stands for **Action Chunking with Transformers**. In the pinned LeRobot
 implementation, images and robot state condition a Transformer that predicts a
 fixed-size action chunk.
 
+The figure separates the two parts that are both called "encoders" in the
+implementation. The orange CVAE encoder estimates a posterior only while the
+demonstrated future action chunk is available during training. The blue main
+Transformer path predicts actions in both training and inference; the green
+inference branch replaces the unavailable posterior sample with an all-zero
+latent. Each learned action query represents one position in the predicted
+chunk rather than an action copied from the dataset.
+
+![ACT has a training-only CVAE posterior path and a shared action-chunk predictor. During training, state and the demonstrated future action chunk produce a sampled latent and KL loss. During inference, the CVAE encoder is skipped and the latent is zero. In both modes, camera features, current robot state, and the latent enter the main Transformer encoder; learned action queries drive its decoder to predict the action chunk.](/diagrams/l12-act-architecture.svg)
+
 ### Training path
 
 ACT contains two Transformer-based paths whose names are easy to confuse:
@@ -157,16 +167,6 @@ ACT contains two Transformer-based paths whose names are easy to confuse:
 - The main **Transformer encoder/decoder** consumes visual features, robot
   state, a sampled latent, and learned action queries. It predicts the complete
   action chunk and is the path retained for inference.
-
-The information flow is:
-
-```text
-ground-truth action chunk + state
-  → CVAE encoder → mean/log-variance → sampled latent
-
-camera features + state + sampled latent + action queries
-  → Transformer encoder/decoder → predicted action chunk
-```
 
 The current loss is the mean absolute action reconstruction error over valid,
 non-padded targets plus `kl_weight` times the KL divergence between the learned
@@ -213,6 +213,16 @@ SmolVLA is a compact **vision-language-action (VLA)** policy. This course
 fine-tunes `lerobot/smolvla_base`; it does not train the complete model from
 scratch.
 
+The figure follows the pinned cross-attention configuration. The blue prefix is
+computed once from the current camera images, task text, and robot state. The
+purple action path receives a noisy action point and its continuous time, then
+the action expert reads the prefix context to predict a velocity. Orange shows
+how one supervised flow point is constructed during training; green shows how
+inference repeatedly reuses the same velocity network to move from noise toward
+an action chunk.
+
+![SmolVLA forms a conditioning prefix from camera images, task tokens, and current robot state. A shared action path fuses a noisy action point with a time embedding, lets the action expert read the prefix through cross-attention, and predicts a velocity. Training compares that velocity with noise minus the demonstrated action chunk. Inference starts from noise and applies repeated Euler updates to obtain an action chunk.](/diagrams/l12-smolvla-architecture.svg)
+
 ### Prefix context and action expert
 
 The model separates two conceptual streams:
@@ -238,9 +248,12 @@ the demonstrated action chunk and noise, then asks the action expert to predict
 the velocity that points along that path. In compact notation:
 
 ```text
-noisy point x_t = t × noise + (1 - t) × demonstrated_actions
-target velocity = noise - demonstrated_actions
-loss = mean squared error(predicted_velocity, target_velocity)
+demonstrated action chunk: a
+noise: ε ~ N(0, I)
+noisy point: x_t = t × ε + (1 - t) × a
+target velocity: u_t = ε - a
+predicted velocity: v_theta = v_theta(x_t, t | context)
+loss = mean squared error(v_theta, u_t)
 ```
 
 At inference the model starts from noise and integrates the learned velocity
