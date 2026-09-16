@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-labelledby="title description">
+  <title id="title">RoboGenesis 101 logo</title>
+  <desc id="description">A robotic gripper holding a simulated cube inside a learning loop.</desc>
+
+  <circle cx="200" cy="200" r="178" fill="#0b2035"/>
+
+  <path
+    d="M70 188A137 137 0 0 1 286 83"
+    fill="none"
+    stroke="#3478c9"
+    stroke-linecap="round"
+    stroke-width="15"
+  />
+  <path
+    d="M330 211A137 137 0 0 1 114 317"
+    fill="none"
+    stroke="#24c7c9"
+    stroke-linecap="round"
+    stroke-width="15"
+  />
+  <circle cx="69" cy="188" r="12" fill="#70e1e3"/>
+  <circle cx="287" cy="83" r="12" fill="#70e1e3"/>
+  <circle cx="331" cy="211" r="12" fill="#72aef0"/>
+  <circle cx="113" cy="317" r="12" fill="#72aef0"/>
+
+  <path
+    d="M174 251L140 224V181H164"
+    fill="none"
+    stroke="#e8f5ff"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="25"
+  />
+  <path
+    d="M226 251L260 224V181H236"
+    fill="none"
+    stroke="#e8f5ff"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="25"
+  />
+  <rect x="157" y="238" width="86" height="62" rx="22" fill="#4e9ee8"/>
+  <circle cx="200" cy="269" r="14" fill="#0b2035"/>
+  <path d="M181 298H219L231 342H169Z" fill="#e8f5ff"/>
+  <rect x="154" y="334" width="92" height="22" rx="11" fill="#4e9ee8"/>
+
+  <path d="M200 105L242 128L200 152L158 128Z" fill="#ffd166"/>
+  <path d="M158 128L200 152V201L158 177Z" fill="#f39a3f"/>
+  <path d="M242 128L200 152V201L242 177Z" fill="#ef6b35"/>
+  <path d="M200 152V201" stroke="#d74f2b" stroke-width="5"/>
+
+  <path
+    d="M194 89L200 73L206 89M173 98L160 89M227 98L240 89"
+    fill="none"
+    stroke="#ffd166"
+    stroke-linecap="round"
+    stroke-width="8"
+  />
+</svg>

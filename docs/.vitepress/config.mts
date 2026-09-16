@@ -170,7 +170,7 @@ export default defineConfig({
     }
   },
   themeConfig: {
-    logo: '/datawhale-logo.png',
+    logo: '/robogenesis-logo.svg',
     nav: [
       { text: '中文', link: '/zh/' },
       { text: 'English', link: '/en/' }
