@@ -719,11 +719,11 @@ world-camera pose 被有意排除：它属于 reset-time Layer B，需要录制 
   源码](https://github.com/Genesis-Embodied-AI/genesis-world/blob/v1.3.3/genesis/vis/camera.py)——
   版本锁定的 camera construction、FOV、pose、attachment 与 rendering behavior。
 - [RoboGenesis 101 scene
-  builder](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/build_scene.py)、
+  builder](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/build_scene.py)、
   [environment
-  randomizer](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/randomize.py)、
+  randomizer](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/randomize.py)、
   [dataset
-  recorder](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/record_dataset.py)与
+  recorder](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/record_dataset.py)与
   [DR preview
-  tool](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/tools/dr_preview.py)——
+  tool](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/tools/dr_preview.py)——
   本讲所用的当前 Layer-A/Layer-B behavior 与 collection schedule。

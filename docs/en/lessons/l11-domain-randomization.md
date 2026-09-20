@@ -845,12 +845,12 @@ improves a policy without a controlled training and closed-loop evaluation.
   — version-pinned camera construction, FOV, pose, attachment, and rendering
   behavior.
 - [RoboGenesis 101 scene
-  builder](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/build_scene.py),
+  builder](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/build_scene.py),
   [environment
-  randomizer](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/randomize.py),
+  randomizer](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/randomize.py),
   [dataset
-  recorder](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/record_dataset.py),
+  recorder](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/record_dataset.py),
   and [DR preview
-  tool](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/tools/dr_preview.py)
+  tool](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/tools/dr_preview.py)
   — the current Layer-A/Layer-B behavior and collection schedule used by this
   lesson.

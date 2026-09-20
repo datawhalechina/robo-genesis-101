@@ -64,7 +64,7 @@ the project `.venv` is the selected kernel, and choose **Run All** once.
 The portable lockfile does not by itself select the reviewed AMD PyTorch build.
 If you are preparing the full AMD training environment, follow the wheel and
 checksum instructions in the
-[compatibility matrix](https://github.com/wangxunx/robo-genesis-101/blob/main/COMPATIBILITY.md).
+[compatibility matrix](https://github.com/datawhalechina/robo-genesis-101/blob/main/COMPATIBILITY.md).
 
 ## CPU and AMD are both valid here
 
@@ -145,4 +145,4 @@ optionally rendering an image.
 
 - [Genesis documentation](https://genesis-world.readthedocs.io/) — installation and backend initialization.
 - [PyTorch HIP semantics](https://docs.pytorch.org/docs/stable/notes/hip.html) — why ROCm uses `torch.cuda` interfaces.
-- [Project compatibility matrix](https://github.com/wangxunx/robo-genesis-101/blob/main/COMPATIBILITY.md) — verified versions and AMD platform evidence.
+- [Project compatibility matrix](https://github.com/datawhalechina/robo-genesis-101/blob/main/COMPATIBILITY.md) — verified versions and AMD platform evidence.

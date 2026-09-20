@@ -358,7 +358,7 @@ uv sync --locked --all-extras
 ```
 
 这份跨平台依赖解析本身并不会安装或验证课程使用的 AMD ROCm wheels。参考 AMD 环境
-应遵循[兼容性矩阵](https://github.com/wangxunx/robo-genesis-101/blob/main/COMPATIBILITY.md)。
+应遵循[兼容性矩阵](https://github.com/datawhalechina/robo-genesis-101/blob/main/COMPATIBILITY.md)。
 
 至少记录：
 
@@ -810,7 +810,7 @@ L13 会把其中一个 checkpoint 加载到 Genesis 控制循环中，随时间�
   — 参考兼容性运行所使用的模型内容。
 - [PyTorch HIP 语义](https://docs.pytorch.org/docs/stable/notes/hip.html)
   — 关于 ROCm 共用 `torch.cuda` 接口的官方说明。
-- [RoboGenesis 101 训练 wrapper](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/train_policy.py)、
-  [策略加载器](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/eval_policy.py)
-  和[兼容性记录](https://github.com/wangxunx/robo-genesis-101/blob/main/COMPATIBILITY.md)
+- [RoboGenesis 101 训练 wrapper](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/train_policy.py)、
+  [策略加载器](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_policy.py)
+  和[兼容性记录](https://github.com/datawhalechina/robo-genesis-101/blob/main/COMPATIBILITY.md)
   — 本讲所采用的项目接口与验证边界。

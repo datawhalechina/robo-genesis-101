@@ -577,7 +577,7 @@ statistics、episode boundary、split ID 和 action-window 行为，但不能证
   — ACT 论文，也是 action chunking 的依据。
 - [SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics](https://arxiv.org/abs/2506.01844)
   — SmolVLA 架构，以及本讲 data-contract 对照所需的语言条件策略背景。
-- [RoboGenesis 101 recorder](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/record_dataset.py)、
-  [training wrapper](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/train_policy.py)
-  与 [兼容性记录](https://github.com/wangxunx/robo-genesis-101/blob/main/COMPATIBILITY.md)
+- [RoboGenesis 101 recorder](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/record_dataset.py)、
+  [training wrapper](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/train_policy.py)
+  与 [兼容性记录](https://github.com/datawhalechina/robo-genesis-101/blob/main/COMPATIBILITY.md)
   — 本课程使用的当前 9 关节 schema、policy presets 与已验证运行边界。

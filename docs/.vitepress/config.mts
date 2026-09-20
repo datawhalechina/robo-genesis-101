@@ -21,7 +21,7 @@ const course = JSON.parse(
   readFileSync(new URL('../../course.json', import.meta.url), 'utf-8')
 ) as CourseManifest
 
-const repositoryUrl = 'https://github.com/wangxunx/robo-genesis-101'
+const repositoryUrl = 'https://github.com/datawhalechina/robo-genesis-101'
 const isEdgeOne = process.env.EDGEONE === '1'
 const base = isEdgeOne ? '/' : '/robo-genesis-101/'
 

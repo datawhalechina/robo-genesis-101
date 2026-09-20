@@ -675,8 +675,8 @@ loaded policy back in the control loop.
 - [SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics](https://arxiv.org/abs/2506.01844)
   — the SmolVLA architecture and language-conditioned policy context used for
   the data-contract comparison.
-- [RoboGenesis 101 recorder](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/record_dataset.py),
-  [training wrapper](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/train_policy.py),
-  and [compatibility record](https://github.com/wangxunx/robo-genesis-101/blob/main/COMPATIBILITY.md)
+- [RoboGenesis 101 recorder](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/record_dataset.py),
+  [training wrapper](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/train_policy.py),
+  and [compatibility record](https://github.com/datawhalechina/robo-genesis-101/blob/main/COMPATIBILITY.md)
   — the current nine-joint schema, policy presets, and verified runtime boundary
   used by this course.

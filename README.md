@@ -18,8 +18,8 @@ RoboGenesis 101 是一门 Datawhale 开源课程，面向具备 Python 基础、
 
 ## 在线阅读
 
-- 中文课程：<https://wangxunx.github.io/robo-genesis-101/zh/>
-- English course: <https://wangxunx.github.io/robo-genesis-101/en/>
+- 中文课程：<https://datawhalechina.github.io/robo-genesis-101/zh/>
+- English course: <https://datawhalechina.github.io/robo-genesis-101/en/>
 
 在线站点目前展示课程目录和材料发布状态。完整学习内容将在准备完成并通过实际验证后逐步发布。
 

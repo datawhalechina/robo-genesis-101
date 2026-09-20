@@ -416,7 +416,7 @@ uv sync --locked --all-extras
 
 That portable resolution does not by itself install or verify the course's AMD
 ROCm wheels. Follow the
-[compatibility matrix](https://github.com/wangxunx/robo-genesis-101/blob/main/COMPATIBILITY.md)
+[compatibility matrix](https://github.com/datawhalechina/robo-genesis-101/blob/main/COMPATIBILITY.md)
 for the reference AMD environment.
 
 Record at least:
@@ -912,7 +912,7 @@ closed-loop claim.
   — model content used by the reference compatibility run.
 - [PyTorch HIP semantics](https://docs.pytorch.org/docs/stable/notes/hip.html)
   — official explanation of the shared `torch.cuda` interface on ROCm.
-- [RoboGenesis 101 training wrapper](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/train_policy.py),
-  [policy loader](https://github.com/wangxunx/robo-genesis-101/blob/main/src/robo_genesis/eval_policy.py),
-  and [compatibility record](https://github.com/wangxunx/robo-genesis-101/blob/main/COMPATIBILITY.md)
+- [RoboGenesis 101 training wrapper](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/train_policy.py),
+  [policy loader](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_policy.py),
+  and [compatibility record](https://github.com/datawhalechina/robo-genesis-101/blob/main/COMPATIBILITY.md)
   — the project interfaces and verification boundary used by this lesson.

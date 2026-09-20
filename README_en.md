@@ -20,8 +20,8 @@ The course follows a concept–code–experiment–evidence loop: lectures expla
 
 ## Read online
 
-- English course: <https://wangxunx.github.io/robo-genesis-101/en/>
-- 中文课程：<https://wangxunx.github.io/robo-genesis-101/zh/>
+- English course: <https://datawhalechina.github.io/robo-genesis-101/en/>
+- 中文课程：<https://datawhalechina.github.io/robo-genesis-101/zh/>
 
 The online site currently presents the course outline and material status. Complete lesson content will be published progressively once it is ready and has been verified.
 

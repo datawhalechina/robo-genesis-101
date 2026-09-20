@@ -56,7 +56,7 @@ uv run jupyter lab
 选择的是项目 `.venv`，再执行一次 **Run All**。
 
 可移植 lockfile 本身不会自动选择经过验证的 AMD PyTorch 构建。如果你在准备完整 AMD
-训练环境，请按照[兼容性矩阵](https://github.com/wangxunx/robo-genesis-101/blob/main/COMPATIBILITY.md)
+训练环境，请按照[兼容性矩阵](https://github.com/datawhalechina/robo-genesis-101/blob/main/COMPATIBILITY.md)
 中的 wheel 和校验和说明安装。
 
 ## CPU 和 AMD 在本讲都有效
@@ -132,4 +132,4 @@ L02 会拆开这个最小 smoke 场景，解释仿真生命周期：声明实体
 
 - [Genesis 文档](https://genesis-world.readthedocs.io/)：安装与后端初始化。
 - [PyTorch HIP 语义](https://docs.pytorch.org/docs/stable/notes/hip.html)：ROCm 为什么复用 `torch.cuda` 接口。
-- [项目兼容性矩阵](https://github.com/wangxunx/robo-genesis-101/blob/main/COMPATIBILITY.md)：已验证版本与 AMD 平台证据。
+- [项目兼容性矩阵](https://github.com/datawhalechina/robo-genesis-101/blob/main/COMPATIBILITY.md)：已验证版本与 AMD 平台证据。
