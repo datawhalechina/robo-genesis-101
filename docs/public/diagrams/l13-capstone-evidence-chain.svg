@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">The L13 Capstone is a chain of scoped evidence</title>
+  <desc id="desc">Six connected gates form the Capstone evidence chain. Environment identity establishes that the intended runtime is available but not that the task works. Dataset and provenance establish the training input but not that a policy learned. Checkpoint and processors establish reloadability but not useful actions. Frozen conditions establish a comparable protocol but not outcomes. Live rollouts establish simulated behavior under that protocol but not real-world transfer. A scoped report connects counts, uncertainty, videos, limitations, and reproduction commands without claiming more than the evidence supports.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title { font: 700 31px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .stage { font: 700 13px Inter, ui-sans-serif, system-ui, sans-serif; }
+      .heading { font: 700 17px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .label { font: 700 11px Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.6px; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .code { font: 600 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .flow { stroke: #475569; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" rx="24" fill="#f8fafc"/>
+  <text x="800" y="45" text-anchor="middle" class="title">The Capstone is one auditable chain, not a collection of green checks</text>
+  <text x="800" y="77" text-anchor="middle" class="subtitle">Each gate enables the next experiment while preserving a clear boundary on what has not been established.</text>
+
+  <rect x="35" y="115" width="1510" height="55" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="800" y="149" text-anchor="middle" class="body">Question → What can this checkpoint do under one declared reference condition and one declared held-out condition?</text>
+
+  <rect x="35" y="205" width="235" height="405" rx="19" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+  <rect x="55" y="225" width="74" height="28" rx="14" fill="#dbeafe"/>
+  <text x="92" y="244" text-anchor="middle" class="stage" fill="#1d4ed8">GATE 1</text>
+  <text x="152" y="286" text-anchor="middle" class="heading">Environment</text>
+  <text x="152" y="310" text-anchor="middle" class="heading">identity</text>
+  <rect x="57" y="334" width="191" height="55" rx="12" fill="#ffffff" stroke="#bfdbfe"/>
+  <text x="152" y="356" text-anchor="middle" class="code">Python · Genesis</text>
+  <text x="152" y="376" text-anchor="middle" class="code">Torch/HIP · GPU · render</text>
+  <text x="57" y="425" class="label" fill="#1d4ed8">ESTABLISHES</text>
+  <text x="57" y="449" class="body">intended runtime and</text>
+  <text x="57" y="470" class="body">live cameras are available</text>
+  <text x="57" y="511" class="label" fill="#b91c1c">DOES NOT ESTABLISH</text>
+  <text x="57" y="535" class="body">that data, checkpoint,</text>
+  <text x="57" y="556" class="body">or task behavior is valid</text>
+
+  <path d="M270 407.5 H290" class="flow"/>
+
+  <rect x="290" y="205" width="235" height="405" rx="19" fill="#ecfeff" stroke="#22d3ee" stroke-width="2"/>
+  <rect x="310" y="225" width="74" height="28" rx="14" fill="#cffafe"/>
+  <text x="347" y="244" text-anchor="middle" class="stage" fill="#0e7490">GATE 2</text>
+  <text x="407" y="286" text-anchor="middle" class="heading">Dataset +</text>
+  <text x="407" y="310" text-anchor="middle" class="heading">provenance</text>
+  <rect x="312" y="334" width="191" height="55" rx="12" fill="#ffffff" stroke="#a5f3fc"/>
+  <text x="407" y="356" text-anchor="middle" class="code">schema · FPS · cameras</text>
+  <text x="407" y="376" text-anchor="middle" class="code">task · domain support</text>
+  <text x="312" y="425" class="label" fill="#0e7490">ESTABLISHES</text>
+  <text x="312" y="449" class="body">the demonstrations and</text>
+  <text x="312" y="470" class="body">training distribution identity</text>
+  <text x="312" y="511" class="label" fill="#b91c1c">DOES NOT ESTABLISH</text>
+  <text x="312" y="535" class="body">that optimization learned</text>
+  <text x="312" y="556" class="body">a useful policy</text>
+
+  <path d="M525 407.5 H545" class="flow"/>
+
+  <rect x="545" y="205" width="235" height="405" rx="19" fill="#eef2ff" stroke="#818cf8" stroke-width="2"/>
+  <rect x="565" y="225" width="74" height="28" rx="14" fill="#e0e7ff"/>
+  <text x="602" y="244" text-anchor="middle" class="stage" fill="#4338ca">GATE 3</text>
+  <text x="662" y="286" text-anchor="middle" class="heading">Checkpoint +</text>
+  <text x="662" y="310" text-anchor="middle" class="heading">processors</text>
+  <rect x="567" y="334" width="191" height="55" rx="12" fill="#ffffff" stroke="#c7d2fe"/>
+  <text x="662" y="356" text-anchor="middle" class="code">weights · config · rename</text>
+  <text x="662" y="376" text-anchor="middle" class="code">action horizon · source</text>
+  <text x="567" y="425" class="label" fill="#4338ca">ESTABLISHES</text>
+  <text x="567" y="449" class="body">the policy package can be</text>
+  <text x="567" y="470" class="body">identified and reconstructed</text>
+  <text x="567" y="511" class="label" fill="#b91c1c">DOES NOT ESTABLISH</text>
+  <text x="567" y="535" class="body">that its actions complete</text>
+  <text x="567" y="556" class="body">the task</text>
+
+  <path d="M780 407.5 H800" class="flow"/>
+
+  <rect x="800" y="205" width="235" height="405" rx="19" fill="#fff7ed" stroke="#fb923c" stroke-width="2"/>
+  <rect x="820" y="225" width="74" height="28" rx="14" fill="#ffedd5"/>
+  <text x="857" y="244" text-anchor="middle" class="stage" fill="#c2410c">GATE 4</text>
+  <text x="917" y="286" text-anchor="middle" class="heading">Frozen</text>
+  <text x="917" y="310" text-anchor="middle" class="heading">conditions</text>
+  <rect x="822" y="334" width="191" height="55" rx="12" fill="#ffffff" stroke="#fed7aa"/>
+  <text x="917" y="356" text-anchor="middle" class="code">task · dwell · seeds</text>
+  <text x="917" y="376" text-anchor="middle" class="code">reference · held-out</text>
+  <text x="822" y="425" class="label" fill="#c2410c">ESTABLISHES</text>
+  <text x="822" y="449" class="body">a fair, interpretable,</text>
+  <text x="822" y="470" class="body">reproducible measurement</text>
+  <text x="822" y="511" class="label" fill="#b91c1c">DOES NOT ESTABLISH</text>
+  <text x="822" y="535" class="body">the outcome before live</text>
+  <text x="822" y="556" class="body">episodes are run</text>
+
+  <path d="M1035 407.5 H1055" class="flow"/>
+
+  <rect x="1055" y="205" width="235" height="405" rx="19" fill="#ecfdf5" stroke="#34d399" stroke-width="2"/>
+  <rect x="1075" y="225" width="74" height="28" rx="14" fill="#d1fae5"/>
+  <text x="1112" y="244" text-anchor="middle" class="stage" fill="#047857">GATE 5</text>
+  <text x="1172" y="286" text-anchor="middle" class="heading">Live feedback</text>
+  <text x="1172" y="310" text-anchor="middle" class="heading">rollouts</text>
+  <rect x="1077" y="334" width="191" height="55" rx="12" fill="#ffffff" stroke="#a7f3d0"/>
+  <text x="1172" y="356" text-anchor="middle" class="code">episode rows · counts</text>
+  <text x="1172" y="376" text-anchor="middle" class="code">videos · reasons</text>
+  <text x="1077" y="425" class="label" fill="#047857">ESTABLISHES</text>
+  <text x="1077" y="449" class="body">simulated task behavior</text>
+  <text x="1077" y="470" class="body">under this protocol</text>
+  <text x="1077" y="511" class="label" fill="#b91c1c">DOES NOT ESTABLISH</text>
+  <text x="1077" y="535" class="body">untested-domain or</text>
+  <text x="1077" y="556" class="body">physical-robot performance</text>
+
+  <path d="M1290 407.5 H1310" class="flow"/>
+
+  <rect x="1310" y="205" width="235" height="405" rx="19" fill="#faf5ff" stroke="#c084fc" stroke-width="2"/>
+  <rect x="1330" y="225" width="74" height="28" rx="14" fill="#f3e8ff"/>
+  <text x="1367" y="244" text-anchor="middle" class="stage" fill="#7e22ce">GATE 6</text>
+  <text x="1427" y="286" text-anchor="middle" class="heading">Scoped</text>
+  <text x="1427" y="310" text-anchor="middle" class="heading">report</text>
+  <rect x="1332" y="334" width="191" height="55" rx="12" fill="#ffffff" stroke="#e9d5ff"/>
+  <text x="1427" y="356" text-anchor="middle" class="code">k/n + Wilson interval</text>
+  <text x="1427" y="376" text-anchor="middle" class="code">failures · limits · commands</text>
+  <text x="1332" y="425" class="label" fill="#7e22ce">ESTABLISHES</text>
+  <text x="1332" y="449" class="body">a traceable answer to the</text>
+  <text x="1332" y="470" class="body">declared policy question</text>
+  <text x="1332" y="511" class="label" fill="#b91c1c">DOES NOT ESTABLISH</text>
+  <text x="1332" y="535" class="body">universal robustness or</text>
+  <text x="1332" y="556" class="body">sim-to-real transfer</text>
+
+  <rect x="35" y="650" width="1510" height="180" rx="20" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.7"/>
+  <text x="60" y="684" class="heading">Capstone evidence bundle</text>
+  <rect x="60" y="708" width="276" height="76" rx="13" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="198" y="737" text-anchor="middle" class="code">environment summary</text>
+  <text x="198" y="763" text-anchor="middle" class="small">versions · device · render</text>
+  <rect x="356" y="708" width="276" height="76" rx="13" fill="#ecfeff" stroke="#a5f3fc"/>
+  <text x="494" y="737" text-anchor="middle" class="code">artifact audit</text>
+  <text x="494" y="763" text-anchor="middle" class="small">dataset + checkpoint identity</text>
+  <rect x="652" y="708" width="276" height="76" rx="13" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="790" y="737" text-anchor="middle" class="code">protocol + conditions</text>
+  <text x="790" y="763" text-anchor="middle" class="small">rules frozen before outcomes</text>
+  <rect x="948" y="708" width="276" height="76" rx="13" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <text x="1086" y="737" text-anchor="middle" class="code">results + videos</text>
+  <text x="1086" y="763" text-anchor="middle" class="small">all episodes stay visible</text>
+  <rect x="1244" y="708" width="276" height="76" rx="13" fill="#faf5ff" stroke="#e9d5ff"/>
+  <text x="1382" y="737" text-anchor="middle" class="code">report + reproduction</text>
+  <text x="1382" y="763" text-anchor="middle" class="small">claim · limits · next evidence</text>
+
+  <text x="800" y="858" text-anchor="middle" class="body">A zero-success result can complete the chain; an undocumented high rate cannot.</text>
+  <text x="800" y="887" text-anchor="middle" class="small">Course-created schematic for RoboGenesis 101 L13.</text>
+</svg>

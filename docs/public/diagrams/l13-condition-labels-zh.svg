@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">根据训练 provenance 选择评估条件标签</title>
+  <desc id="desc">一棵判定流程区分四种标签。报告预先声明的基线是参考条件。对于另一种条件，缺失 provenance 或支持范围重叠时使用分布偏移。支持范围可审计时，训练记录范围内的新取值属于未见但仍在支持范围内；可证明落在不相交范围之外，且其他重要因素受控时，才属于 OOD。右侧小型范围图直观展示各自关系。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title { font: 700 31px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .question { font: 700 18px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .questionBody { font: 400 14px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .label { font: 700 21px Inter, ui-sans-serif, system-ui, sans-serif; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .branch { font: 700 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .flow { stroke: #475569; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .axis { stroke: #94a3b8; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" rx="24" fill="#f8fafc"/>
+  <text x="800" y="48" text-anchor="middle" class="title">这个评估条件应该使用哪个标签？</text>
+  <text x="800" y="78" text-anchor="middle" class="subtitle">依据已记录的训练支持范围判断，而不是依据是否“打开 DR”。</text>
+
+  <rect x="55" y="130" width="280" height="96" rx="18" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+  <text x="195" y="164" text-anchor="middle" class="question">待命名的评估条件</text>
+  <text x="195" y="191" text-anchor="middle" class="questionBody">必须在查看回合结果</text>
+  <text x="195" y="211" text-anchor="middle" class="questionBody">之前声明。</text>
+
+  <path d="M335 178 H410" class="flow"/>
+
+  <rect x="410" y="118" width="410" height="120" rx="20" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+  <text x="615" y="154" text-anchor="middle" class="question">这是本次报告预先声明的</text>
+  <text x="615" y="179" text-anchor="middle" class="question">基线条件吗？</text>
+  <text x="615" y="210" text-anchor="middle" class="questionBody">这里判断的是它在比较中的角色。</text>
+
+  <path d="M820 178 H1000" class="flow"/>
+  <rect x="868" y="155" width="50" height="25" rx="12" fill="#dcfce7"/>
+  <text x="893" y="172" text-anchor="middle" class="branch">是</text>
+
+  <path d="M615 238 V305" class="flow"/>
+  <rect x="631" y="254" width="44" height="25" rx="12" fill="#f1f5f9"/>
+  <text x="653" y="271" text-anchor="middle" class="branch">否</text>
+
+  <rect x="410" y="305" width="410" height="132" rx="20" fill="#fff7ed" stroke="#fb923c" stroke-width="2"/>
+  <text x="615" y="342" text-anchor="middle" class="question">支持关系是否可审计</text>
+  <text x="615" y="367" text-anchor="middle" class="question">且没有歧义？</text>
+  <text x="615" y="398" text-anchor="middle" class="questionBody">provenance 缺失或范围部分重叠时，</text>
+  <text x="615" y="418" text-anchor="middle" class="questionBody">不能明确声称在范围内或范围外。</text>
+
+  <path d="M820 371 H1000" class="flow"/>
+  <rect x="842" y="337" width="132" height="25" rx="12" fill="#ffedd5"/>
+  <text x="908" y="354" text-anchor="middle" class="branch">否 / 有重叠</text>
+
+  <path d="M615 437 V510" class="flow"/>
+  <rect x="631" y="456" width="50" height="25" rx="12" fill="#dcfce7"/>
+  <text x="656" y="473" text-anchor="middle" class="branch">是</text>
+
+  <rect x="410" y="510" width="410" height="145" rx="20" fill="#f0fdfa" stroke="#2dd4bf" stroke-width="2"/>
+  <text x="615" y="548" text-anchor="middle" class="question">评估取值相对于已知的</text>
+  <text x="615" y="573" text-anchor="middle" class="question">训练支持范围位于哪里？</text>
+  <rect x="450" y="600" width="145" height="33" rx="16" fill="#ccfbf1"/>
+  <text x="522" y="622" text-anchor="middle" class="branch">完全在范围内</text>
+  <rect x="630" y="600" width="150" height="33" rx="16" fill="#fee2e2"/>
+  <text x="705" y="622" text-anchor="middle" class="branch">范围不相交</text>
+
+  <path d="M820 558 H1000" class="flow"/>
+  <rect x="854" y="524" width="112" height="25" rx="12" fill="#ccfbf1"/>
+  <text x="910" y="541" text-anchor="middle" class="branch">完全在范围内</text>
+
+  <path d="M820 620 H900 V744 H1000" class="flow"/>
+  <rect x="838" y="636" width="84" height="25" rx="12" fill="#fee2e2"/>
+  <text x="880" y="653" text-anchor="middle" class="branch">不相交</text>
+
+  <rect x="1000" y="100" width="545" height="156" rx="20" fill="#f0fdf4" stroke="#4ade80" stroke-width="2.2"/>
+  <text x="1030" y="133" class="label" fill="#15803d">参考条件（REFERENCE）</text>
+  <text x="1030" y="158" class="body">报告的基线，在查看结果前确定。</text>
+  <text x="1030" y="180" class="small">“参考”描述比较角色；是否对齐训练条件仍需单独审计。</text>
+  <line x1="1050" y1="220" x2="1500" y2="220" class="axis"/>
+  <rect x="1150" y="205" width="235" height="30" rx="15" fill="#bfdbfe" opacity="0.9"/>
+  <text x="1267" y="225" text-anchor="middle" class="small">已记录的训练支持范围</text>
+  <circle cx="1295" cy="220" r="10" fill="#16a34a" stroke="#ffffff" stroke-width="3"/>
+  <text x="1435" y="225" class="small">基线</text>
+
+  <rect x="1000" y="282" width="545" height="178" rx="20" fill="#fff7ed" stroke="#fb923c" stroke-width="2.2"/>
+  <text x="1030" y="316" class="label" fill="#c2410c">分布偏移（SHIFTED）</text>
+  <text x="1030" y="341" class="body">某个因素改变了，但 provenance 无法证明支持范围不相交。</text>
+  <text x="1030" y="363" class="small">适用于缺少支持范围记录或训练与评估范围部分重叠的情况。</text>
+  <line x1="1050" y1="420" x2="1500" y2="420" class="axis"/>
+  <rect x="1110" y="394" width="215" height="18" rx="9" fill="#bfdbfe"/>
+  <text x="1217" y="390" text-anchor="middle" class="small">训练</text>
+  <rect x="1270" y="426" width="190" height="18" rx="9" fill="#fdba74"/>
+  <text x="1365" y="453" text-anchor="middle" class="small">评估范围有重叠，或训练范围未知</text>
+
+  <rect x="1000" y="482" width="545" height="160" rx="20" fill="#f0fdfa" stroke="#2dd4bf" stroke-width="2.2"/>
+  <text x="1030" y="516" class="label" fill="#0f766e">未见但仍在支持范围内</text>
+  <text x="1030" y="541" class="body">新 seed 或新 domain 样本仍落在已记录的训练支持范围内。</text>
+  <text x="1030" y="563" class="small">具体实例是新的；审计过的参数范围没有改变。</text>
+  <line x1="1050" y1="607" x2="1500" y2="607" class="axis"/>
+  <rect x="1120" y="592" width="300" height="30" rx="15" fill="#bfdbfe" opacity="0.9"/>
+  <circle cx="1175" cy="607" r="9" fill="#0d9488" stroke="#ffffff" stroke-width="3"/>
+  <circle cx="1270" cy="607" r="9" fill="#0d9488" stroke="#ffffff" stroke-width="3"/>
+  <circle cx="1375" cy="607" r="9" fill="#0d9488" stroke="#ffffff" stroke-width="3"/>
+  <text x="1270" y="636" text-anchor="middle" class="small">新抽样仍处于训练支持范围内</text>
+
+  <rect x="1000" y="665" width="545" height="160" rx="20" fill="#fef2f2" stroke="#f87171" stroke-width="2.2"/>
+  <text x="1030" y="699" class="label" fill="#b91c1c">分布外（OOD）</text>
+  <text x="1030" y="724" class="body">所指因素可证明位于已记录的支持范围之外。</text>
+  <text x="1030" y="746" class="small">训练与评估范围不相交，其他重要因素保持受控。</text>
+  <line x1="1050" y1="790" x2="1500" y2="790" class="axis"/>
+  <rect x="1090" y="775" width="180" height="30" rx="15" fill="#bfdbfe"/>
+  <rect x="1375" y="775" width="100" height="30" rx="15" fill="#fca5a5"/>
+  <text x="1180" y="795" text-anchor="middle" class="small">训练</text>
+  <text x="1425" y="795" text-anchor="middle" class="small">评估</text>
+  <path d="M1288 790 H1357" stroke="#b91c1c" stroke-width="2" stroke-dasharray="5 5"/>
+
+  <rect x="55" y="700" width="765" height="125" rx="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="80" y="736" class="question">结论必须带上发生变化的因素名称</text>
+  <text x="80" y="765" class="body">香蕉 → 柠檬是对象/任务偏移，不是“摩擦 OOD”。</text>
+  <text x="80" y="791" class="body">domain 参数在支持范围内，也不保证闭环策略访问到的每个状态</text>
+  <text x="80" y="813" class="body">都曾出现在演示中。</text>
+
+  <rect x="55" y="850" width="1490" height="32" rx="16" fill="#e2e8f0"/>
+  <text x="800" y="871" text-anchor="middle" class="small">蓝色带表示已记录的训练支持范围；彩色标记表示评估条件。RoboGenesis 101 L13 课程原创示意图。</text>
+</svg>

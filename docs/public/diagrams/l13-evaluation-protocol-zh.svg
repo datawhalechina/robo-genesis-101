@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">从冻结的评估协议到回合证据</title>
+  <desc id="desc">蓝色协议清单在运行前冻结 artifact 身份、场景与观测、动作与时序、任务与成功规则以及 seed 与条件。每个回合沿橙色路径，从带 seed 的重置开始，经实时 rollout 和瞬时 containment 判据进入连续保持计数。回合结果记录成功、超时、发散或无效动作。紫色证据卡汇总成功次数与总回合数、Wilson 置信区间、分对象和分条件计数、回合原因及 rollout 视频。超时处的一帧为真永远不能绕过 dwell。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#475569"/>
+    </marker>
+    <marker id="runArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#ea580c"/>
+    </marker>
+    <marker id="evidenceArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#7c3aed"/>
+    </marker>
+    <style>
+      .title { font: 700 31px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .section { font: 700 19px Inter, ui-sans-serif, system-ui, sans-serif; }
+      .heading { font: 700 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .code { font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .runFlow { stroke: #ea580c; stroke-width: 2.6; fill: none; marker-end: url(#runArrow); }
+      .evidenceFlow { stroke: #7c3aed; stroke-width: 2.5; fill: none; marker-end: url(#evidenceArrow); }
+      .frozen { stroke: #2563eb; stroke-width: 2; stroke-dasharray: 7 6; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="980" rx="24" fill="#f8fafc"/>
+  <text x="800" y="44" text-anchor="middle" class="title">先冻结协议，再运行回合，最后汇总证据</text>
+  <text x="800" y="75" text-anchor="middle" class="subtitle">看到结果后才选定的规则，定义的是另一个实验。</text>
+
+  <rect x="40" y="105" width="1520" height="195" rx="22" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+  <text x="66" y="138" class="section" fill="#1d4ed8">运行之前 · 带版本的 protocol manifest</text>
+
+  <rect x="70" y="160" width="255" height="105" rx="15" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="197" y="189" text-anchor="middle" class="heading">Artifacts</text>
+  <text x="197" y="216" text-anchor="middle" class="body">代码 · 数据集 · checkpoint</text>
+  <text x="197" y="240" text-anchor="middle" class="small">版本 · 路径 · provenance</text>
+
+  <rect x="365" y="160" width="255" height="105" rx="15" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="492" y="189" text-anchor="middle" class="heading">场景 + 观测</text>
+  <text x="492" y="216" text-anchor="middle" class="body">资产 · world/wrist · shape</text>
+  <text x="492" y="240" text-anchor="middle" class="small">第三人称画面只作证据</text>
+
+  <rect x="660" y="160" width="255" height="105" rx="15" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="787" y="189" text-anchor="middle" class="heading">动作 + 时序</text>
+  <text x="787" y="216" text-anchor="middle" class="body">9 维目标 · 策略 FPS</text>
+  <text x="787" y="240" text-anchor="middle" class="small">100 Hz 保持 · 队列重置</text>
+
+  <rect x="955" y="160" width="255" height="105" rx="15" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="1082" y="189" text-anchor="middle" class="heading">任务 + 回合规则</text>
+  <text x="1082" y="216" text-anchor="middle" class="body">抓取/放置 · 判据 · dwell</text>
+  <text x="1082" y="240" text-anchor="middle" class="small">超时与失败处理</text>
+
+  <rect x="1250" y="160" width="280" height="105" rx="15" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="1390" y="189" text-anchor="middle" class="heading">采样 + 条件</text>
+  <text x="1390" y="216" text-anchor="middle" class="body">回合数 · seed 调度</text>
+  <text x="1390" y="240" text-anchor="middle" class="small">参考/偏移支持关系</text>
+
+  <path d="M800 300 V320" class="frozen"/>
+  <rect x="650" y="320" width="300" height="44" rx="22" fill="#dbeafe" stroke="#60a5fa" stroke-width="1.6"/>
+  <text x="800" y="348" text-anchor="middle" class="heading">在第 0 个回合前锁定</text>
+
+  <text x="55" y="382" class="section" fill="#c2410c">每个回合运行期间</text>
+
+  <rect x="55" y="405" width="190" height="125" rx="16" fill="#fff7ed" stroke="#fb923c" stroke-width="1.8"/>
+  <text x="150" y="437" text-anchor="middle" class="heading">带 seed 的重置</text>
+  <text x="150" y="467" text-anchor="middle" class="code">seed = base + i</text>
+  <text x="150" y="494" text-anchor="middle" class="body">对象 + domain 抽样</text>
+  <text x="150" y="515" text-anchor="middle" class="small">同时重置策略状态</text>
+
+  <path d="M245 467.5 H300" class="runFlow"/>
+  <rect x="300" y="395" width="245" height="145" rx="17" fill="#fff7ed" stroke="#fb923c" stroke-width="1.8"/>
+  <text x="422" y="428" text-anchor="middle" class="heading">实时反馈 rollout</text>
+  <text x="422" y="458" text-anchor="middle" class="body">观测 → 预测 → 控制</text>
+  <text x="422" y="484" text-anchor="middle" class="body">推进仿真 → 再观测</text>
+  <text x="422" y="512" text-anchor="middle" class="small">直到成功或超时</text>
+
+  <path d="M545 467.5 H600" class="runFlow"/>
+  <rect x="600" y="405" width="220" height="125" rx="16" fill="#ffedd5" stroke="#f97316" stroke-width="1.8"/>
+  <text x="710" y="437" text-anchor="middle" class="heading">瞬时判据 c_t</text>
+  <text x="710" y="466" text-anchor="middle" class="body">位于碗口水平范围内</text>
+  <text x="710" y="492" text-anchor="middle" class="body">并低于碗沿余量</text>
+  <text x="710" y="515" text-anchor="middle" class="small">一帧为真不等于成功</text>
+
+  <path d="M820 467.5 H875" class="runFlow"/>
+  <rect x="875" y="395" width="250" height="145" rx="17" fill="#ecfdf5" stroke="#34d399" stroke-width="1.9"/>
+  <text x="1000" y="428" text-anchor="middle" class="heading">连续保持时间</text>
+  <text x="1000" y="458" text-anchor="middle" class="code">D = ceil(seconds × FPS)</text>
+  <text x="1000" y="485" text-anchor="middle" class="body">为真：连续次数 + 1</text>
+  <text x="1000" y="511" text-anchor="middle" class="body">为假：连续次数清零</text>
+
+  <path d="M1125 467.5 H1180" class="runFlow"/>
+  <rect x="1180" y="385" width="350" height="165" rx="18" fill="#faf5ff" stroke="#c084fc" stroke-width="1.9"/>
+  <text x="1355" y="418" text-anchor="middle" class="heading">回合结果</text>
+  <rect x="1210" y="438" width="140" height="34" rx="17" fill="#d1fae5" stroke="#34d399"/>
+  <text x="1280" y="460" text-anchor="middle" class="small">达到 D 后成功</text>
+  <rect x="1365" y="438" width="135" height="34" rx="17" fill="#fee2e2" stroke="#f87171"/>
+  <text x="1432" y="460" text-anchor="middle" class="small">超时</text>
+  <text x="1355" y="498" text-anchor="middle" class="body">diverged · invalid_action</text>
+  <text x="1355" y="524" text-anchor="middle" class="small">超时不会增加单帧例外</text>
+
+  <path d="M1355 550 V620" class="evidenceFlow"/>
+  <rect x="1125" y="620" width="460" height="72" rx="15" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7"/>
+  <text x="1355" y="648" text-anchor="middle" class="heading">追加一条不可变的回合记录</text>
+  <text x="1355" y="674" text-anchor="middle" class="code">seed · 对象 · 步数 · 结果 · 原因 · 条件</text>
+
+  <rect x="40" y="720" width="1520" height="205" rx="22" fill="#faf5ff" stroke="#c084fc" stroke-width="2"/>
+  <text x="66" y="754" class="section" fill="#7e22ce">所有回合结束后 · 形成证据，但不扩大结论</text>
+  <path d="M1355 692 V720" class="evidenceFlow"/>
+
+  <rect x="70" y="780" width="330" height="105" rx="15" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.6"/>
+  <text x="235" y="810" text-anchor="middle" class="heading">计数 + 不确定性</text>
+  <text x="235" y="840" text-anchor="middle" class="code">k 次成功 / n 个回合</text>
+  <text x="235" y="865" text-anchor="middle" class="small">95% Wilson 置信区间</text>
+
+  <rect x="445" y="780" width="330" height="105" rx="15" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.6"/>
+  <text x="610" y="810" text-anchor="middle" class="heading">分层结果</text>
+  <text x="610" y="840" text-anchor="middle" class="body">分对象 · 分条件</text>
+  <text x="610" y="865" text-anchor="middle" class="small">准确标注 pooled 计数</text>
+
+  <rect x="820" y="780" width="330" height="105" rx="15" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.6"/>
+  <text x="985" y="810" text-anchor="middle" class="heading">逐回合表格</text>
+  <text x="985" y="840" text-anchor="middle" class="body">配对 seed · 结果翻转</text>
+  <text x="985" y="865" text-anchor="middle" class="small">发散仍保留在分母中</text>
+
+  <rect x="1195" y="780" width="330" height="105" rx="15" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.6"/>
+  <text x="1360" y="810" text-anchor="middle" class="heading">Rollout 证据</text>
+  <text x="1360" y="840" text-anchor="middle" class="body">H.264 视频 · 人工标签</text>
+  <text x="1360" y="865" text-anchor="middle" class="small">永远不能替代分母</text>
+
+  <text x="800" y="958" text-anchor="middle" class="small">RoboGenesis 101 L13 课程原创示意图。</text>
+</svg>

@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">From a frozen evaluation protocol to episode evidence</title>
+  <desc id="desc">A blue protocol manifest freezes artifact identity, scene and observations, action and timing, task and success, and seeds and conditions before execution. Each episode follows an orange runtime path from seeded reset through live rollout and an instantaneous containment predicate into a consecutive-dwell tracker. The outcome records success, timeout, divergence, or invalid action. Purple evidence cards aggregate successes and total episodes, Wilson intervals, per-object and per-condition counts, episode reasons, and rollout videos. A single true predicate frame never bypasses dwell at timeout.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#475569"/>
+    </marker>
+    <marker id="runArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#ea580c"/>
+    </marker>
+    <marker id="evidenceArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#7c3aed"/>
+    </marker>
+    <style>
+      .title { font: 700 31px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .section { font: 700 19px Inter, ui-sans-serif, system-ui, sans-serif; }
+      .heading { font: 700 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .code { font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .runFlow { stroke: #ea580c; stroke-width: 2.6; fill: none; marker-end: url(#runArrow); }
+      .evidenceFlow { stroke: #7c3aed; stroke-width: 2.5; fill: none; marker-end: url(#evidenceArrow); }
+      .frozen { stroke: #2563eb; stroke-width: 2; stroke-dasharray: 7 6; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="980" rx="24" fill="#f8fafc"/>
+  <text x="800" y="44" text-anchor="middle" class="title">Freeze the protocol, run episodes, then summarize evidence</text>
+  <text x="800" y="75" text-anchor="middle" class="subtitle">Rules chosen after outcomes are known define a different experiment.</text>
+
+  <rect x="40" y="105" width="1520" height="195" rx="22" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+  <text x="66" y="138" class="section" fill="#1d4ed8">BEFORE EXECUTION · versioned protocol manifest</text>
+
+  <rect x="70" y="160" width="255" height="105" rx="15" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="197" y="189" text-anchor="middle" class="heading">Artifacts</text>
+  <text x="197" y="216" text-anchor="middle" class="body">code · dataset · checkpoint</text>
+  <text x="197" y="240" text-anchor="middle" class="small">versions, paths, provenance</text>
+
+  <rect x="365" y="160" width="255" height="105" rx="15" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="492" y="189" text-anchor="middle" class="heading">Scene + observations</text>
+  <text x="492" y="216" text-anchor="middle" class="body">assets · world/wrist · shape</text>
+  <text x="492" y="240" text-anchor="middle" class="small">third-person is evidence only</text>
+
+  <rect x="660" y="160" width="255" height="105" rx="15" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="787" y="189" text-anchor="middle" class="heading">Action + timing</text>
+  <text x="787" y="216" text-anchor="middle" class="body">9-D target · policy FPS</text>
+  <text x="787" y="240" text-anchor="middle" class="small">100 Hz hold · queue reset</text>
+
+  <rect x="955" y="160" width="255" height="105" rx="15" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="1082" y="189" text-anchor="middle" class="heading">Task + episode rule</text>
+  <text x="1082" y="216" text-anchor="middle" class="body">pick/place · predicate · dwell</text>
+  <text x="1082" y="240" text-anchor="middle" class="small">timeout and failure treatment</text>
+
+  <rect x="1250" y="160" width="280" height="105" rx="15" fill="#ffffff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="1390" y="189" text-anchor="middle" class="heading">Sampling + conditions</text>
+  <text x="1390" y="216" text-anchor="middle" class="body">episode count · seed schedule</text>
+  <text x="1390" y="240" text-anchor="middle" class="small">reference / shifted support</text>
+
+  <path d="M800 300 V320" class="frozen"/>
+  <rect x="650" y="320" width="300" height="44" rx="22" fill="#dbeafe" stroke="#60a5fa" stroke-width="1.6"/>
+  <text x="800" y="348" text-anchor="middle" class="heading">LOCKED BEFORE EPISODE 0</text>
+
+  <text x="55" y="382" class="section" fill="#c2410c">DURING EACH EPISODE</text>
+
+  <rect x="55" y="405" width="190" height="125" rx="16" fill="#fff7ed" stroke="#fb923c" stroke-width="1.8"/>
+  <text x="150" y="437" text-anchor="middle" class="heading">Seeded reset</text>
+  <text x="150" y="467" text-anchor="middle" class="code">seed = base + i</text>
+  <text x="150" y="494" text-anchor="middle" class="body">object + domain draw</text>
+  <text x="150" y="515" text-anchor="middle" class="small">reset policy state too</text>
+
+  <path d="M245 467.5 H300" class="runFlow"/>
+  <rect x="300" y="395" width="245" height="145" rx="17" fill="#fff7ed" stroke="#fb923c" stroke-width="1.8"/>
+  <text x="422" y="428" text-anchor="middle" class="heading">Live feedback rollout</text>
+  <text x="422" y="458" text-anchor="middle" class="body">observe → predict → control</text>
+  <text x="422" y="484" text-anchor="middle" class="body">advance simulator → observe</text>
+  <text x="422" y="512" text-anchor="middle" class="small">until success or timeout</text>
+
+  <path d="M545 467.5 H600" class="runFlow"/>
+  <rect x="600" y="405" width="220" height="125" rx="16" fill="#ffedd5" stroke="#f97316" stroke-width="1.8"/>
+  <text x="710" y="437" text-anchor="middle" class="heading">Instant predicate c_t</text>
+  <text x="710" y="466" text-anchor="middle" class="body">inside bowl footprint</text>
+  <text x="710" y="492" text-anchor="middle" class="body">and below rim margin</text>
+  <text x="710" y="515" text-anchor="middle" class="small">one frame is not success</text>
+
+  <path d="M820 467.5 H875" class="runFlow"/>
+  <rect x="875" y="395" width="250" height="145" rx="17" fill="#ecfdf5" stroke="#34d399" stroke-width="1.9"/>
+  <text x="1000" y="428" text-anchor="middle" class="heading">Consecutive dwell</text>
+  <text x="1000" y="458" text-anchor="middle" class="code">D = ceil(seconds × FPS)</text>
+  <text x="1000" y="485" text-anchor="middle" class="body">true: streak + 1</text>
+  <text x="1000" y="511" text-anchor="middle" class="body">false: reset streak to 0</text>
+
+  <path d="M1125 467.5 H1180" class="runFlow"/>
+  <rect x="1180" y="385" width="350" height="165" rx="18" fill="#faf5ff" stroke="#c084fc" stroke-width="1.9"/>
+  <text x="1355" y="418" text-anchor="middle" class="heading">Episode outcome</text>
+  <rect x="1210" y="438" width="140" height="34" rx="17" fill="#d1fae5" stroke="#34d399"/>
+  <text x="1280" y="460" text-anchor="middle" class="small">success after D</text>
+  <rect x="1365" y="438" width="135" height="34" rx="17" fill="#fee2e2" stroke="#f87171"/>
+  <text x="1432" y="460" text-anchor="middle" class="small">timeout</text>
+  <text x="1355" y="498" text-anchor="middle" class="body">diverged · invalid_action</text>
+  <text x="1355" y="524" text-anchor="middle" class="small">timeout never adds a one-frame exception</text>
+
+  <path d="M1355 550 V620" class="evidenceFlow"/>
+  <rect x="1125" y="620" width="460" height="72" rx="15" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.7"/>
+  <text x="1355" y="648" text-anchor="middle" class="heading">Append one immutable episode row</text>
+  <text x="1355" y="674" text-anchor="middle" class="code">seed · object · steps · outcome · reason · condition</text>
+
+  <rect x="40" y="720" width="1520" height="205" rx="22" fill="#faf5ff" stroke="#c084fc" stroke-width="2"/>
+  <text x="66" y="754" class="section" fill="#7e22ce">AFTER ALL EPISODES · evidence, not a stronger claim</text>
+  <path d="M1355 692 V720" class="evidenceFlow"/>
+
+  <rect x="70" y="780" width="330" height="105" rx="15" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.6"/>
+  <text x="235" y="810" text-anchor="middle" class="heading">Counts + uncertainty</text>
+  <text x="235" y="840" text-anchor="middle" class="code">k successes / n episodes</text>
+  <text x="235" y="865" text-anchor="middle" class="small">95% Wilson interval</text>
+
+  <rect x="445" y="780" width="330" height="105" rx="15" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.6"/>
+  <text x="610" y="810" text-anchor="middle" class="heading">Stratified results</text>
+  <text x="610" y="840" text-anchor="middle" class="body">per object · per condition</text>
+  <text x="610" y="865" text-anchor="middle" class="small">label pooled counts accurately</text>
+
+  <rect x="820" y="780" width="330" height="105" rx="15" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.6"/>
+  <text x="985" y="810" text-anchor="middle" class="heading">Episode table</text>
+  <text x="985" y="840" text-anchor="middle" class="body">matched seeds · outcome flips</text>
+  <text x="985" y="865" text-anchor="middle" class="small">divergence stays in denominator</text>
+
+  <rect x="1195" y="780" width="330" height="105" rx="15" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.6"/>
+  <text x="1360" y="810" text-anchor="middle" class="heading">Rollout evidence</text>
+  <text x="1360" y="840" text-anchor="middle" class="body">H.264 videos · manual labels</text>
+  <text x="1360" y="865" text-anchor="middle" class="small">never replace the denominator</text>
+
+  <text x="800" y="958" text-anchor="middle" class="small">Course-created schematic for RoboGenesis 101 L13.</text>
+</svg>

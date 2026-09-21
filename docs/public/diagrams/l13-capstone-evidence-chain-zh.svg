@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">L13 Capstone 是一条结论边界明确的证据链</title>
+  <desc id="desc">六道相连的证据门构成 Capstone。环境身份能证明预期 runtime 可用，但不能证明任务有效；数据集与 provenance 能证明训练输入身份，但不能证明策略已经学会；checkpoint 与 processors 能证明可重建，但不能证明动作有用；冻结条件能形成可比较协议，但不能预知结果；实时 rollout 能证明协议内的仿真行为，但不能证明现实迁移；范围明确的报告把计数、不确定性、视频、限制和复现命令连接起来，不作超出证据的声称。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title { font: 700 31px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .stage { font: 700 13px Inter, ui-sans-serif, system-ui, sans-serif; }
+      .heading { font: 700 17px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .label { font: 700 11px Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.6px; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .code { font: 600 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .flow { stroke: #475569; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" rx="24" fill="#f8fafc"/>
+  <text x="800" y="45" text-anchor="middle" class="title">Capstone 是一条可审计的证据链，不是一组绿色勾选</text>
+  <text x="800" y="77" text-anchor="middle" class="subtitle">每道门都解锁下一项实验，同时清楚保留尚未证明的边界。</text>
+
+  <rect x="35" y="115" width="1510" height="55" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="800" y="149" text-anchor="middle" class="body">问题 → 这个 checkpoint 在一个已声明的参考条件和一个 held-out 条件下能够做到什么？</text>
+
+  <rect x="35" y="205" width="235" height="405" rx="19" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+  <rect x="55" y="225" width="74" height="28" rx="14" fill="#dbeafe"/>
+  <text x="92" y="244" text-anchor="middle" class="stage" fill="#1d4ed8">第 1 门</text>
+  <text x="152" y="286" text-anchor="middle" class="heading">环境</text>
+  <text x="152" y="310" text-anchor="middle" class="heading">身份</text>
+  <rect x="57" y="334" width="191" height="55" rx="12" fill="#ffffff" stroke="#bfdbfe"/>
+  <text x="152" y="356" text-anchor="middle" class="code">Python · Genesis</text>
+  <text x="152" y="376" text-anchor="middle" class="code">Torch/HIP · GPU · render</text>
+  <text x="57" y="425" class="label" fill="#1d4ed8">能够证明</text>
+  <text x="57" y="449" class="body">预期 runtime 和</text>
+  <text x="57" y="470" class="body">实时相机可用</text>
+  <text x="57" y="511" class="label" fill="#b91c1c">不能证明</text>
+  <text x="57" y="535" class="body">数据、checkpoint 或</text>
+  <text x="57" y="556" class="body">任务行为有效</text>
+
+  <path d="M270 407.5 H290" class="flow"/>
+
+  <rect x="290" y="205" width="235" height="405" rx="19" fill="#ecfeff" stroke="#22d3ee" stroke-width="2"/>
+  <rect x="310" y="225" width="74" height="28" rx="14" fill="#cffafe"/>
+  <text x="347" y="244" text-anchor="middle" class="stage" fill="#0e7490">第 2 门</text>
+  <text x="407" y="286" text-anchor="middle" class="heading">数据集 +</text>
+  <text x="407" y="310" text-anchor="middle" class="heading">provenance</text>
+  <rect x="312" y="334" width="191" height="55" rx="12" fill="#ffffff" stroke="#a5f3fc"/>
+  <text x="407" y="356" text-anchor="middle" class="code">schema · FPS · 相机</text>
+  <text x="407" y="376" text-anchor="middle" class="code">任务 · domain 支持范围</text>
+  <text x="312" y="425" class="label" fill="#0e7490">能够证明</text>
+  <text x="312" y="449" class="body">演示和训练分布的</text>
+  <text x="312" y="470" class="body">身份</text>
+  <text x="312" y="511" class="label" fill="#b91c1c">不能证明</text>
+  <text x="312" y="535" class="body">优化已经学到</text>
+  <text x="312" y="556" class="body">有用的策略</text>
+
+  <path d="M525 407.5 H545" class="flow"/>
+
+  <rect x="545" y="205" width="235" height="405" rx="19" fill="#eef2ff" stroke="#818cf8" stroke-width="2"/>
+  <rect x="565" y="225" width="74" height="28" rx="14" fill="#e0e7ff"/>
+  <text x="602" y="244" text-anchor="middle" class="stage" fill="#4338ca">第 3 门</text>
+  <text x="662" y="286" text-anchor="middle" class="heading">Checkpoint +</text>
+  <text x="662" y="310" text-anchor="middle" class="heading">processors</text>
+  <rect x="567" y="334" width="191" height="55" rx="12" fill="#ffffff" stroke="#c7d2fe"/>
+  <text x="662" y="356" text-anchor="middle" class="code">权重 · 配置 · 重命名</text>
+  <text x="662" y="376" text-anchor="middle" class="code">动作 horizon · 来源</text>
+  <text x="567" y="425" class="label" fill="#4338ca">能够证明</text>
+  <text x="567" y="449" class="body">策略包能够被识别</text>
+  <text x="567" y="470" class="body">并重新构建</text>
+  <text x="567" y="511" class="label" fill="#b91c1c">不能证明</text>
+  <text x="567" y="535" class="body">策略动作能够</text>
+  <text x="567" y="556" class="body">完成任务</text>
+
+  <path d="M780 407.5 H800" class="flow"/>
+
+  <rect x="800" y="205" width="235" height="405" rx="19" fill="#fff7ed" stroke="#fb923c" stroke-width="2"/>
+  <rect x="820" y="225" width="74" height="28" rx="14" fill="#ffedd5"/>
+  <text x="857" y="244" text-anchor="middle" class="stage" fill="#c2410c">第 4 门</text>
+  <text x="917" y="286" text-anchor="middle" class="heading">冻结的</text>
+  <text x="917" y="310" text-anchor="middle" class="heading">评估条件</text>
+  <rect x="822" y="334" width="191" height="55" rx="12" fill="#ffffff" stroke="#fed7aa"/>
+  <text x="917" y="356" text-anchor="middle" class="code">任务 · dwell · seeds</text>
+  <text x="917" y="376" text-anchor="middle" class="code">参考 · held-out</text>
+  <text x="822" y="425" class="label" fill="#c2410c">能够证明</text>
+  <text x="822" y="449" class="body">测量公平、可解释</text>
+  <text x="822" y="470" class="body">并且可复现</text>
+  <text x="822" y="511" class="label" fill="#b91c1c">不能证明</text>
+  <text x="822" y="535" class="body">实时回合运行前的</text>
+  <text x="822" y="556" class="body">任务结果</text>
+
+  <path d="M1035 407.5 H1055" class="flow"/>
+
+  <rect x="1055" y="205" width="235" height="405" rx="19" fill="#ecfdf5" stroke="#34d399" stroke-width="2"/>
+  <rect x="1075" y="225" width="74" height="28" rx="14" fill="#d1fae5"/>
+  <text x="1112" y="244" text-anchor="middle" class="stage" fill="#047857">第 5 门</text>
+  <text x="1172" y="286" text-anchor="middle" class="heading">实时反馈</text>
+  <text x="1172" y="310" text-anchor="middle" class="heading">rollout</text>
+  <rect x="1077" y="334" width="191" height="55" rx="12" fill="#ffffff" stroke="#a7f3d0"/>
+  <text x="1172" y="356" text-anchor="middle" class="code">回合记录 · 计数</text>
+  <text x="1172" y="376" text-anchor="middle" class="code">视频 · 原因</text>
+  <text x="1077" y="425" class="label" fill="#047857">能够证明</text>
+  <text x="1077" y="449" class="body">这套协议下的</text>
+  <text x="1077" y="470" class="body">仿真任务行为</text>
+  <text x="1077" y="511" class="label" fill="#b91c1c">不能证明</text>
+  <text x="1077" y="535" class="body">未测试 domain 或</text>
+  <text x="1077" y="556" class="body">真实机器人上的表现</text>
+
+  <path d="M1290 407.5 H1310" class="flow"/>
+
+  <rect x="1310" y="205" width="235" height="405" rx="19" fill="#faf5ff" stroke="#c084fc" stroke-width="2"/>
+  <rect x="1330" y="225" width="74" height="28" rx="14" fill="#f3e8ff"/>
+  <text x="1367" y="244" text-anchor="middle" class="stage" fill="#7e22ce">第 6 门</text>
+  <text x="1427" y="286" text-anchor="middle" class="heading">范围明确的</text>
+  <text x="1427" y="310" text-anchor="middle" class="heading">报告</text>
+  <rect x="1332" y="334" width="191" height="55" rx="12" fill="#ffffff" stroke="#e9d5ff"/>
+  <text x="1427" y="356" text-anchor="middle" class="code">k/n + Wilson 区间</text>
+  <text x="1427" y="376" text-anchor="middle" class="code">失败 · 限制 · 命令</text>
+  <text x="1332" y="425" class="label" fill="#7e22ce">能够证明</text>
+  <text x="1332" y="449" class="body">对既定策略问题的</text>
+  <text x="1332" y="470" class="body">可追溯回答</text>
+  <text x="1332" y="511" class="label" fill="#b91c1c">不能证明</text>
+  <text x="1332" y="535" class="body">普遍鲁棒性或</text>
+  <text x="1332" y="556" class="body">sim-to-real transfer</text>
+
+  <rect x="35" y="650" width="1510" height="180" rx="20" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.7"/>
+  <text x="60" y="684" class="heading">Capstone 证据包</text>
+  <rect x="60" y="708" width="276" height="76" rx="13" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="198" y="737" text-anchor="middle" class="code">环境摘要</text>
+  <text x="198" y="763" text-anchor="middle" class="small">版本 · 设备 · 渲染</text>
+  <rect x="356" y="708" width="276" height="76" rx="13" fill="#ecfeff" stroke="#a5f3fc"/>
+  <text x="494" y="737" text-anchor="middle" class="code">Artifact 审计</text>
+  <text x="494" y="763" text-anchor="middle" class="small">数据集 + checkpoint 身份</text>
+  <rect x="652" y="708" width="276" height="76" rx="13" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="790" y="737" text-anchor="middle" class="code">协议 + 条件</text>
+  <text x="790" y="763" text-anchor="middle" class="small">查看结果前冻结规则</text>
+  <rect x="948" y="708" width="276" height="76" rx="13" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <text x="1086" y="737" text-anchor="middle" class="code">结果 + 视频</text>
+  <text x="1086" y="763" text-anchor="middle" class="small">所有回合保持可见</text>
+  <rect x="1244" y="708" width="276" height="76" rx="13" fill="#faf5ff" stroke="#e9d5ff"/>
+  <text x="1382" y="737" text-anchor="middle" class="code">报告 + 复现</text>
+  <text x="1382" y="763" text-anchor="middle" class="small">结论 · 限制 · 下一项证据</text>
+
+  <text x="800" y="858" text-anchor="middle" class="body">零次成功也可以完成这条证据链；没有记录依据的高成功率则不能。</text>
+  <text x="800" y="887" text-anchor="middle" class="small">RoboGenesis 101 L13 课程原创示意图。</text>
+</svg>
