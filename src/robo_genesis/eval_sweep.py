@@ -1,8 +1,9 @@
 """Sweep every checkpoint of a training run and plot a success-rate curve.
 
 Builds the Genesis scene *once*, then loads each checkpoint in turn and evaluates
-it with an identical, fixed protocol (same seeds -> same initial conditions), so
-the resulting curve isolates the effect of training progress. Outputs:
+it with an identical, fixed protocol. Matched seeds control the scheduled initial
+task instances, but they do not isolate every training or runtime difference.
+Outputs:
 
   * ``<out-dir>/sweep.json``  -- full structured results (per checkpoint + per episode)
   * ``<out-dir>/sweep.csv``   -- one row per checkpoint (step, success_rate, ...)
@@ -120,14 +121,14 @@ def plot_curve(rows: list[dict], out_png: Path, title: str, per_domain: list[dic
     plt.figure(figsize=(7, 4.5))
 
     # Faint per-domain curves (when sweeping multiple appearance domains), then the
-    # bold aggregate (mean over domains) on top.
+    # bold aggregate (pooled successes / pooled episodes) on top.
     if per_domain and len(per_domain) > 1:
         for dom in per_domain:
             d_steps = [r["step"] for r in dom["rows"]]
             d_rates = [r["success_rate"] * 100.0 for r in dom["rows"]]
             plt.plot(d_steps, d_rates, marker=".", linewidth=1, alpha=0.35, label=f"domain {dom['domain']}")
 
-    agg_label = "aggregate (mean over domains)" if per_domain and len(per_domain) > 1 else None
+    agg_label = "aggregate (pooled over domains)" if per_domain and len(per_domain) > 1 else None
     plt.errorbar(steps, rates, yerr=yerr, marker="o", linewidth=2.5, color="black",
                  capsize=4, elinewidth=1.2, label=agg_label)
     for x, y in zip(steps, rates):
@@ -412,7 +413,7 @@ def main() -> None:
     plot_curve(rows, out_dir / "success_curve.png", title=title, per_domain=per_domain)
 
     total_diverged = sum(r["n_diverged"] for r in rows)
-    print("\n[sweep] summary (aggregate over domains):")
+    print("\n[sweep] summary (pooled over domains):")
     for r in rows:
         note = f"  ({r['n_diverged']} diverged)" if r["n_diverged"] else ""
         print(

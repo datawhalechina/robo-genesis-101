@@ -1,7 +1,9 @@
-"""Policy-agnostic closed-loop evaluation of a trained lerobot policy.
+"""Policy-agnostic closed-loop evaluation of a trained LeRobot policy.
 
-Runs a trained policy (ACT, SmolVLA, or any other lerobot policy) in the same
-Genesis pick-and-place scene used for recording, and reports the success rate.
+Runs a trained policy (ACT, SmolVLA, or another compatible LeRobot policy) in
+the project Genesis pick-and-place scene. The command audits the dataset,
+checkpoint, and rollout protocol before initializing Genesis; sharing a scene
+builder with recording is not treated as proof that every condition matches.
 
 The script is deliberately *policy-agnostic*: it never hard-codes ACT- or
 SmolVLA-specific logic. Instead it relies on lerobot's generic interfaces, and
@@ -38,7 +40,10 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import importlib.metadata
 import json
+import os
+import platform
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -55,11 +60,26 @@ from lerobot.policies.factory import make_policy, make_pre_post_processors
 from lerobot.utils.device_utils import get_safe_torch_device
 
 from .build_scene import build_scene
+from .evaluation_contract import (
+    DwellTracker,
+    EvaluationContractError,
+    audit_dataset_contract,
+    build_condition_spec,
+    build_evaluation_report,
+    dwell_frame_count,
+    git_identity,
+    require_requested_device,
+    validate_action_vector,
+    validate_evaluation_protocol,
+    validate_output_targets,
+)
 from .grasp_demo import TaskSpec, check_success
-from .paths import DATASETS_DIR, EVAL_RESULTS_DIR, EVAL_VIDEOS_DIR, resolve_cli_path
-from .randomize import EnvRandomizer, RandomizationConfig
+from .paths import DATASETS_DIR, EVAL_RESULTS_DIR, EVAL_VIDEOS_DIR, PROJECT_ROOT, resolve_cli_path
+from .randomize import DomainRandomizationConfig, EnvRandomizer, RandomizationConfig
 from .record_dataset import CONTROL_FPS, task_description
+from .scene_config import YCB_LAYOUT
 from .stats import wilson
+from .training_contract import audit_checkpoint
 
 STATE_KEY = "observation.state"
 
@@ -98,7 +118,9 @@ class PolicyBundle:
             task=task,
             robot_type="franka",
         )
-        return action.detach().cpu().numpy().reshape(-1).astype(np.float32)
+        raw_action = action.detach().cpu().numpy()
+        values = validate_action_vector(raw_action)
+        return np.asarray(values, dtype=np.float32)
 
 
 def _load_rename_map(policy_path: str) -> dict:
@@ -239,7 +261,7 @@ def _record_frame(bundle, pb: PolicyBundle, obs: dict[str, np.ndarray]) -> np.nd
 
 def apply_action(bundle, action: np.ndarray, n_sim_steps: int) -> None:
     """Position-control the arm+gripper to the policy's target for ``n_sim_steps``."""
-    action = np.asarray(action, dtype=np.float64).reshape(-1)
+    action = np.asarray(action, dtype=np.float64)
     for _ in range(n_sim_steps):
         bundle.franka.control_dofs_position(action)
         bundle.scene.step()
@@ -251,6 +273,10 @@ class EpisodeResult:
     success: bool
     frames: list[np.ndarray] = field(default_factory=list)
     n_policy_steps: int = 0
+    termination_reason: str = "timeout"
+    error: str | None = None
+    dwell_frames: int = 0
+    max_success_streak: int = 0
 
 
 def run_episode(
@@ -260,6 +286,7 @@ def run_episode(
     *,
     task_text: str | None,
     max_seconds: float,
+    dwell_seconds: float = 0.4,
     record_video: bool = False,
 ) -> EpisodeResult:
     """Run one closed-loop rollout and return whether the task succeeded.
@@ -271,22 +298,27 @@ def run_episode(
     pb.reset()
 
     steps_per_frame = CONTROL_FPS / pb.fps
-    max_frames = int(round(max_seconds * pb.fps))
+    max_frames = max(1, int(np.ceil(max_seconds * pb.fps)))
 
-    result = EpisodeResult(success=False)
+    settle_frames = dwell_frame_count(dwell_seconds, pb.fps)
+    result = EpisodeResult(success=False, dwell_frames=settle_frames)
     accum = 0.0
     # Require the (containment) success condition to hold for a short dwell (~0.4 s)
     # before declaring success, so we only stop once the object has actually come to
     # rest inside the bowl -- not during the fly-by/descent. This also keeps the
     # recorded video running through the settle, so the placement is visible.
-    settle_frames = max(1, int(round(0.4 * pb.fps)))
-    success_streak = 0
+    dwell = DwellTracker(settle_frames)
     for _ in range(max_frames):
         obs = build_observation(bundle, pb)
         if record_video:
             result.frames.append(_record_frame(bundle, pb, obs))
 
-        action = pb.select_action(obs, task_text)
+        try:
+            action = pb.select_action(obs, task_text)
+        except (EvaluationContractError, TypeError, ValueError, OverflowError) as exc:
+            result.termination_reason = "invalid_action"
+            result.error = str(exc)
+            break
 
         accum += steps_per_frame
         n_sub = int(accum)
@@ -294,16 +326,12 @@ def run_episode(
         apply_action(bundle, action, max(1, n_sub))
         result.n_policy_steps += 1
 
-        if check_success(bundle, task):
-            success_streak += 1
-            if success_streak >= settle_frames:
-                result.success = True
-                break
-        else:
-            success_streak = 0
+        if dwell.update(bool(check_success(bundle, task))):
+            result.success = True
+            result.termination_reason = "success"
+            break
 
-    if not result.success:
-        result.success = check_success(bundle, task)
+    result.max_success_streak = dwell.max_streak
 
     # Cosmetic tail: after a successful placement, hold the last action and keep
     # recording for a short window so the resting object is clearly visible in the video.
@@ -346,6 +374,20 @@ def _save_video(frames: list[np.ndarray], path: Path, fps: int) -> None:
         writer.close()
 
 
+def _domain_draw(randomizer: EnvRandomizer) -> dict[str, object] | None:
+    """Return the runtime-domain values actually sampled for the current episode."""
+    friction = getattr(randomizer, "last_friction_ratio", None)
+    masses = getattr(randomizer, "last_mass_ratio", None)
+    camera = getattr(randomizer, "last_world_camera_pose", None)
+    if friction is None and not masses and camera is None:
+        return None
+    return {
+        "friction_ratio": friction,
+        "mass_ratios": dict(masses or {}),
+        "world_camera_pose": camera,
+    }
+
+
 def evaluate_policy(
     bundle,
     pb: PolicyBundle,
@@ -353,6 +395,7 @@ def evaluate_policy(
     episodes: int,
     seed: int = 1000,
     max_seconds: float = 15.0,
+    dwell_seconds: float = 0.4,
     pick: list[str] | tuple[str, ...] = ("011_banana",),
     place: str = "024_bowl",
     tol: float = 0.06,
@@ -363,13 +406,13 @@ def evaluate_policy(
     save_video: bool = False,
     video_dir: Path | None = None,
     label: str = "",
+    protocol: dict | None = None,
 ) -> dict:
     """Run ``episodes`` closed-loop rollouts and return a structured results dict.
 
-    The episode initial conditions are fully determined by ``seed`` (per-episode
-    ``randomizer.reset(seed=seed+ep)`` + a ``seed``-seeded pick sampler), so calling
-    this with the same ``seed``/``jitter``/``pick`` on different checkpoints evaluates
-    every policy on *identical* initial conditions -- the basis for fair comparison.
+    Reusing ``seed`` and all other protocol fields gives matched scheduled task
+    instances across checkpoints or conditions. It controls one source of variation;
+    it does not imply identical trajectories or isolate every training difference.
 
     ``balanced`` (default) assigns objects via a stratified schedule so each object gets
     an (almost) equal number of episodes -- ``episodes // len(pick)`` each, with any
@@ -378,6 +421,22 @@ def evaluate_policy(
     them to a Multinomial draw. Set ``balanced=False`` to recover the legacy i.i.d.
     ``pick_rng.choice`` sampling (needed to reproduce sweeps run before this option).
     """
+    if protocol is None:
+        protocol = validate_evaluation_protocol(
+            episodes=episodes,
+            policy_fps=pb.fps,
+            control_fps=CONTROL_FPS,
+            dwell_seconds=dwell_seconds,
+            max_seconds=max_seconds,
+            tolerance=tol,
+            pick_objects=pick,
+            place_target=place,
+            available_objects=tuple(bundle.ycb),
+            base_seed=seed,
+            balanced=balanced,
+            condition_name=(label or "reference").replace(":", "-"),
+            render_enabled=True,
+        )
     if randomizer is None:
         randomizer = EnvRandomizer(
             bundle, RandomizationConfig(pos_jitter=jitter, randomize_pick=False, seed=seed)
@@ -387,18 +446,12 @@ def evaluate_policy(
     # Balanced mode: build a stratified, seed-shuffled schedule up front (equal n per object,
     # remainder distributed to a seeded subset). Legacy mode leaves schedule=None and draws
     # i.i.d. inside the loop, preserving the exact sequence of earlier runs.
-    schedule = None
-    if balanced:
-        base, rem = divmod(episodes, len(pick_choices))
-        sched = [o for o in pick_choices for _ in range(base)]
-        if rem:
-            sched += list(pick_rng.choice(pick_choices, size=rem, replace=False))
-        schedule = np.array(sched, dtype=object)
-        pick_rng.shuffle(schedule)
+    schedule = protocol["sampling"]["object_schedule"] if balanced else None
     prefix = f"[eval:{label}]" if label else "[eval]"
 
     n_success = 0
     n_diverged = 0
+    n_invalid_action = 0
     per_object: dict[str, list[int]] = {}
     episodes_detail: list[dict] = []
     for ep in range(episodes):
@@ -413,10 +466,12 @@ def evaluate_policy(
 
         try:
             randomizer.reset(seed=episode_seed)
+            domain_draw = _domain_draw(randomizer)
             result = run_episode(
                 bundle, pb, task,
                 task_text=task_text,
                 max_seconds=max_seconds,
+                dwell_seconds=dwell_seconds,
                 record_video=save_video,
             )
         except gs.GenesisException as exc:
@@ -435,6 +490,11 @@ def evaluate_policy(
                     "steps": 0,
                     "success": False,
                     "diverged": True,
+                    "termination_reason": "diverged",
+                    "error": str(exc),
+                    "condition": label or "reference",
+                    "domain_draw": _domain_draw(randomizer),
+                    "video": None,
                 }
             )
             print(
@@ -444,7 +504,14 @@ def evaluate_policy(
             continue
 
         n_success += int(result.success)
+        n_invalid_action += int(result.termination_reason == "invalid_action")
         per_object.setdefault(pick_object, []).append(int(result.success))
+        video_path: Path | None = None
+        if save_video and video_dir is not None:
+            tag = "success" if result.success else result.termination_reason
+            video_path = Path(video_dir) / f"ep{ep:03d}_{pick_object}_{tag}.mp4"
+            _save_video(result.frames, video_path, pb.fps)
+
         episodes_detail.append(
             {
                 "ep": ep,
@@ -453,16 +520,19 @@ def evaluate_policy(
                 "steps": result.n_policy_steps,
                 "success": bool(result.success),
                 "diverged": False,
+                "termination_reason": result.termination_reason,
+                "error": result.error,
+                "condition": label or "reference",
+                "domain_draw": domain_draw,
+                "dwell_frames": result.dwell_frames,
+                "max_success_streak": result.max_success_streak,
+                "video": str(video_path) if video_path is not None else None,
             }
         )
 
-        if save_video and video_dir is not None:
-            tag = "success" if result.success else "fail"
-            _save_video(result.frames, Path(video_dir) / f"ep{ep:03d}_{pick_object}_{tag}.mp4", pb.fps)
-
         print(
             f"{prefix} ep {ep:03d} seed={episode_seed} pick={pick_object} "
-            f"steps={result.n_policy_steps} -> success={result.success}"
+            f"steps={result.n_policy_steps} -> {result.termination_reason}"
         )
 
     rate = n_success / max(1, episodes)
@@ -490,6 +560,7 @@ def evaluate_policy(
         "episodes": episodes,
         "n_success": n_success,
         "n_diverged": n_diverged,
+        "n_invalid_action": n_invalid_action,
         "success_rate": rate,
         "success_ci": [ci_lo, ci_hi],
         "per_object": per_object_summary,
@@ -497,12 +568,14 @@ def evaluate_policy(
         "params": {
             "seed": seed,
             "max_seconds": max_seconds,
+            "dwell_seconds": dwell_seconds,
             "pick": list(pick_choices),
             "place": place,
             "tol": tol,
             "no_task": no_task,
             "jitter": jitter,
         },
+        "protocol": protocol,
     }
 
 
@@ -533,6 +606,106 @@ def _str2bool(v: str) -> bool:
     raise argparse.ArgumentTypeError(f"expected a boolean, got {v!r}")
 
 
+def _checkpoint_evidence(policy_path: Path, repo_id: str) -> dict[str, object]:
+    config_path = policy_path / "config.json"
+    if not config_path.is_file():
+        raise EvaluationContractError(f"checkpoint config does not exist: {config_path}")
+    try:
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise EvaluationContractError(f"cannot read checkpoint config {config_path}: {exc}") from exc
+    policy_type = config.get("type") if isinstance(config, dict) else None
+    if not isinstance(policy_type, str) or not policy_type:
+        raise EvaluationContractError(f"checkpoint config has no policy type: {config_path}")
+    try:
+        evidence = audit_checkpoint(policy_path, expected_policy_type=policy_type)
+    except ValueError as exc:
+        raise EvaluationContractError(str(exc)) from exc
+    if evidence.get("dataset_repo_id") != repo_id:
+        raise EvaluationContractError(
+            "checkpoint training dataset does not match --repo-id: "
+            f"{evidence.get('dataset_repo_id')!r} != {repo_id!r}"
+        )
+    return evidence
+
+
+def _condition_config(
+    args: argparse.Namespace,
+) -> tuple[DomainRandomizationConfig, dict[str, object]]:
+    """Build the reference or one-factor runtime condition used by L13."""
+    factor = args.changed_factor
+    evaluation_range = args.evaluation_range
+    if args.condition_label == "reference":
+        if factor is not None or args.training_support is not None or evaluation_range is not None:
+            raise EvaluationContractError(
+                "reference conditions must not declare a changed factor or support ranges"
+            )
+    else:
+        if factor not in {"friction_ratio", "mass_ratio"}:
+            raise EvaluationContractError(
+                "non-reference conditions support one factor: friction_ratio or mass_ratio"
+            )
+        if evaluation_range is None:
+            raise EvaluationContractError(
+                "a non-reference condition requires --evaluation-range LO HI"
+            )
+        if any(value <= 0.0 for value in evaluation_range):
+            raise EvaluationContractError("evaluation range values must be positive")
+
+    condition = build_condition_spec(
+        name=args.condition_name,
+        declared_label=args.condition_label,
+        changed_factor=factor,
+        training_support=args.training_support,
+        evaluation_range=evaluation_range,
+        held_constant=args.held_constant,
+    )
+    friction_range = tuple(evaluation_range) if factor == "friction_ratio" else (1.0, 1.0)
+    mass_range = tuple(evaluation_range) if factor == "mass_ratio" else (1.0, 1.0)
+    runtime_dr = DomainRandomizationConfig(
+        enabled=args.condition_label != "reference",
+        friction_ratio_range=friction_range,
+        mass_ratio_range=mass_range,
+    )
+    condition["configuration"] = {
+        "runtime": {
+            "enabled": runtime_dr.enabled,
+            "friction_ratio_range": list(runtime_dr.friction_ratio_range),
+            "mass_ratio_range": list(runtime_dr.mass_ratio_range),
+        },
+        "position_jitter_m": args.jitter,
+    }
+    return runtime_dr, condition
+
+
+def _package_version(name: str) -> str | None:
+    try:
+        return importlib.metadata.version(name)
+    except importlib.metadata.PackageNotFoundError:
+        return None
+
+
+def _environment_evidence(args: argparse.Namespace, pb: PolicyBundle) -> dict[str, object]:
+    cuda_name = None
+    if pb.device.type == "cuda" and torch.cuda.is_available():
+        cuda_name = torch.cuda.get_device_name(pb.device)
+    return {
+        "code": git_identity(PROJECT_ROOT),
+        "python": platform.python_version(),
+        "platform": platform.platform(),
+        "genesis": _package_version("genesis-world"),
+        "lerobot": _package_version("lerobot"),
+        "torch": torch.__version__,
+        "torch_hip": torch.version.hip,
+        "requested_policy_device": args.device,
+        "actual_policy_device": str(pb.device),
+        "accelerator_name": cuda_name,
+        "simulation_backend": "cpu" if args.cpu else "gpu",
+        "render_backend": os.environ.get("PYOPENGL_PLATFORM"),
+        "viewer": args.vis,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Policy-agnostic closed-loop eval.")
     parser.add_argument("--policy-path", required=True, help="Checkpoint dir (contains config.json + model.safetensors).")
@@ -542,7 +715,7 @@ def main() -> None:
         default=None,
         help="Local dataset directory (default: configured datasets/<repo-name>).",
     )
-    parser.add_argument("--device", default="cuda", help="cuda | cpu | mps (auto-falls back if unavailable).")
+    parser.add_argument("--device", default="cuda", help="cuda | cpu | mps (unavailable requests fail).")
     parser.add_argument("--use-amp", action="store_true", help="Enable autocast on CUDA inference.")
     parser.add_argument(
         "--rename-map",
@@ -555,6 +728,12 @@ def main() -> None:
     parser.add_argument("--episodes", type=int, default=10, help="Number of eval episodes.")
     parser.add_argument("--seed", type=int, default=1000, help="Base RNG seed (offset from training seeds).")
     parser.add_argument("--max-seconds", type=float, default=15.0, help="Max wall-clock per episode (sim time).")
+    parser.add_argument(
+        "--dwell-seconds",
+        type=float,
+        default=0.4,
+        help="Required consecutive containment time before success (default: 0.4 s).",
+    )
     parser.add_argument(
         "--pick",
         nargs="+",
@@ -589,21 +768,91 @@ def main() -> None:
         "--results-out",
         default=None,
         help="Write a structured results JSON here "
-        "(default: configured outputs/eval_results/<repo>/<checkpoint>.json). "
+        "(default: configured outputs/eval_results/<repo>/<condition>/<checkpoint>.json). "
         "Pass 'none' to skip.",
     )
+    parser.add_argument("--condition-name", default="reference")
+    parser.add_argument(
+        "--condition-label",
+        choices=("reference", "unseen-in-support", "shifted", "ood"),
+        default="reference",
+    )
+    parser.add_argument(
+        "--changed-factor",
+        choices=("friction_ratio", "mass_ratio"),
+        default=None,
+        help="Single runtime factor changed by a non-reference condition.",
+    )
+    parser.add_argument("--training-support", type=float, nargs=2, metavar=("LO", "HI"))
+    parser.add_argument("--evaluation-range", type=float, nargs=2, metavar=("LO", "HI"))
+    parser.add_argument("--held-constant", action="append", default=[])
     args = parser.parse_args()
 
     repo_name = args.repo_id.split("/")[-1]
     policy_path = resolve_cli_path(args.policy_path)
     dataset_root = resolve_cli_path(args.dataset_root, default=DATASETS_DIR / repo_name)
+    dataset_evidence = audit_dataset_contract(dataset_root, repo_id=args.repo_id)
+    checkpoint_evidence = _checkpoint_evidence(policy_path, args.repo_id)
+    require_requested_device(
+        args.device,
+        cuda_available=torch.cuda.is_available(),
+        mps_available=bool(
+            hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
+        ),
+    )
+    if not args.cpu and not torch.cuda.is_available():
+        raise EvaluationContractError(
+            "Genesis GPU execution was requested but no CUDA/ROCm device is available; "
+            "pass --cpu only for an explicitly CPU-scoped run"
+        )
+
+    runtime_dr, condition = _condition_config(args)
+    protocol = validate_evaluation_protocol(
+        episodes=args.episodes,
+        policy_fps=dataset_evidence["fps"],
+        control_fps=CONTROL_FPS,
+        dwell_seconds=args.dwell_seconds,
+        max_seconds=args.max_seconds,
+        tolerance=args.tol,
+        pick_objects=args.pick,
+        place_target=args.place,
+        available_objects=tuple(YCB_LAYOUT),
+        base_seed=args.seed,
+        balanced=args.balanced,
+        condition_name=args.condition_name,
+        render_enabled=True,
+    )
+
+    label = checkpoint_label(str(policy_path))
+    default_result = EVAL_RESULTS_DIR / repo_name / args.condition_name / f"{label}.json"
+    results_out = (
+        None
+        if args.results_out == "none"
+        else resolve_cli_path(args.results_out, default=default_result)
+    )
+    video_dir = resolve_cli_path(
+        args.video_dir,
+        default=EVAL_VIDEOS_DIR / repo_name / args.condition_name / label,
+    )
+    validate_output_targets(
+        results_path=results_out,
+        video_dir=video_dir,
+        save_video=args.save_video,
+    )
+
+    rename_map = json.loads(args.rename_map) if args.rename_map else None
+    if rename_map is not None and rename_map != checkpoint_evidence["rename_map"]:
+        raise EvaluationContractError(
+            "--rename-map does not match the mapping saved with the checkpoint"
+        )
+
+    # All protocol, path, artifact, and device checks above happen before Genesis starts.
     gs.init(backend=gs.cpu if args.cpu else gs.gpu)
     bundle = build_scene(
         show_viewer=args.vis, n_envs=1, add_world_cam=True, add_wrist_cam=True,
         add_video_cam=args.save_video,
     )
 
-    rename_map = json.loads(args.rename_map) if args.rename_map else None
     pb = load_policy(
         str(policy_path),
         args.repo_id,
@@ -612,43 +861,70 @@ def main() -> None:
         use_amp=args.use_amp,
         rename_map=rename_map,
     )
+    if pb.device.type != args.device.split(":", maxsplit=1)[0].lower():
+        raise EvaluationContractError(
+            f"requested policy device {args.device!r}, but loader selected {str(pb.device)!r}"
+        )
 
-    video_dir = resolve_cli_path(args.video_dir, default=EVAL_VIDEOS_DIR / repo_name)
+    randomizer = EnvRandomizer(
+        bundle,
+        RandomizationConfig(
+            pos_jitter=args.jitter,
+            randomize_pick=False,
+            seed=args.seed,
+            dr=runtime_dr,
+        ),
+    )
 
     results = evaluate_policy(
         bundle, pb,
         episodes=args.episodes,
         seed=args.seed,
         max_seconds=args.max_seconds,
+        dwell_seconds=args.dwell_seconds,
         pick=args.pick,
         place=args.place,
         tol=args.tol,
         no_task=args.no_task,
         jitter=args.jitter,
         balanced=args.balanced,
+        randomizer=randomizer,
         save_video=args.save_video,
         video_dir=video_dir,
+        label=args.condition_name,
+        protocol=protocol,
     )
     if args.save_video:
         print(f"[eval] rollout videos -> {video_dir}")
 
-    if args.results_out != "none":
-        label = checkpoint_label(str(policy_path))
-        out = resolve_cli_path(
-            args.results_out,
-            default=EVAL_RESULTS_DIR / repo_name / f"{label}.json",
-        )
-        results["meta"] = {
-            "policy_path": str(policy_path),
-            "policy_type": pb.policy_type,
-            "checkpoint": label,
-            "repo_id": args.repo_id,
-            "dataset_root": str(dataset_root),
-            "device": str(pb.device),
-            "balanced": args.balanced,
-            "timestamp": datetime.now().isoformat(timespec="seconds"),
+    if results_out is not None:
+        protocol["observation"] = {
+            "state_key": STATE_KEY,
+            "image_keys": list(dataset_evidence["image_shapes"]),
+            "image_shapes": dataset_evidence["image_shapes"],
+            "third_person_is_policy_input": False,
+            "camera_rename": checkpoint_evidence["rename_map"],
         }
-        write_results(results, out)
+        report = build_evaluation_report(
+            generated_at=datetime.now().astimezone().isoformat(timespec="seconds"),
+            environment=_environment_evidence(args, pb),
+            dataset=dataset_evidence,
+            checkpoint=checkpoint_evidence,
+            protocol=protocol,
+            condition=condition,
+            episode_rows=results["episodes_detail"],
+            outputs={
+                "results": str(results_out),
+                "video_dir": str(video_dir) if args.save_video else None,
+                "log": None,
+            },
+            limitations=(
+                "The Wilson interval covers finite-sample uncertainty under this protocol only.",
+                "This simulation run does not establish physical-robot performance.",
+                f"These {args.episodes} episodes are an integration run, not a stable performance ranking.",
+            ),
+        )
+        write_results(report, results_out)
 
 
 if __name__ == "__main__":
