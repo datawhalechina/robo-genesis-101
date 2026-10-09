@@ -68,8 +68,8 @@ from .evaluation_contract import (
     build_evaluation_report,
     dwell_frame_count,
     git_identity,
+    normalize_policy_action,
     require_requested_device,
-    validate_action_vector,
     validate_evaluation_protocol,
     validate_output_targets,
 )
@@ -119,7 +119,7 @@ class PolicyBundle:
             robot_type="franka",
         )
         raw_action = action.detach().cpu().numpy()
-        values = validate_action_vector(raw_action)
+        values = normalize_policy_action(raw_action)
         return np.asarray(values, dtype=np.float32)
 
 

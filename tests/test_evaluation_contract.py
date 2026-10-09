@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from robo_genesis.evaluation_contract import (
@@ -14,6 +15,7 @@ from robo_genesis.evaluation_contract import (
     dwell_frame_count,
     evaluate_predicate_trace,
     paired_outcome_changes,
+    normalize_policy_action,
     require_requested_device,
     summarize_episode_rows,
     validate_action_vector,
@@ -159,6 +161,20 @@ def test_action_validation_rejects_wrong_shape_non_numeric_and_non_finite() -> N
         validate_action_vector([0.0] * 8 + [float("nan")])
     with pytest.raises(EvaluationContractError, match="finite"):
         validate_action_vector([0.0] * 8 + ["joint"])
+
+
+def test_policy_action_normalization_only_removes_one_singleton_batch_axis() -> None:
+    flat = np.arange(9, dtype=np.float32)
+    batched = flat[np.newaxis, :]
+
+    assert normalize_policy_action(flat) == tuple(float(value) for value in flat)
+    assert normalize_policy_action(batched) == tuple(float(value) for value in flat)
+
+    for wrong_shape in (np.zeros((2, 9)), np.zeros((3, 3))):
+        with pytest.raises(EvaluationContractError, match="policy action shape"):
+            normalize_policy_action(wrong_shape)
+    with pytest.raises(EvaluationContractError, match="finite"):
+        normalize_policy_action(np.asarray([[0.0] * 8 + [float("nan")]]))
 
 
 def test_dataset_audit_checks_the_course_feature_contract(tmp_path: Path) -> None:

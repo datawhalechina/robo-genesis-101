@@ -178,6 +178,24 @@ def validate_action_vector(action: object, *, expected_dim: int = EXPECTED_ACTIO
     return tuple(normalized)
 
 
+def normalize_policy_action(
+    action: object, *, expected_dim: int = EXPECTED_ACTION_DIM
+) -> tuple[float, ...]:
+    """Remove one explicit policy batch axis, then validate one controller action."""
+    dimension = _positive_int("expected_dim", expected_dim)
+    shape = getattr(action, "shape", None)
+    if shape is not None:
+        action_shape = tuple(shape)
+        if action_shape == (1, dimension):
+            action = action[0]  # type: ignore[index]
+        elif action_shape != (dimension,):
+            raise EvaluationContractError(
+                f"policy action shape must be ({dimension},) or (1, {dimension}), "
+                f"got {action_shape!r}"
+            )
+    return validate_action_vector(action, expected_dim=dimension)
+
+
 def classify_condition(
     *,
     is_reference: bool,
@@ -678,6 +696,7 @@ __all__ = [
     "require_requested_device",
     "summarize_episode_rows",
     "validate_action_vector",
+    "normalize_policy_action",
     "validate_evaluation_protocol",
     "validate_evaluation_report",
     "validate_output_root",

@@ -301,6 +301,39 @@ def _processor_state_files(value: object) -> tuple[str, ...]:
     return tuple(sorted(found))
 
 
+def _huggingface_blob_root(checkpoint_root: Path) -> Path | None:
+    """Return the blob directory for a standard Hub cache snapshot path."""
+    for candidate in (checkpoint_root, *checkpoint_root.parents):
+        if (
+            candidate.parent.name == "snapshots"
+            and _COMMIT_PATTERN.fullmatch(candidate.name)
+        ):
+            blob_root = candidate.parent.parent / "blobs"
+            return blob_root.resolve() if blob_root.is_dir() else None
+    return None
+
+
+def _resolve_processor_state_file(root: Path, name: str) -> Path:
+    """Resolve a processor file without rejecting Hub cache blob symlinks."""
+    relative = Path(name)
+    if relative.is_absolute() or ".." in relative.parts:
+        raise ValueError(f"Processor state file escapes the checkpoint directory: {name}")
+
+    logical_path = root / relative
+    resolved = logical_path.resolve()
+    if resolved.is_relative_to(root):
+        return resolved
+
+    blob_root = _huggingface_blob_root(root)
+    if (
+        logical_path.is_symlink()
+        and blob_root is not None
+        and resolved.is_relative_to(blob_root)
+    ):
+        return resolved
+    raise ValueError(f"Processor state file escapes the checkpoint directory: {name}")
+
+
 def audit_checkpoint(
     pretrained_model: str | Path,
     *,
@@ -347,9 +380,7 @@ def audit_checkpoint(
         set(_processor_state_files(preprocessor)) | set(_processor_state_files(postprocessor))
     )
     for name in state_files:
-        path = (root / name).resolve()
-        if not path.is_relative_to(root):
-            raise ValueError(f"Processor state file escapes the checkpoint directory: {name}")
+        path = _resolve_processor_state_file(root, name)
         if not path.is_file() or path.stat().st_size <= 0:
             raise ValueError(f"Processor state file is missing or empty: {path}")
 

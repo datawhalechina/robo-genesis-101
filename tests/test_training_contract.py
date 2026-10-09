@@ -184,3 +184,53 @@ def test_checkpoint_audit_uses_numeric_directory_and_processor_state(tmp_path: P
     assert evidence["action_dim"] == 9
     assert evidence["rename_map"] == SMOLVLA_CAMERA_RENAME
     assert evidence["processor_state_files"] == ["normalizer.safetensors"]
+
+
+def test_checkpoint_audit_accepts_only_huggingface_blob_symlinks(
+    tmp_path: Path,
+) -> None:
+    cache_root = tmp_path / "models--example--policy"
+    model = cache_root / "snapshots" / ("a" * 40)
+    blob_root = cache_root / "blobs"
+    model.mkdir(parents=True)
+    blob_root.mkdir()
+    (model / "config.json").write_text(
+        json.dumps(
+            {
+                "type": "smolvla",
+                "chunk_size": 50,
+                "n_action_steps": 10,
+                "output_features": {"action": {"shape": [9]}},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (model / "train_config.json").write_text(
+        json.dumps(
+            {
+                "dataset": {"repo_id": "local/example", "root": "/tmp/example"},
+                "rename_map": SMOLVLA_CAMERA_RENAME,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (model / "model.safetensors").write_bytes(b"weights")
+    (model / "policy_preprocessor.json").write_text(
+        json.dumps({"steps": [{"state_file": "normalizer.safetensors"}]}),
+        encoding="utf-8",
+    )
+    (model / "policy_postprocessor.json").write_text("{}", encoding="utf-8")
+    blob = blob_root / "normalizer-blob"
+    blob.write_bytes(b"state")
+    state_file = model / "normalizer.safetensors"
+    state_file.symlink_to("../../blobs/normalizer-blob")
+
+    evidence = audit_checkpoint(model, expected_policy_type="smolvla")
+    assert evidence["processor_state_files"] == ["normalizer.safetensors"]
+
+    outside = tmp_path / "outside.safetensors"
+    outside.write_bytes(b"not a Hub blob")
+    state_file.unlink()
+    state_file.symlink_to(outside)
+    with pytest.raises(ValueError, match="escapes the checkpoint directory"):
+        audit_checkpoint(model, expected_policy_type="smolvla")

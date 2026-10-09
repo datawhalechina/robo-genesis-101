@@ -5,16 +5,17 @@ locale: en
 title: "Closed-Loop Evaluation and Capstone"
 duration_minutes: 120
 hardware: gpu-required
-status: planned
+status: gpu-verified
 ---
 
 # L13 · Closed-Loop Evaluation and Capstone
 
-> **Course status:** `planned`. This lecture defines the evaluation mechanism and
-> evidence contract. The companion notebook, the final evaluation-report contract,
-> and the complete GPU-plus-rendering run have not yet been accepted. Commands on
-> this page show the current project interfaces; they are not evidence that an L13
-> experiment has already run.
+> **Course status:** `gpu-verified`. The core single-checkpoint closed-loop path has
+> passed bilingual diagnostics, matched Reference/shifted rollouts on a reference
+> R9700 with AMD+EGL, and H.264 video and report evidence audit. This status verifies
+> the evaluation and evidence contract in the recorded environment; it does not
+> establish a stable success rate, OOD robustness, sim-to-real transfer, or the
+> optional multi-checkpoint sweep.
 
 ## Where this lesson fits
 
@@ -246,11 +247,12 @@ the evaluator may hold the last action and record a short cosmetic tail so the
 resting object is visible. Those extra frames do not alter the result or policy
 step count.
 
-::: warning Planned execution gate
-Formal L13 evidence requires the consecutive-dwell rule, including the timeout
-boundary, to pass the companion lab's contract tests. While this lesson remains
-`planned`, do not publish a success rate from an unchecked local evaluator as a
-verified course result.
+::: tip Accepted execution gate
+The consecutive-dwell rule, including the timeout boundary, has passed contract
+tests and reference R9700 AMD+EGL closed-loop runs. `gpu-verified` covers the
+evaluator and evidence contract in the recorded environment; local results from
+other checkpoints, seeds, conditions, or platforms do not automatically become
+course-verified success rates.
 :::
 
 ### Failure and infrastructure error are not the same event
@@ -478,6 +480,21 @@ one checkpoint + one dataset contract + one frozen condition
     → episode rows + aggregate statistics + rollout videos
 ```
 
+The companion notebook mirrors this evidence order as seven numbered steps.
+Steps 1–3 audit the environment, dataset, and checkpoint source, freeze the
+protocol, and predeclare the comparison without starting Genesis. Step 1 prefers
+the configured local dataset; when it is absent, the notebook downloads only the
+pinned dataset's `meta/**` files because evaluation reads no training episodes or
+videos. A remote checkpoint is marked `DEFERRED`; Step 4 downloads and audits it
+before performing the five-episode Reference action. Step 5 audits the rows and
+videos. Learners who continue the Capstone then run Step 6 for the matched
+held-out comparison and Step 7 for the scoped report. Every experiment choice is
+visible in the configuration cell, and running an evaluation cell starts it.
+Step 7 is a local two-pass interaction: run it once to generate an evidence card
+and result-specific sentence stems, fill the three `CAPSTONE_CONCLUSION` fields
+next to that evidence, then rerun only Step 7 to write the report. It does not
+repeat either rollout condition.
+
 This run asks whether one specific checkpoint can execute the declared task under
 one declared condition. It is not yet a checkpoint sweep or a Reference/Shifted
 comparison. Each group of command-line options fixes part of the protocol:
@@ -527,13 +544,13 @@ On ROCm PyTorch, `--device cuda` selects the shared PyTorch device API; verify
 that the printed hardware is the intended AMD GPU and that HIP is present. A
 silent CPU fallback does not satisfy this lesson's GPU-required path.
 
-::: warning Current interface boundary
+::: tip Verified core interface
 The current CLI recovers dataset FPS and image features from metadata and
 recovers a saved SmolVLA camera rename when available. It writes per-episode
-details, counts, a Wilson interval, and videos. While the lesson remains
-`planned`, preserve the full command and environment separately: the accepted
-Capstone report schema and all preflight checks are not yet a verified public
-interface.
+details, counts, a Wilson interval, and videos. This core path, the Capstone
+report schema, and the preflight checks have passed on the reference environment.
+Preserve the full command and environment for reproducibility; other platforms
+and the optional checkpoint sweep remain outside this verification scope.
 :::
 
 ### What this five-episode run can establish
@@ -634,11 +651,21 @@ example, a changed condition cannot be justified as OOD. Without a fixed
 checkpoint identity, another learner cannot reproduce the result. Without live
 rollouts, checkpoint loading cannot become a task-performance claim.
 
-::: warning Checkpoint availability
-No versioned course checkpoint is currently published in this repository. Use
-your own L12 checkpoint unless a release artifact manifest explicitly lists one.
-Do not invent a URL, silently search unrelated outputs, or describe a provided
-checkpoint as self-trained.
+::: tip Pinned default dataset and checkpoint
+When the configured local `datasets/fruit_pick` directory is absent, Step 1 uses
+[`wangxun1010/fruit_pick`](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd)
+at commit `475e8c6ec7079c4c52b20a0221bf959acb541abd`. It downloads only
+`meta/**`: the feature/FPS contract, statistics, tasks, and episode index needed
+by `LeRobotDatasetMetadata`. Training parquet files and videos are not downloaded.
+
+When `CONFIG['checkpoint']` is `None`, the companion notebook uses
+[`wangxun1010/smolvla-fruit-pick-0821`](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221)
+at commit `cdf720f162e6ee86dbc856cdf15c5dcd4a673221`. Its training configuration
+identifies the logical dataset as `genesis/fruit_pick`, matching both the local
+candidate and pinned metadata fallback. The checkpoint download is deferred until
+the learner runs Step 4. Setting `CONFIG['checkpoint']` explicitly replaces the
+model source, and the dataset fields and fallback must be updated when that
+checkpoint used another dataset.
 :::
 
 ### Write the report from the evidence chain
@@ -741,10 +768,11 @@ dwell, and explain why timeout must not promote it to success.
 
 ### One-factor condition exercise
 
-In `l13-condition-plan`, change exactly one domain factor. Use the training
-provenance to label it `unseen in-support`, `shifted`, or `OOD`. State which
-factors remain fixed and why the new range still preserves a valid task. If the
-provenance cannot justify the label, downgrade it to `shifted`.
+Change exactly one domain factor in the configuration cell's
+`CONFIG['held_out']`, then run `l13-condition-plan`. Use the training provenance
+to label it `unseen in-support`, `shifted`, or `OOD`. State which factors remain
+fixed and why the new range still preserves a valid task. If the provenance
+cannot justify the label, downgrade it to `shifted`.
 
 ### Failure-evidence exercise
 
@@ -755,11 +783,17 @@ model-architecture cause from the aggregate rate alone.
 
 ### Capstone conclusion exercise
 
-In `l13-capstone-report`, write three sentences:
+After Step 6, run `l13-capstone-report` once. Read the evidence card and the
+sentence stems generated from the actual Reference and held-out results. Then
+fill the three empty fields in `CAPSTONE_CONCLUSION` inside that Step 7 cell:
 
 1. what the current evidence supports;
 2. what it cannot support; and
 3. which next experiment would reduce the most important uncertainty.
+
+Rerun only Step 7 to write the report; the Reference and held-out rollouts are
+not repeated. Use the displayed counts, intervals, and matched outcome changes
+rather than inventing an explanation that the evidence does not contain.
 
 The next experiment should change one justified factor or increase a
 predeclared episode budget. “Train longer” without a diagnosed boundary is not
@@ -799,6 +833,10 @@ an evidence-based recommendation.
 - [Genesis World documentation](https://genesis-world.readthedocs.io/en/latest/)
   and [Genesis World 1.3.3 on PyPI](https://pypi.org/project/genesis-world/1.3.3/)
   — simulator documentation and the exact course version.
+- [Pinned SmolVLA fruit-pick checkpoint](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221)
+  — the default L13 artifact when the learner does not provide a checkpoint.
+- [Pinned fruit-pick dataset](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd)
+  — the metadata fallback when the matching local dataset is absent.
 - [RoboGenesis 101 task predicate](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/grasp_demo.py),
   [single-checkpoint evaluator](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_policy.py),
   [checkpoint sweep](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_sweep.py),

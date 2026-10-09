@@ -258,7 +258,7 @@
         "zh": "docs/zh/lessons/l13-closed-loop-evaluation-and-capstone.md",
         "en": "docs/en/lessons/l13-closed-loop-evaluation-and-capstone.md"
       },
-      "status": "planned"
+      "status": "gpu-verified"
     }
   ]
 }

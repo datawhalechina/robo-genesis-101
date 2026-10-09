@@ -32,7 +32,9 @@ features:
 > L12 训练内容也已通过 ACT、SmolVLA GPU smoke、checkpoint 审计和重载验证，状态为
 > `gpu-verified`。L10 已通过双语 CPU-only 数据读取与检查路径，状态为 `cpu-verified`。
 > L11 已通过双语诊断、CPU+EGL 和参考 R9700 AMD+EGL 的 bounded DR 录制、回读与
-> provenance 验证，状态为 `gpu-verified`。L13 仍为 `planned`。
+> provenance 验证，状态为 `gpu-verified`。L13 已通过双语诊断、参考 R9700 AMD+EGL 单
+> checkpoint 闭环评估、matched reference/shifted rollout、H.264 视频与报告证据审计，状态为
+> `gpu-verified`；这不表示已经证明稳定成功率、OOD 鲁棒性或 sim-to-real。
 
 | 讲次 | 主题 | 预计时长 | 硬件 | 状态 |
 |---|---|---:|---|---|
@@ -48,4 +50,4 @@ features:
 | L10 | [数据集解剖与模仿学习 101](/zh/lessons/l10-dataset-anatomy-and-imitation-learning) | 90 分钟 | `gpu-recommended` | `cpu-verified` |
 | L11 | [域随机化](/zh/lessons/l11-domain-randomization) | 90 分钟 | `gpu-recommended` | `gpu-verified` |
 | L12 | [ACT 与 SmolVLA 策略训练](/zh/lessons/l12-act-and-smolvla-policy-training) | 150 分钟 | `gpu-required` | `gpu-verified` |
-| L13 | [闭环评估与 Capstone](/zh/lessons/l13-closed-loop-evaluation-and-capstone) | 120 分钟 | `gpu-required` | `planned` |
+| L13 | [闭环评估与 Capstone](/zh/lessons/l13-closed-loop-evaluation-and-capstone) | 120 分钟 | `gpu-required` | `gpu-verified` |

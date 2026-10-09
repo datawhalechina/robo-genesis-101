@@ -14,6 +14,7 @@ dependencies = [
     "av==15.1.0",
     "genesis-world==1.3.3",
     "ipykernel>=6.29,<7",
+    "ipywidgets>=8.1,<9",
     "jupyterlab>=4.4,<5",
     "llvmlite==0.48.0",
     "matplotlib==3.11.1",
@@ -35,6 +36,7 @@ data = [
 ]
 training = [
     "accelerate==1.14.0",
+    "huggingface-hub==1.29.0",
     "lerobot[smolvla,training]==0.6.0",
     "num2words==0.5.14",
     "pyarrow==25.0.0",

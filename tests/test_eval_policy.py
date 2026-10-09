@@ -63,7 +63,7 @@ def test_eval_policy_records_versioned_report_and_termination_reasons() -> None:
     assert "build_evaluation_report(" in source
     assert '"termination_reason": "diverged"' in source
     assert 'result.termination_reason' in source
-    assert "validate_action_vector(raw_action)" in source
+    assert "normalize_policy_action(raw_action)" in source
     assert "audit_checkpoint(policy_path" in source
     assert "auto-falls back if unavailable" not in source
 

@@ -5,14 +5,15 @@ locale: zh
 title: "闭环评估与 Capstone"
 duration_minutes: 120
 hardware: gpu-required
-status: planned
+status: gpu-verified
 ---
 
 # L13 · 闭环评估与 Capstone
 
-> **课程状态：**`planned`。本讲先给出评估机制和证据规范。配套 notebook、最终评估报告
-> 规范以及完整的 GPU 加渲染运行尚未通过验收。本页命令展示的是项目当前接口，不能据此认定
-> L13 实验已经实际运行。
+> **课程状态：**`gpu-verified`。核心单 checkpoint 闭环路径已通过双语诊断、参考 R9700
+> AMD+EGL 的 matched Reference/shifted rollout、H.264 视频与报告证据审计。该状态只验证记录
+> 环境中的评估与证据合同，不表示已经证明稳定成功率、OOD 鲁棒性、sim-to-real 或可选的多
+> checkpoint sweep。
 
 ## 本讲在课程中的位置
 
@@ -211,9 +212,10 @@ dwell_frames = max(1, ceil(dwell_seconds × policy_fps))
 失败。真正成功后，评估器可以维持最后一个动作并额外录制一小段仅用于观察的结尾，让人看清
 物体是否静止；这些额外帧不会改变回合结果或策略步数。
 
-::: warning 计划中的运行门禁
-L13 的正式证据要求连续 dwell 规则通过配套实验的合同测试，其中包括超时边界。在本讲仍为
-`planned` 时，不要把未经检查的本地评估器结果发布成已经验证的课程成功率。
+::: tip 已验收的运行门禁
+连续 dwell 规则及其超时边界已经通过合同测试和参考 R9700 AMD+EGL 闭环运行。`gpu-verified`
+只覆盖记录环境中的评估器与证据合同；其他 checkpoint、seed、条件或平台上的本地结果不能自动
+当作课程已验证成功率。
 :::
 
 ### 策略失败与基础设施错误不是同一类事件
@@ -407,6 +409,16 @@ H.264 文件通常更容易播放，同时要求帧的宽高为偶数。文件�
     → 逐回合记录 + 汇总统计 + rollout 视频
 ```
 
+配套 notebook 按照这条证据顺序提供 7 个编号步骤。第 1–3 步审计运行环境、数据集和 checkpoint
+来源，冻结协议并预先声明比较条件，全程不会启动 Genesis。第 1 步优先使用配置的本地数据集；
+本地目录不存在时，只下载固定 dataset 的 `meta/**`，因为评估不读取训练 episodes 或视频。远端
+checkpoint 会标记为 `DEFERRED`；第 4 步先下载并审计它，再执行 5 回合参考条件评估。第 5 步
+审计逐回合记录与视频；希望继续 Capstone 的学习者再运行第 6 步完成 matched held-out 比较，并
+运行第 7 步生成结论范围明确的报告。每项实验选择都直接出现在配置单元中，运行评估 cell 本身
+就是启动它的动作。第 7 步采用局部的两次运行流程：先运行一次，根据实际结果生成 evidence
+card 和对应的句式提示；在这些证据旁填写三个 `CAPSTONE_CONCLUSION` 字段；然后只重跑第 7
+步来写出报告，不会重复两个条件的 rollout。
+
 这次运行要回答的是：某一个明确的 checkpoint 能否在一个明确条件下执行指定任务。它还不是
 checkpoint sweep，也不是参考/偏移条件比较。每组命令行参数都会冻结协议的一部分：
 
@@ -452,11 +464,11 @@ checkpoint，依据数据集合同构造实时观测，运行反馈回路，并�
 在 ROCm PyTorch 中，`--device cuda` 使用 PyTorch 共享的设备 API；请核对输出的硬件确实是
 预期的 AMD GPU，并且 HIP 可用。静默回退 CPU 不满足本讲的 GPU-required 路径。
 
-::: warning 当前接口边界
+::: tip 已验证的核心接口
 当前 CLI 能从 metadata 恢复数据集 FPS 和图像特征，也会在可用时恢复已保存的 SmolVLA 相机
-重命名；它会输出逐回合明细、计数、Wilson 置信区间和视频。本讲仍为 `planned`，因此请另行
-保留完整命令和环境信息：最终通过验收的 Capstone 报告 schema 和全部运行前检查还不是已验证的
-公开接口。
+重命名；它会输出逐回合明细、计数、Wilson 置信区间和视频。这条核心路径、Capstone report
+schema 与运行前检查已在参考环境通过验收。仍应保存完整命令和环境信息；其他平台与可选
+checkpoint sweep 不在该验证范围内。
 :::
 
 ### 这次 5 回合运行能够证明什么？
@@ -545,10 +557,19 @@ Capstone 从一个策略问题开始，而不是从一份命令检查清单开�
 论证为 OOD；checkpoint 身份不固定，其他学习者便无法复现结果；没有实时 rollout，checkpoint
 能够加载也不能升级成任务性能结论。
 
-::: warning Checkpoint 可用性
-本仓库目前没有发布带版本的课程 checkpoint。请使用自己在 L12 训练的 checkpoint，除非 release
-artifact manifest 明确列出了其他选择。不要虚构 URL、静默搜索无关输出，或把提供的 checkpoint
-说成自己训练所得。
+::: tip 固定 revision 的默认数据集与 checkpoint
+如果配置的本地 `datasets/fruit_pick` 目录不存在，第 1 步会使用 commit
+`475e8c6ec7079c4c52b20a0221bf959acb541abd` 上的
+[`wangxun1010/fruit_pick`](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd)。
+它只下载 `meta/**`，包括 `LeRobotDatasetMetadata` 所需的 feature/FPS 合同、统计量、任务表和
+episode 索引；不会下载训练 parquet 或视频。
+
+当 `CONFIG['checkpoint']` 为 `None` 时，配套 notebook 使用 commit
+`cdf720f162e6ee86dbc856cdf15c5dcd4a673221` 上的
+[`wangxun1010/smolvla-fruit-pick-0821`](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221)。
+它的训练配置声明逻辑数据集身份为 `genesis/fruit_pick`，与本地候选路径和固定 metadata fallback
+一致。只有学习者运行第 4 步后才会下载 checkpoint。显式填写 `CONFIG['checkpoint']` 会替换模型
+来源；如果该 checkpoint 使用了另一份数据集，也必须同步更新数据集字段和 fallback。
 :::
 
 ### 沿证据链撰写报告
@@ -635,9 +656,9 @@ preflight、audit、rollout 和 report cells 中收集完整版本字段、特�
 
 ### 单因素条件练习
 
-在 `l13-condition-plan` 中只改变一个 domain 因素。依据训练 provenance，把它标记为
-`unseen in-support`、`shifted` 或 `OOD`，说明哪些因素保持不变，以及新范围为何仍能维持一个
-有效任务。如果 provenance 不能支持所选标签，就把它降级为 `shifted`。
+只修改配置单元中的 `CONFIG['held_out']`，然后运行 `l13-condition-plan`。依据训练 provenance，
+把它标记为 `unseen in-support`、`shifted` 或 `OOD`，说明哪些因素保持不变，以及新范围为何仍能
+维持一个有效任务。如果 provenance 不能支持所选标签，就把它降级为 `shifted`。
 
 ### 失败证据练习
 
@@ -647,11 +668,15 @@ preflight、audit、rollout 和 report cells 中收集完整版本字段、特�
 
 ### Capstone 结论练习
 
-在 `l13-capstone-report` 中写三句话：
+完成第 6 步后，先运行一次 `l13-capstone-report`。阅读根据实际 Reference 和 held-out 结果生成
+的 evidence card 与句式提示，然后在第 7 步 cell 内填写 `CAPSTONE_CONCLUSION` 的三个空字段：
 
 1. 当前证据能支持什么；
 2. 当前证据不能支持什么；
 3. 下一项什么实验能减少最重要的不确定性。
+
+只重跑第 7 步即可写出报告；Reference 和 held-out rollout 不会重复执行。结论应引用显示出的
+计数、区间和 matched outcome change，不能补写证据中不存在的原因。
 
 下一项实验应该只改变一个有依据的因素，或增加预先声明的回合预算。没有先诊断边界就笼统地说
 “训练更久”，并不是基于证据的建议。
@@ -687,6 +712,10 @@ preflight、audit、rollout 和 report cells 中收集完整版本字段、特�
 - [Genesis World 文档](https://genesis-world.readthedocs.io/en/latest/)与
   [Genesis World 1.3.3 on PyPI](https://pypi.org/project/genesis-world/1.3.3/)——仿真器文档和课程使用的
   确切版本。
+- [固定 revision 的 SmolVLA fruit-pick checkpoint](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221)——
+  学习者未指定 checkpoint 时，L13 使用的默认 artifact。
+- [固定 revision 的 fruit-pick 数据集](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd)——
+  匹配的本地数据集不存在时使用的 metadata fallback。
 - [RoboGenesis 101 任务判据](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/grasp_demo.py)、
   [单 checkpoint 评估器](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_policy.py)、
   [checkpoint sweep](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_sweep.py) 和

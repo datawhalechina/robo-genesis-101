@@ -12,7 +12,11 @@
 > smoke, checkpoint audit, and reload checks. L10 is `cpu-verified` after its
 > bilingual CPU-only data-readback and inspection paths passed. L11 is `gpu-verified`
 > after its bilingual diagnostics, CPU+EGL path, and bounded-DR recording, readback,
-> and provenance path on a reference R9700 passed. L13 remains `planned`.
+> and provenance path on a reference R9700 passed. L13 is `gpu-verified` after its
+> bilingual diagnostics, single-checkpoint closed-loop evaluation on a reference
+> R9700 with AMD+EGL, matched Reference/shifted rollouts, and H.264 video and report
+> evidence audit passed. This does not establish a stable success rate, OOD
+> robustness, or sim-to-real transfer.
 
 RoboGenesis 101 is a Datawhale open-source course for learners with basic Python experience who want a structured, hands-on introduction to robot learning. Using Genesis as its simulation platform, the course connects environment diagnostics, scenes, and rigid-body physics with robot control, inverse kinematics, grasping, demonstration data, imitation learning, policy training, and closed-loop evaluation.
 
@@ -64,7 +68,7 @@ Training loss or open-loop action prediction is not treated as task success. The
 | L10 | [Dataset Anatomy and Imitation Learning 101](docs/en/lessons/l10-dataset-anatomy-and-imitation-learning.md) | 90 min | `gpu-recommended` | `cpu-verified` |
 | L11 | [Domain Randomization](docs/en/lessons/l11-domain-randomization.md) | 90 min | `gpu-recommended` | `gpu-verified` |
 | L12 | [Training ACT and SmolVLA Policies](docs/en/lessons/l12-act-and-smolvla-policy-training.md) | 150 min | `gpu-required` | `gpu-verified` |
-| L13 | [Closed-Loop Evaluation and Capstone](docs/en/lessons/l13-closed-loop-evaluation-and-capstone.md) | 120 min | `gpu-required` | `planned` |
+| L13 | [Closed-Loop Evaluation and Capstone](docs/en/lessons/l13-closed-loop-evaluation-and-capstone.md) | 120 min | `gpu-required` | `gpu-verified` |
 
 Statuses progress from `planned` to `draft`, `reviewed`, `cpu-verified` or
 `gpu-verified`, and finally `published`. See the [course content guide](CONTENT_GUIDE.md) for the evidence required at each stage.
