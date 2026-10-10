@@ -1,6 +1,6 @@
 # RoboGenesis 101 当前工作交接
 
-最后核对日期：2026-09-16（Asia/Shanghai）。
+最后核对日期：2026-10-10（Asia/Shanghai）。
 
 本文件只记录新 thread 最容易遗漏的当前状态、近期验收结论、项目负责人偏好、未决事项和
 恢复顺序。通用协作规则以根目录 `AGENTS.md` 为准；课程总状态与步骤门禁以本地
@@ -9,185 +9,240 @@
 
 ## 1. 一句话恢复状态
 
-- L03–L11 的逐讲开发步骤均已完成并通过项目负责人验收；L01、L02 与 L12 也已有各自
-  已验收实现和状态。
-- L11 已于 2026-09-15 完成 `M3.L11.1`–`M3.L11.6` 全部验收，公开状态为
-  `gpu-verified`。
-- L13 尚未开始；当前唯一课程开发下一步是等待项目负责人明确说“开始 `M3.L13.1`”。
-  不要因为骨架已存在、L11 已验收或新 thread 已建立而自动开始。
-- L13 启动后先完成 `.1`：来源与现有实现审计、教学边界、学习目标、讲义/视觉结构、
-  notebook 合同和 `.2`–`.6` 验收门禁。不要直接扩写讲义/notebook，也不要提前改变
-  L13 的 `planned` 状态。
+- M0、M1、M2、M3 已全部完成并通过项目负责人验收。
+- L13 的 `M3.L13.1`–`M3.L13.6` 已全部验收；公开状态为 `gpu-verified`。
+- L13 是 M3 最后一讲。当前没有进行中的课程开发子步骤。
+- M4 尚未开始。只有项目负责人明确说“开始 `M4.1`”后，才进入全课程集成与发布前回归；
+  不要因为 M3 已完成而自动启动 M4。
+- M5 也未开始。L13 已有固定 Hugging Face fallback，不等于 M5 的版本化 artifact 发布、
+  checksum、license/model card、下载工具和 V1 发布流程已经完成。
 
 ## 2. Git 快照与工作树保护
 
 更新本文件前的快照：
 
 - 当前分支：`main`；
-- HEAD、本地 `main`、`origin/main` 与 `origin/HEAD`：
-  `84adc29 new course logo`；
-- 近期课程提交：`0f182e8 verified en/zh notebooks of l11 domain randomization`、
-  `3b931ec update l11 lectures and src tests per notebooks' requirement`、
-  `106aa86 add en/zh notebooks of l11 domain randomization`。
+- HEAD、本地 `main`、`origin/main` 与 `origin/HEAD` 均为
+  `a2441789c7b2693688224cbc550787f327a8d956`；
+- HEAD 标题：`a244178 update COMPATIBILITY doc after l13`；
+- 近期 L13 提交：
+  - `bf9f3ad verified en/zh notebooks of l13 closed loop evaluation`；
+  - `b25f66c add en/zh notebooks of l13 closed loop evaluation`；
+  - `d5617b2 add en/zh lecture of l13 closed loop evaluation`；
+  - `21f951c transfer to datawhalechina org`。
 
-分支和 HEAD 可能在新 thread 启动前继续变化，因此首先重新运行：
+新 thread 首先重新运行：
 
 ```sh
 git status --short --branch
 git log -5 --oneline --decorate
 ```
 
-本次 handoff 更新前，tracked 工作树是 clean；更新后预期只有
-`docs/handoffs/current.md` 是 tracked 修改。下列 untracked 内容在本轮之前已经存在，属于
+本次 handoff 更新前 tracked 工作树为 clean；更新后预期只有
+`docs/handoffs/current.md` 是 tracked 修改。下列 untracked 内容在 handoff 前已经存在，属于
 本地配置、补丁或开发记录，必须保留，不得清理、覆盖或误当成新 thread 生成的垃圾文件：
 
 - `.vscode/`；
 - `0001-4-cards-failure.patch`；
+- `0001-add-en-zh-lecture-of-l13-closed-loop-evaluation.patch`；
 - `0001-rewrite-l09-lectures.patch`；
 - `MIGRATION.md`；
 - `course_development/`；
 - `genesis_公开课体系规划_2ba5d82e.plan.md`；
 - `robo_genesis_101_course_development.plan.md`。
 
-根开发计划和逐课档案位于 untracked 路径，但它们是当前开发状态的重要真相源；不要因为
-`git diff` 不显示其内容变化而忽略或删除。当前 thread 没有执行新的 commit、push 或发布；
-HEAD 的 logo commit 已在本 thread 开始 handoff 前存在并与 `origin/main` 对齐。
+根开发计划和逐课档案位于 untracked 路径，但仍是当前开发状态的重要真相源；不要因为
+`git diff` 不显示其内容变化而忽略或删除。本次 handoff 不创建 commit、不 push、不发布外部
+artifact。
 
 ## 3. 当前公开课程状态
 
 `course.json` 是课程元数据的唯一结构化来源。当前共 13 讲：
 
 - L01–L07、L10：8 个 `cpu-verified`；
-- L08、L09、L11、L12：4 个 `gpu-verified`；
-- L13：1 个 `planned`；
+- L08、L09、L11、L12、L13：5 个 `gpu-verified`；
+- 0 个 `planned`；
 - 0 个 `published`。
 
-L11 的 90 分钟时长、`domain-randomization` slug、双语路径和 `gpu-recommended` hardware
-字段没有因状态晋级而改变。以下来源已一致同步为 `gpu-verified`：
+L13 的 120 分钟时长、`closed-loop-evaluation-and-capstone` slug、双语路径和
+`gpu-required` hardware 没有因状态晋级而改变。以下来源已一致同步为 `gpu-verified`：
 
 - `course.json`；
-- 双语 L11 讲义 frontmatter 与顶部课程状态说明；
-- 双语 L11 notebook metadata、setup assert 和两处分支 final-check contract；
-- 双语 README 与首页；
-- manifest 和 L11 notebook 合同测试。
+- 双语 L13 讲义 frontmatter 与顶部状态说明；
+- 双语 L13 notebook metadata 和 manifest status assert；
+- `README.md`、`README_en.md` 与双语首页；
+- manifest 和 L13 notebook 合同测试。
 
-完整逐步记录见 `course_development/lessons/l11.md`；兼容性与运行证据见
-`COMPATIBILITY.md` 第 22 节，尤其是状态同步后的 22.7 节。
+完整开发与验收历史见 `course_development/lessons/l13.md`；正式闭环运行证据见
+`COMPATIBILITY.md` 第 23 节；公开状态同步和更新后诊断见第 24 节。
 
-## 4. L11 最终实现与证据摘要
+## 4. L13 notebook 的最终教学交互
 
-- 双语 notebook 为 20 cells / 9 code cells，cell type、code-cell ID/source 完全一致，
-  提交版保持 clean output；最终规范化 code SHA-256 为
-  `e361fbc0c22b44b15a8155d3733ca99defefe4eee8b9af9e0cd4427ae5850e9b`。
-- 实验把完整 domain-randomization 范畴作为理论背景，但只实践 bounded 子集：构建期
-  table/object flat color 与 FOV，运行期 shared friction、positive mass ratio 和静态
-  world-camera extrinsics；不把 flat recoloring 称为 texture randomization。
-- `.5` 已通过 EN/ZH CPU `render=0`、English CPU+EGL 与参考 R9700 AMD+EGL；两条完整路径
-  均得到 4 attempts / 4 successes、173 frames、appearance domains `[0,0,1,1]`、双相机
-  H.264 5 FPS `640×360` readback、provenance sidecar 和两种 domain-aware split。
-- `.6` 只更新状态 literal 与公开摘要，没有改变 scene、DR、recorder、schema、视频、
-  readback 或 split 行为。更新后 English CPU 无渲染 clean-kernel 9/9 cells 通过并读取
-  `status=gpu-verified`，未创建 dataset/preview。
-- 证据边界必须保留：没有训练 policy、没有闭环评价或真实机器人实验，也没有证明 DR
-  提升性能、统计显著性或 sim-to-real。正式运行恰好 4/4 成功，因此 selection effect 是
-  已解释并有失败路径合同的风险，不是本轮实测发生的现象。
-- L09 baseline 仍是旧的 `160×120` 输入，L11 DR 数据是 `640×360`。项目负责人决定此前
-  课程的分辨率以后统一处理；不要在启动 L13 时顺带返工 L09。
+双语 notebook 当前均为 18 cells / 8 code cells，cell type、code-cell ID 和 code source
+逐字一致，提交版所有 `outputs` 为空、`execution_count` 为 null。Markdown 自然本地化。
 
-## 5. 项目负责人已明确的教学偏好
+最终主线是一个从上到下的七步流程：
 
-后续 L13 应继续遵循：
+1. 审计环境、dataset 与 checkpoint 来源；
+2. 冻结任务和 success/dwell/timeout 协议；
+3. 预声明 Reference 与单因素 held-out 条件；
+4. 运行五个 Reference closed-loop episodes；
+5. 审计逐 episode rows、汇总统计和代表视频；
+6. 用相同 seeds 运行 matched held-out 条件；
+7. 根据 evidence card 写出结论范围明确的 Capstone report。
 
-- 面向有基础 Python/机器学习知识、但刚接触机器人技术与仿真的学习者；先把机制讲清楚，
-  再进入实现细节。
-- 理论概念可以比 notebook 实践范围更完整；实践只取可控子集没有问题，但必须明确
-  “完整技术范畴”和“本课实际实现”之间的边界。
-- 对 provenance、selection effect、domain-aware split 等抽象内容，要解释“为什么需要它、
-  代码里是否真的实现、学习者如何读结果”，不能只堆术语或字段。
-- 抽象关系适合用课程自制示意图帮助理解；保持图形直观、无歧义，并实际检查细节。
-- notebook 中不易读的 check 应配简明注释；练习必须明确告诉学习者修改哪个 code cell，
-  不能只在结尾留下无落点的题目。
-- 复习问题应挑核心，不要把前文每个细节全部再问一遍；问题必须与学习者当前已完成的
-  实验相匹配。尚未训练 policy 时，不应要求学习者论证“policy 表现提升”。
-- 如果少量 episode/domain 使教学输出难以解读，应适当增加最小 smoke 数量来真正展示
-  差异，同时继续控制运行成本。
-- 讲义示例和 notebook 必须忠实解释当前源码。发现课程说法与实现不一致时，先确认代码
-  是否已有支持；不要把计划中的功能写成已经实现。
-- EN/ZH notebook code cells 必须逐字一致；Markdown 应自然本地化，不做生硬逐句翻译。
-- 相机图像是实验核心数据时，`render=0` 只能作为受限诊断，不能冒充完整视觉实验。
-- 训练 loss、开环动作预测或视频回放不能替代闭环 rollout 与明确的任务成功判据。
+必须保留的交互决策：
 
-## 6. 新课程 logo 的当前状态
+- 不使用 global run mode，不在说明中突兀提及“global run mode”，也不恢复 `mode`、
+  `RUN_REFERENCE`、`RUN_HELD_OUT`、`run_eval` 或其他分支开关。
+- 运行某个评估 cell 本身就是明确的执行动作。Step 4 一定执行 Reference，因此没有额外
+  True/False 开关。
+- 所有学习者需要选择的实验参数都在顶部可见 `CONFIG` 中；子进程环境由 `render`、
+  `gpu_index` 和 `policy_device` 派生，并在 Step 1 runtime summary 中打印，不能藏在模块内部
+  让学习者毫无察觉。
+- Step 1–3 不启动 Genesis。远端 checkpoint 在 Step 1 显示 `DEFERRED`，只有运行 Step 4
+  才下载并审计，然后立即执行 Reference rollout。
+- Step 5 使用 `Video(..., embed=True)`，解决浏览器无法直接播放本地路径视频的问题。
+- Step 7 是局部的两次运行流程：第一次打印 actual-result evidence card 和 scenario-aware
+  sentence stems；学习者在同一个 cell 的 `CAPSTONE_CONCLUSION` 中填写
+  `supported_claim`、`unsupported_claim`、`next_evidence`；然后只重跑 Step 7，rollout 不重复。
+- 三个 Capstone 字段不得重新移回顶部 `CONFIG`。空字段时打印针对性的 `ACTION REQUIRED`，
+  不恢复含义不清的通用 `INCOMPLETE`。
+- checkpoint sweep 只保留为 notebook 末尾的可选终端扩展，不增加新的 notebook 分支。
 
-HEAD `84adc29` 已将站点 logo 从 `/datawhale-logo.png` 切换为原创的
-`/robogenesis-logo.svg`：机器人夹爪托举橙色仿真立方体，外部双向轨迹与节点代表
-数据—训练—评估闭环。
+复用实现位于 `src/robo_genesis/l13_workflow.py`，但 notebook 仍直接展示 CONFIG、冻结协议、
+condition declaration、evidence audit、matched comparison 和结论填写动作，不能退化成黑盒包装器。
 
-- 矢量源：`docs/public/robogenesis-logo.svg`；
-- 400×400 RGBA 导出：`docs/public/robogenesis-logo.png`；
-- VitePress 引用：`docs/.vitepress/config.mts` 的 `themeConfig.logo`；
-- 原 `docs/public/datawhale-logo.png` 仍保留，但不再被站点引用；不要无指令删除；
-- logo 接入后的 `npm run docs:build` 已通过，页面与 SVG 在本地预览中均返回 HTTP 200；
-- 本轮曾启动 VitePress 预览服务供项目负责人查看，handoff 前已停止。新 thread 不应依赖
-  旧端口或后台 session，若需预览应重新运行 `npm run docs:dev -- --host 0.0.0.0`。
+## 5. L13 artifact fallback 与已修复问题
 
-图标已进入 `main`/`origin/main`，不再是未决的候选文件；除非项目负责人提出新反馈，
-不要在 L13 开发中顺带改动 logo。
+最终可见配置允许学习者提供自己的 artifact，也提供固定 revision 的默认输入：
 
-## 7. L13 启动前已知边界
+- checkpoint：`wangxun1010/smolvla-fruit-pick-0821`，revision
+  `cdf720f162e6ee86dbc856cdf15c5dcd4a673221`；
+- dataset metadata：`wangxun1010/fruit_pick`，revision
+  `475e8c6ec7079c4c52b20a0221bf959acb541abd`；
+- `CONFIG['checkpoint'] = None` 时使用可见的 course-default checkpoint；
+- 优先使用 `CONFIG['dataset_root']` 指向的本地 dataset；目录不存在时只下载 pinned dataset
+  的 `meta/**`。评估器读取 dataset contract，不读取训练 episodes 或训练视频；
+- 每次正式重跑应使用新的 `run_name`，因为 evaluator 要求 fresh result/video targets。
 
-L13 当前只有 `planned` 骨架：双语讲义各为 frontmatter 加一句占位说明，双语 notebook
-各为 2 cells（`l13-overview`、`l13-manifest-check`），尚无
-`course_development/lessons/l13.md` 单课档案。
+本轮实际遇到并修复的集成问题：
 
-冻结在根计划中的 L13 主线是：
+- 本地 `datasets/fruit_pick` 缺失时 notebook 原本直接失败，现改为上述 pinned dataset metadata
+  fallback。
+- Hugging Face snapshot 中 processor state 通过 `snapshots/... -> blobs/...` symlink 保存时，
+  旧 audit 错报“escapes checkpoint directory”。`training_contract.py` 现在只接受可验证的
+  Hugging Face cache blob symlink，仍拒绝任意外部 symlink；相关安全回归测试已覆盖。
+- `tqdm` 曾提示 `IProgress not found`，项目现显式依赖 `ipywidgets>=8.1,<9`。
+- Step 5 的非嵌入本地视频在浏览器中无法播放，现使用 `embed=True`。
+- `src/robo_genesis/l13_workflow.py` 不得重新引入 `RG101_L13_*` 隐藏环境变量；现有测试明确
+  禁止该模式。
 
-1. 区分 training loss、open-loop playback 与 closed-loop rollout；
-2. 定义 success criterion、dwell、seed、in-distribution/OOD 分组和评估协议；
-3. 报告 successes / total episodes 与置信区间，不编造成功率；
-4. Capstone 串联环境诊断、数据检查、模型加载、闭环评估和实验报告；
-5. 自训失败的学习者应能使用课程 checkpoint 完成评估。
+## 6. L13 正式证据与结论边界
 
-这些只是现有课程级边界，不是已经验收的 L13 详细设计。`M3.L13.1` 启动后必须审计：
+`M3.L13.5` 已验收的主要任务级证据来自参考 AMD Radeon AI PRO R9700、ROCm、
+`gs.amdgpu` 与 EGL：
 
-- `src/robo_genesis/` 当前 evaluation、scene、checkpoint loader 与 policy adapter 的真实能力；
-- 已验收 L08 success criterion、L09/L11 dataset/provenance 和 L12 checkpoint/data contract；
-- 原始课程对应模块、当前可用 checkpoint/fixture、许可和可复现实验成本；
-- CPU 诊断、GPU smoke、完整闭环路径及无法运行时的诚实降级边界。
+- 20,000-step SmolVLA checkpoint；
+- matched seeds `[1000,1001,1002,1003,1004]`；
+- Reference：4/5，Wilson 95% interval
+  `[0.3755282641185388,0.9637768390302125]`；
+- shifted friction `0.9`：5/5，Wilson 95% interval
+  `[0.5655085052479191,1.0]`；
+- 四个 `unchanged-success`，一个 `failure-to-success`；
+- 十个 H.264/yuv420p、30 FPS、`1920×360` 视频通过解码和人工画面审计；
+- Reference timeout 与 success/shifted success 的末帧和 JSON termination 一致。
 
-不要假设课程 checkpoint、闭环 evaluator、OOD domain 或成功率统计已经存在；先以仓库实际
-实现为准。L13 是当前最后一讲，但 `.1`–`.6` 仍需逐步交付、逐步验收，不能一次性跳到
-发布状态。
+公开的 `gpu-verified` 只证明核心 single-checkpoint closed-loop evaluator 和 evidence contract
+在该记录环境通过，不证明：
 
-## 8. 最近门禁与已知 warning
+- friction shift 因果改善性能或统计显著；
+- 一般鲁棒性或 OOD robustness；
+- 稳定成功率；
+- sim-to-real 或真实机器人表现；
+- 多 checkpoint learning curve；
+- 其他 GPU、操作系统或 viewer 路径。
 
-L11 `.6` 状态同步后的完整门禁：
+训练 dataset 缺少 domain-support sidecar，因此 friction `0.9` 必须继续标为 `shifted`，不能
+称 OOD。checkpoint sweep 在 `.5` 中明确 `SKIP`，不属于核心 blocker，也没有升级为已验证路径。
 
-- course validation：13 lessons、32 localized Markdown files、26 notebooks、37 Python files；
-- pytest：67 passed；
+在最后的交互 review 中，项目负责人还手动运行了最终中文 notebook 并到达 Step 7；当时填写
+内容显示 Reference 5/5、shifted 5/5。为保持课程 notebook clean，这些 output、execution count
+和学习者填写内容随后全部清除。该次交互结果没有完整归档到 `COMPATIBILITY.md`，因此不得替代
+上述正式 4/5 + 5/5 证据；若未来需要引用 5/5 + 5/5，必须重新运行并保存完整 report、视频、
+artifact identity 和环境证据。
+
+## 7. 项目负责人已明确的教学偏好
+
+- 面向有基础 Python/机器学习知识、但刚接触机器人技术与仿真的学习者；先讲清机制，再进入
+  实现细节。
+- notebook 应线性递进，让学习者一眼看出当前在做什么、为什么做、下一步是什么；避免为工程
+  灵活性引入教学上无必要的 modes、flags 和分支。
+- 用户需要决定的配置必须在 notebook 可见；共享模块负责复用和安全边界，但不能隐藏实验选择。
+- 理论概念可以比 notebook 实践范围更完整，但必须明确“完整技术范畴”和“本课实际实现”的
+  边界。
+- 结论填写只能在学习者看到实际 evidence 后出现；句式提示应随结果变化，不能让学习者预先猜
+  应填写什么。
+- 训练 loss、开环动作预测和视频回放不能替代 closed-loop rollout 与明确 success criterion。
+- 小样本结果必须报告 `k/n`、Wilson interval、matched outcomes 和限制；不能把 5 episodes
+  写成稳定 benchmark。
+- EN/ZH notebook code cells 必须逐字一致；Markdown 应自然本地化。
+- 相机图像是核心数据时，`render=0` 只能作为受限诊断，不能冒充完整视觉实验。
+- 发现课程说法与实现不一致时，先核对实际代码和证据；不得把计划功能或未归档结果写成已验证。
+
+## 8. 最近完整门禁与已知 warning
+
+L13 `.6` 状态同步后的门禁：
+
+- clean-kernel diagnostic：English notebook Step 1–3 在独立 Jupyter kernel 完成 4/4 code
+  cells，输出 `status=gpu-verified`、dataset `PASS`、checkpoint `DEFERRED`、
+  `Ready to run Step 4: True`，未启动 Genesis；
+- course validation：13 lessons、32 localized Markdown files、26 notebooks、42 Python files；
+- pytest：95 passed；
 - compileall：通过；
-- `uv lock --check`：解析 235 packages；
+- `uv lock --check`：解析 238 packages；
 - `npm ci`：安装 190 个包并审计 191 个包；
 - 普通与 `EDGEONE=1` 文档构建：通过；
-- EN/ZH notebook parity、clean output、更新后执行副本 source identity、状态残留和
-  `git diff --check`：通过。
+- EN/ZH L13 notebook parity、clean outputs、状态残留扫描和 `git diff --check`：通过。
 
-logo commit 后又单独运行 `npm run docs:build` 并通过，只有既有的 VitePress large-chunk
-warning。最近 `npm ci` 仍报告 11 项既有 advisory（4 low、1 moderate、6 high），没有运行
-`npm audit fix`。Genesis/Franka、Quadrants、NumPy read-only tensor 等 warning 的精确记录
-见 `COMPATIBILITY.md`；它们没有导致 L11 正式路径失败。
+已知但未自动修复的 warning：
 
-## 9. 新 thread 恢复顺序
+- `npm ci` 报告 14 项既有 advisory（4 low、1 moderate、9 high）；没有运行 `npm audit fix`，
+  因为那会改变依赖和锁文件。
+- VitePress build 有既有 large-chunk warning，但两种构建都成功。
+- managed sandbox 内直接启动 Jupyter kernel 可能因 socket 权限报 `Operation not permitted`；
+  `.6` clean-kernel diagnostic 经明确授权在沙箱外启动，只写隔离 `/tmp`。
+- managed sandbox 中默认 uv cache 可能不可写；使用任务专用
+  `UV_CACHE_DIR=/tmp/<task-cache>` 运行 `uv lock --check`。
+
+## 9. 下一步 M4 的边界
+
+M4 是全课程集成与发布前回归，不是继续扩写或重做某一讲。根计划冻结的步骤为：
+
+1. `M4.1`：按 L01→L13 审计先修关系、跨讲链接、练习输入输出和术语首次解释位置；
+2. `M4.2`：核对 EN/ZH 讲义结构、命令、结论、notebook Markdown 与 glossary 一致性；
+3. `M4.3`：按课程顺序执行适用的 CPU clean-kernel notebook、Python 门禁和文档构建；
+4. `M4.4`：在参考 AMD 环境验证指定 GPU notebook，以及数据→训练→checkpoint→闭环评估的
+   纵向接口；
+5. `M4.5`：同步 manifest、README、首页、sidebar、frontmatter、notebook metadata、兼容性
+   记录和真实状态；
+6. `M4.6`：完成 setup、fallback paths、API cheatsheet、instructor guide、引用和第三方许可
+   总审计，形成进入 M5 前的验收材料。
+
+只有项目负责人明确启动后才执行 `M4.1`。M4 发现单讲问题时，应回到对应讲次做范围明确的修复
+和回归，不进行无关重写；每个 M4 子步骤仍需单独交付和验收，不自动前进。
+
+## 10. 新 thread 恢复顺序
 
 1. 完整读取根目录 `AGENTS.md`。
-2. 运行第 2 节的 Git 快照命令，确认是否出现本 handoff 之后的新提交或用户修改。
+2. 运行第 2 节 Git 快照命令，确认 handoff 后是否出现新提交或用户修改。
 3. 完整读取本文件与 `robo_genesis_101_course_development.plan.md`。
-4. 读取 `COMPATIBILITY.md` 第 22 节；需要追溯教学决策时读取
-   `course_development/lessons/l11.md`，不要重复执行已经验收的 L11 工作。
-5. 核对 `course.json` 当前仍为 8/4/1/0，L11=`gpu-verified`、L13=`planned`。
-6. 若项目负责人明确启动 `M3.L13.1`，先做第 7 节所列审计并创建
-   `course_development/lessons/l13.md`；否则只报告当前状态，不自动开始。
+4. 核对 `course.json` 当前状态统计为 8 个 `cpu-verified`、5 个 `gpu-verified`、0 个
+   `planned`、0 个 `published`。
+5. 若任务涉及 L13，读取 `course_development/lessons/l13.md` 和 `COMPATIBILITY.md`
+   第 23–24 节；不要重复已经验收的 GPU rollout 或把已清理的手动 5/5 output 当成正式证据。
+6. 若项目负责人明确说“开始 `M4.1`”，先按第 9 节和根计划建立 M4 审计范围；否则只报告当前
+   状态，不自动开始 M4。
 
-持续适用的协作边界：每个子步骤完成后单独等待项目负责人验收，不自动开始下一步；
-`docs/handoffs/current.md` 只在项目负责人准备切换 thread 时更新；不创建 commit、不 push、
-不发布外部 artifact，除非项目负责人明确要求。
+持续适用的协作边界：每个子步骤完成后单独等待项目负责人验收，不自动开始下一步；不创建
+commit、不 push、不发布外部 artifact，除非项目负责人明确要求。
