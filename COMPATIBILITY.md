@@ -1730,3 +1730,244 @@ files、26 notebooks、37 Python files），pytest 67 passed，compileall 通过
 因此第 22.1–22.6 节已验收的 CPU+EGL、R9700 AMD+EGL、失败路径和人工视觉证据继续适用。
 以上证据支持 L11 当前公开状态为 `gpu-verified`。`M3.L11.6` 已于 2026-09-15 通过项目负责人
 验收；L11 六个子步骤至此全部完成并验收，未开始 L13。
+
+## 23. L13 / M3.L13.5 闭环评估正式运行证据
+
+> 日期：2026-10-08 至 2026-10-09（Asia/Shanghai）
+> 范围：L13 双语无 checkpoint 诊断、失败路径、ACT 5+5 reference/shifted 闭环、
+> SmolVLA 单 episode 跨策略验证，以及 20,000-step SmolVLA checkpoint 的 5+5 matched
+> reference/shifted 闭环、H.264 视频与报告人工检查。L13 的公开状态在本步继续为 `planned`；
+> 状态候选只在 `.6` 单独同步。
+
+### 23.1 环境、数据与 checkpoint identity
+
+正式路径使用仓库 `.venv`：Python 3.12.3、Genesis 1.3.3、LeRobot 0.6.0，以及 PyTorch
+`2.9.1+rocm7.2.1.gitff65f5bc` / HIP `7.2.53211-e1a6bc5663`。进程显式设置
+`ROCR_VISIBLE_DEVICES=0`、`HIP_VISIBLE_DEVICES=0` 和 `CUDA_VISIBLE_DEVICES=0`；PyTorch
+与最终 report 均识别 `AMD Radeon AI PRO R9700`，Genesis 日志实际报告 `gs.amdgpu`，render
+backend 为 EGL，没有 CPU fallback。
+
+只读输入为当前本地 `local/l09_banana_demo`：LeRobot `codebase_version=v3.0`、5 FPS、
+2 episodes、85 frames、Franka、9-D state/action，以及 world/wrist 两路 `(120,160,3)` 图像。
+数据没有 domain-provenance sidecar，因此 friction `0.9` 只称为 `shifted`，不声称 OOD。
+
+本轮在隔离的 `/tmp/rg101-l13-l5.KujzRP/` 下重新生成两个 1-step、seed 1000、训练数据身份
+完整的 pipeline-only checkpoint：
+
+- ACT：loss `25.361`、gradient norm `239.626`、单次 update `0.929 s`、观察到的显存
+  `0.36 GB`、权重 `45,384,956` bytes，chunk/action steps 为 `10/10`；
+- SmolVLA：loss `11.850`、gradient norm `136.000`、单次 update `1.348 s`、观察到的显存
+  `1.81 GB`、权重 `906,712,520` bytes，chunk/action steps 为 `50/50`。
+
+两者 checkpoint audit 均确认 action dim 9、dataset repo/root、seed 和 processor state；ACT
+camera rename 为空，SmolVLA 把 world/wrist 映射为 camera1/camera2。SmolVLA 复用了本地固定的
+`lerobot/smolvla_base@c83c3163b8ca9b7e67c509fffd9121e66cb96205` 与
+`HuggingFaceTB/SmolVLM2-500M-Video-Instruct@7b375e1b73b11138ff12fe22c8f2822d8fe03467`
+快照，全程离线。以上训练量只生成接口可消费的 checkpoint，不构成任务能力或性能基线。
+
+### 23.2 Clean-kernel、失败路径与运行中修复
+
+EN/ZH notebook 分别由独立 CPU/no-checkpoint kernel 从头执行，执行副本位于本轮 `/tmp`
+隔离目录；两者都完成 diagnostic/preflight，并明确输出 core、Capstone 未完成以及 optional
+sweep 未运行。该分支没有初始化 Genesis、加载模型或启动 evaluator subprocess。
+
+正式运行前逐项验证了八类失败合同：缺失 dataset、缺失 checkpoint、`episodes=0`、policy FPS
+高于 control FPS、wrong-shape action、non-finite action、provenance 不足却声明 OOD，以及
+timeout 前只有一个 true frame 时不能绕过 2-frame dwell。最后一项实际得到 `success=false`、
+`termination_reason=timeout`、3 steps、`max_streak=1`。
+
+首次 ACT 5+5 尝试的十个 episode 都在首个 policy step 准确终止为 `invalid_action`，错误为
+`action shape must be (9,), got (1, 9)`。这暴露出 LeRobot `predict_action()` 保留单例 batch
+轴、而 controller 合同要求 flat vector 的边界缺口；该次 JSON/log/视频作为失败证据保留，
+没有当作完成的闭环 rollout。修复只在 policy boundary 接受精确 `(9,)` 或 `(1,9)`，后者去掉
+一个 batch 轴后再执行既有 finite 9-D 校验；`(2,9)`、`(3,3)` 和 non-finite 仍拒绝，没有使用
+宽泛 flatten。相关 evaluation/evaluator 定向测试为 19 passed。
+
+SmolVLA 首次尝试也作为失败证据保留：模型权重可从绝对快照加载，但临时
+`XDG_CACHE_HOME` 隔离了 repo-ID tokenizer lookup。确认快照内 tokenizer 完整且离线探针得到
+`GPT2Tokenizer` / vocab 49152 后，重跑显式指向既有 Hugging Face cache；没有下载，也没有
+改写 checkpoint 或以代码绕过资源检查。
+
+### 23.3 ACT reference 与 matched shifted 结果
+
+English notebook 使用新输出根目录从头执行，主要 opt-in 为：
+
+```sh
+ROCR_VISIBLE_DEVICES=0 HIP_VISIBLE_DEVICES=0 CUDA_VISIBLE_DEVICES=0 \
+PYOPENGL_PLATFORM=egl HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
+RG101_L13_RUN_EVAL=1 RG101_L13_RUN_CAPSTONE=1 RG101_L13_RUN_SWEEP=0 \
+ROBO_GENESIS_RENDER=1 RG101_L13_DEVICE=cuda \
+RG101_L13_CHANGED_FACTOR=friction_ratio RG101_L13_EVALUATION_RANGE=0.9,0.9 \
+RG101_L13_HELD_OUT_NAME=shifted-friction-0_9 \
+.venv/bin/jupyter nbconvert --execute --to notebook \
+  notebooks/en/l13-closed-loop-evaluation-and-capstone.ipynb
+```
+
+reference 与 shifted 条件都使用 seeds `[1000,1001,1002,1003,1004]`、banana→bowl、15 s、
+5 policy FPS、100 control FPS、0.4 s / 2 policy-frame dwell。两组报告均为 0/5 success、
+5 timeout、0 divergence、0 invalid action，95% Wilson 区间均为
+`[0.0,0.43449149475208104]`。逐 episode 均执行 75 个 policy steps；报告 schema、原始 rows、
+termination counts、per-object counts、matched seeds 与 Wilson 值已独立重算一致。
+
+Capstone 准确把第二条件记录为 `shifted-friction-0_9` / `shifted`，五个配对 outcome 都是
+`unchanged-failure`，没有包装成显著性或鲁棒性结论。最终 notebook 状态为 diagnostic、core
+closed-loop、Capstone 全部 `COMPLETED`；checkpoint sweep 的预算 cell 完成，但因只有本轮一个
+ACT checkpoint 且未显式 opt in，保持 `SKIP` / `NOT RUN`，不冒充 learning curve。
+
+### 23.4 视频编码与人工视觉检查
+
+ACT 两个条件共 10 个视频，均由 `ffprobe` 回读为 H.264、yuv420p、5 FPS、480×120、75 帧；
+宽高为偶数且 OpenCV 可完整解码。每帧横向拼接三幅 160×120 画面。对 reference seed 1000
+完整视频抽取 frame 0、37、74 人工检查：左、中、右依次为 world、wrist、third-person；banana、
+bowl、桌面和机器人颜色/方向合理，机械臂姿态和 wrist 画面从开头到中段、结尾明显变化，证明
+动作实际进入仿真。末帧未完成抓取或放置，与 report 的 timeout/success=false 一致。
+
+视频选择与统计没有互相替代：本轮使用完整十条 episode rows 计算结果，人工抽查只验证媒体、
+视角和 termination 语义。所有正式运行产物留在 gitignored `outputs/l13/`，执行 notebook、
+checkpoint 与抽帧留在 `/tmp`，均不进入 Git。
+
+### 23.5 SmolVLA 跨策略 closed-loop
+
+修正 cache 可见性后，同一 evaluator 使用 SmolVLA checkpoint、reference seed 1000、相同任务、
+15 s 与 render 协议完成 1 个真实 GPU+EGL episode。日志确认 camera rename map、`device=cuda`、
+R9700 与 `gs.amdgpu`；episode 执行 75 steps 后 timeout。结果为 0/1，95% Wilson 区间
+`[0.0,0.7934567085261071]`，termination counts 为 1 timeout、0 invalid action/divergence。
+
+对应视频同样为 H.264/yuv420p、5 FPS、480×120、75 帧；report schema、counts、Wilson、
+checkpoint type、actual policy device、simulation/render backend 已独立复核。这个 smoke 证明 ACT
+与 SmolVLA 都能被同一 evaluator 消费，不支持二者性能排名。
+
+### 23.6 Warning 与证据边界
+
+日志保留 Genesis/Franka tendon approximation、neutral qpos、solver time-constant 调整、neutral
+self-collision filtering、Quadrants `ast.Str` deprecation、Transformers `torch_dtype` deprecation
+以及只读 NumPy image 转 tensor 提示。它们没有导致 GPU/EGL、policy load、75-step rollout、
+视频编码或报告验证失败；首次 SmolVLA tokenizer cache 失败则明确作为失败路径记录并通过环境
+修正后重跑，未将其降格为 warning。
+
+ACT 0/5 + 0/5 与 SmolVLA 0/1 是 1-step pipeline-only checkpoint 的如实结果，不是课程策略
+性能目标，也不能说明 friction shift 的因果影响。它们只证明本机 Linux、固定 R9700/ROCm/EGL、
+当前本地数据与两个临时 checkpoint 的闭环和证据合同；2026-10-09 补充的已训练 SmolVLA 结果及其
+更严格的结论边界见 23.8。两轮证据都不外推到其他 AMD/ROCm、NVIDIA、Apple Silicon、Windows
+或 viewer 路径。
+
+### 23.7 仓库门禁与当前状态
+
+本轮在同一工作树完成：
+
+- action/evaluator 定向测试：19 passed；
+- `.venv/bin/python -m robo_genesis.course_validation`：通过，13 lessons、32 localized
+  Markdown files、26 notebooks、41 Python files；
+- `.venv/bin/python -m pytest`：89 passed；
+- `.venv/bin/python -m compileall -q src scripts tests`：通过；
+- `UV_CACHE_DIR=<tmp> uv lock --check`：通过，解析 235 packages；
+- `npm ci`：安装 190 个包并审计 191 个包，保留 14 项既有 advisory（4 low、1 moderate、
+  9 high），没有运行 `npm audit fix`；
+- `npm run docs:build` 与 `EDGEONE=1 npm run docs:build`：均通过，仅有既有 large-chunk
+  warning；
+- EN/ZH notebook cell type/ID/code parity、提交版 clean output、两份 diagnostic 与 ACT
+  正式执行副本的 source identity/no-error：通过，均为 23 cells / 11 code cells；
+- 本地链接由 course validator 与两次 VitePress build 验证；8 张 L13 SVG 均通过标准库
+  XML/viewBox 检查，并由 FFmpeg 实际渲染为非空 `1600×900` 或 `1600×980` PNG；
+- learner-facing 开发编号泄漏扫描只有 `docs/handoffs/current.md` 的开发者说明命中，讲义、
+  notebook、README 与首页无命中；`git diff --check` 通过。
+
+当前环境没有 `xmllint`，snap Firefox 也无法在该 capability profile 下写 headless screenshot；
+因此 SVG gate 使用标准库语法检查加 FFmpeg 实际 rasterization，没有安装新工具或依赖。
+`M3.L13.5` 已交付，等待项目负责人验收。L13 继续保持 `planned`；本步没有开始 `.6`、更新
+公开状态、运行多 checkpoint sweep、长训练或真实机器人实验。
+
+### 23.8 20,000-step SmolVLA checkpoint 补充运行
+
+2026-10-09，项目负责人提供了本地训练目录
+`/home/xunwang2/project/franka_fruit_pick_demo/outputs/train/smolvla_fruit_pick_dr_0821`。
+只读审计确认目录包含 2,000–20,000 steps 的十个 checkpoint，`last` 指向 `020000`；本轮明确
+选择 `checkpoints/020000/pretrained_model`，而不是把训练目录本身或中间 checkpoint 交给
+evaluator。checkpoint 为 SmolVLA、seed 1000、9-D action、`chunk_size=n_action_steps=50`，权重
+`906,712,520` bytes，processor state 完整，并记录 world/wrist 到 camera1/camera2 的 rename map。
+
+对应只读数据位于
+`/home/xunwang2/project/franka_fruit_pick_demo/datasets/fruit_pick_dr`：LeRobot
+`repo_id=genesis/fruit_pick`、300 episodes、71,973 frames、30 FPS、9-D state/action，以及
+world/wrist 两路 `640×360` 图像。数据任务表含 banana、lemon、plum 到 bowl；本轮 notebook 使用的
+`pick the banana and place it in the bowl` 与训练 task 一致。目录名中的 `dr` 不能替代 provenance：
+该数据仍没有 `robo_genesis_domain_randomization.json`，所以 friction `0.9` 条件严格标为
+`shifted`，不称 OOD。
+
+English notebook 的提交版 source 未修改；独立执行副本为
+`/tmp/rg101-l13-trained.Nucrzl/l13-en-smolvla-020000-20261009.ipynb`，正式输出根目录为
+`outputs/l13/m3-l13-5-smolvla-020000-20261009/`。运行继续使用 Python 3.12.3、Genesis 1.3.3、
+LeRobot 0.6.0、PyTorch `2.9.1+rocm7.2.1.gitff65f5bc` / HIP
+`7.2.53211-e1a6bc5663`、R9700、`gs.amdgpu` 与 EGL；policy 的 requested/actual device 都是
+`cuda`，全程使用已有 Hugging Face cache 和离线模式，没有 CPU fallback 或联网下载。执行副本
+23 个 cell 与提交版 source identity 一致，没有 error output；最终状态为 diagnostic、core
+closed-loop、Capstone 全部 `COMPLETED`，optional checkpoint sweep 为 `NOT RUN`。
+
+reference 与 shifted 条件使用相同 seeds `[1000,1001,1002,1003,1004]`、banana→bowl、15 s、
+30 policy FPS、100 control FPS 和 0.4 s / 12 policy-frame dwell。正式结果如下：
+
+| 条件 | success | termination | 95% Wilson interval | 每个 episode 的 policy steps |
+|---|---:|---|---|---|
+| reference | 4/5 | 4 success、1 timeout | `[0.3755282641185388, 0.9637768390302125]` | 216、188、450、208、196 |
+| shifted friction `0.9` | 5/5 | 5 success | `[0.5655085052479191, 1.0]` | 205、179、237、207、209 |
+
+两组均为 0 divergence、0 invalid action。四个 seed 为 `unchanged-success`；reference 中 timeout 的
+seed 1002 在 shifted 条件下为 `failure-to-success`。每条 shifted episode 的实际 domain draw 都
+记录 friction ratio `0.9`。报告 schema、summary counts、逐 episode rows、Wilson 区间、12-frame
+dwell、matched seeds 和 paired changes 均已独立重算一致。
+
+十个视频均由 `ffprobe` 回读为 H.264、yuv420p、30 FPS、`1920×360`，尺寸为偶数且可完整解码。
+成功视频包含约 0.8 s 的 24-frame 结尾 hold，因此帧数比 policy steps 多 24；reference timeout
+视频为完整 450 帧。对 reference seed 1000 success、reference seed 1002 timeout 和 shifted
+seed 1002 success 分别抽取起始/中段/结尾帧人工检查：左、中、右依次为 world、wrist、
+third-person，颜色、方向与机械臂动作正常；两个 success 末帧 banana 位于 bowl 内，timeout 末帧
+仍夹持 banana、尚未放入 bowl，与 JSON termination 一致。
+
+这轮 20,000-step checkpoint 是 L13 当前主要的任务级闭环运行证据；23.1–23.5 的 1-step 结果
+继续作为 pipeline regression、跨 policy 接口和问题发现历史保留。它支持的结论只是在冻结协议
+下，该 checkpoint 完成了这十条 matched rollout，并得到上述有限样本 counts。两组 Wilson 区间
+高度重叠，而且只有五对 seeds；因此不能声称 friction `0.9` 改善策略、不能作显著性或一般鲁棒性
+结论。缺失训练 domain-support provenance 也继续阻止 OOD 声明；本轮不证明物理机器人表现、
+sim-to-real、多 checkpoint 学习曲线或其他软硬件平台兼容性。
+
+该补充运行没有修改 notebook、evaluator、讲义或公开状态；`M3.L13.5` 仍为已交付、待项目负责人
+验收，L13 仍为 `planned`，没有开始 `.6`。
+
+## 24. L13 / M3.L13.6 公开状态同步
+
+> 日期：2026-10-10（Asia/Shanghai）
+> 范围：依据已验收的第 23 节 GPU+EGL 闭环证据，把 L13 从 `planned` 原子同步为
+> `gpu-verified`，并重新验证公开材料、双语 notebook 与仓库门禁。
+
+本步同步了 `course.json`、双语讲义 frontmatter 与状态说明、双语 notebook manifest 断言和
+metadata、双语 README、双语首页以及状态合同测试。同步后的公开状态统计为 8 个
+`cpu-verified`、5 个 `gpu-verified`、0 个 `planned` 和 0 个 `published`。VitePress sidebar
+直接引用现有 lesson 路径，不包含独立状态 literal，因此无需改动配置。
+
+L13 的 `gpu-verified` 只表示核心单 checkpoint 闭环评估、matched Reference/shifted rollout、
+H.264 视频和报告证据合同已经在第 23 节记录的参考 R9700、ROCm、`gs.amdgpu` 与 EGL 环境通过。
+它不表示稳定成功率、friction shift 的因果改善、OOD robustness、sim-to-real、其他平台兼容性
+或可选多 checkpoint sweep 已经验证。学习者未显式指定 checkpoint 时，notebook 使用讲义中已
+标注来源和固定 revision 的 Hugging Face SmolVLA artifact；本步没有新增或臆造下载地址。
+
+状态更新后，从当前 English notebook 截取 Step 1–3，在新的独立 Jupyter kernel、隔离的
+`/tmp` dataset/cache 目录中执行 clean-kernel diagnostic。4/4 code cells 均无 error output；
+manifest 输出 `status=gpu-verified`，dataset audit 为 `PASS`，固定远端 checkpoint 为
+`DEFERRED`，并输出 `Ready to run Step 4: True`。该诊断没有下载 checkpoint、启动 Genesis 或
+重复第 23 节已验收的 GPU rollout。
+
+状态同步后的门禁结果：
+
+- course validation 通过：13 lessons、32 localized Markdown files、26 notebooks、42 Python
+  files；
+- 全量 pytest 95 passed，compileall 通过；
+- `uv lock --check` 通过，解析 238 packages；
+- `npm ci` 安装 190 个包并审计 191 个包，保留 14 项既有 advisory（4 low、1 moderate、
+  9 high），没有运行 `npm audit fix`；
+- 普通与 `EDGEONE=1` 文档构建均通过，只有既有 large-chunk warning；
+- EN/ZH notebook 均为 18 cells / 8 code cells，code cell ID/source 逐字一致，提交版 output 为空且
+  `execution_count: null`；
+- learner-facing L13 `planned` 状态残留扫描、状态表一致性与 `git diff --check` 通过。
+
+项目负责人于 2026-10-10 确认 `M3.L13.6` 验收通过。L13 当前公开状态为
+`gpu-verified`；M3 至此全部完成，未自动开始 M4。
