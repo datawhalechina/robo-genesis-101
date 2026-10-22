@@ -259,6 +259,25 @@
         "en": "docs/en/lessons/l13-closed-loop-evaluation-and-capstone.md"
       },
       "status": "gpu-verified"
+    },
+    {
+      "id": "L14",
+      "slug": "robotwin-lingbot-vla-fine-tuning",
+      "title": {
+        "zh": "可选进阶实践：使用 RoboTwin 数据微调 LingBot-VLA-v2",
+        "en": "Optional Advanced Practicum: Fine-Tuning LingBot-VLA-v2 with RoboTwin Data"
+      },
+      "duration_minutes": 180,
+      "hardware": "gpu-required",
+      "notebook": {
+        "zh": "notebooks/zh/l14-robotwin-lingbot-vla-fine-tuning.ipynb",
+        "en": "notebooks/en/l14-robotwin-lingbot-vla-fine-tuning.ipynb"
+      },
+      "lecture": {
+        "zh": "docs/zh/lessons/l14-robotwin-lingbot-vla-fine-tuning.md",
+        "en": "docs/en/lessons/l14-robotwin-lingbot-vla-fine-tuning.md"
+      },
+      "status": "planned"
     }
   ]
 }

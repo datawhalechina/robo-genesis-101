@@ -34,7 +34,8 @@ features:
 > L11 已通过双语诊断、CPU+EGL 和参考 R9700 AMD+EGL 的 bounded DR 录制、回读与
 > provenance 验证，状态为 `gpu-verified`。L13 已通过双语诊断、参考 R9700 AMD+EGL 单
 > checkpoint 闭环评估、matched reference/shifted rollout、H.264 视频与报告证据审计，状态为
-> `gpu-verified`；这不表示已经证明稳定成功率、OOD 鲁棒性或 sim-to-real。
+> `gpu-verified`；这不表示已经证明稳定成功率、OOD 鲁棒性或 sim-to-real。L14 是不影响核心
+> 13 讲完成路径的可选进阶实践，当前仅为 `planned` 结构骨架，尚未形成可运行课程或兼容性证据。
 
 | 讲次 | 主题 | 预计时长 | 硬件 | 状态 |
 |---|---|---:|---|---|
@@ -51,3 +52,4 @@ features:
 | L11 | [域随机化](/zh/lessons/l11-domain-randomization) | 90 分钟 | `gpu-recommended` | `gpu-verified` |
 | L12 | [ACT 与 SmolVLA 策略训练](/zh/lessons/l12-act-and-smolvla-policy-training) | 150 分钟 | `gpu-required` | `gpu-verified` |
 | L13 | [闭环评估与 Capstone](/zh/lessons/l13-closed-loop-evaluation-and-capstone) | 120 分钟 | `gpu-required` | `gpu-verified` |
+| L14 | [可选进阶实践：使用 RoboTwin 数据微调 LingBot-VLA-v2](/zh/lessons/l14-robotwin-lingbot-vla-fine-tuning) | 180 分钟 | `gpu-required` | `planned` |

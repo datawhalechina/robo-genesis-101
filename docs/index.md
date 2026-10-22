@@ -15,10 +15,10 @@ hero:
       link: /en/
 
 features:
-  - title: 13 讲渐进式路径
-    details: 从场景、物理和控制逐步推进到数据、策略训练与闭环评估。
+  - title: 13 讲核心路径 + 1 个可选进阶实践
+    details: 核心课程从场景、物理和控制推进到数据、策略训练与闭环评估；L14 另提供 RoboTwin 与 LingBot-VLA-v2 实践。
   - title: Bilingual by design
     details: Lectures and notebooks use paired English and Chinese structures.
   - title: 当前状态 · Current status
-    details: Seven lessons are CPU-verified, three lessons are GPU-verified, and no lesson is published yet.
+    details: The 13 core lessons are verified; the optional L14 practicum is planned and not yet runnable.
 ---

@@ -11,7 +11,8 @@
 > `cpu-verified`。L11 已通过双语诊断、CPU+EGL 和参考 R9700 AMD+EGL 的 bounded DR 录制、
 > 回读与 provenance 验证，状态为 `gpu-verified`。L13 已通过双语诊断、参考 R9700 AMD+EGL
 > 单 checkpoint 闭环评估、matched reference/shifted rollout、H.264 视频与报告证据审计，状态为
-> `gpu-verified`；这不表示已经证明稳定成功率、OOD 鲁棒性或 sim-to-real。
+> `gpu-verified`；这不表示已经证明稳定成功率、OOD 鲁棒性或 sim-to-real。L14 是不影响核心
+> 13 讲完成路径的可选进阶实践，当前仅建立 `planned` 结构骨架，尚未形成可运行课程或兼容性证据。
 
 RoboGenesis 101 是一门 Datawhale 开源课程，面向具备 Python 基础、希望系统进入机器人学习实践的学习者。课程以 Genesis 为仿真平台，从环境诊断、场景和刚体物理出发，逐步连接机器人控制、逆运动学、抓取、演示数据、模仿学习、策略训练与闭环评估。
 
@@ -42,6 +43,8 @@ RoboGenesis 101 是一门 Datawhale 开源课程，面向具备 Python 基础、
 2. 机器人自由度、关节控制、逆运动学、末端位姿、相机和并行仿真；
 3. 抓取任务、脚本化专家、演示获取和数据录制；
 4. 数据集、模仿学习、域随机化、ACT/SmolVLA 训练和闭环评估。
+5. 可选 L14 使用 RoboTwin 数据完成 LingBot-VLA-v2 的 LoRA、checkpoint merge 和 matched
+   闭环评估实践；它需要独立外部运行环境，不是核心 13 讲的完成前提。
 
 训练 loss 或开环动作预测不等同于任务成功。课程最终以闭环 rollout 和明确的成功判据评价策略。
 
@@ -64,6 +67,7 @@ RoboGenesis 101 是一门 Datawhale 开源课程，面向具备 Python 基础、
 | L11 | [域随机化](docs/zh/lessons/l11-domain-randomization.md) | 90 分钟 | `gpu-recommended` | `gpu-verified` |
 | L12 | [ACT 与 SmolVLA 策略训练](docs/zh/lessons/l12-act-and-smolvla-policy-training.md) | 150 分钟 | `gpu-required` | `gpu-verified` |
 | L13 | [闭环评估与 Capstone](docs/zh/lessons/l13-closed-loop-evaluation-and-capstone.md) | 120 分钟 | `gpu-required` | `gpu-verified` |
+| L14 | [可选进阶实践：使用 RoboTwin 数据微调 LingBot-VLA-v2](docs/zh/lessons/l14-robotwin-lingbot-vla-fine-tuning.md) | 180 分钟 | `gpu-required` | `planned` |
 
 状态从 `planned` 依次推进到 `draft`、`reviewed`、`cpu-verified` 或
 `gpu-verified`，最终才是 `published`。详细证据要求见[课程内容规范](CONTENT_GUIDE.md)。

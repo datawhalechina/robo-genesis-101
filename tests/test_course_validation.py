@@ -39,9 +39,9 @@ def _notebook(code: str, *, outputs: list[object] | None = None) -> dict[str, ob
 def test_repository_passes_all_course_gates() -> None:
     summary = validate_repository(PROJECT_ROOT)
 
-    assert summary.lessons == 13
-    assert summary.markdown_files == 32
-    assert summary.notebooks == 26
+    assert summary.lessons == 14
+    assert summary.markdown_files == 34
+    assert summary.notebooks == 28
     assert summary.python_files == 42
 
 

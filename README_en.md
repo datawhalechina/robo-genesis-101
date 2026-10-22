@@ -16,7 +16,9 @@
 > bilingual diagnostics, single-checkpoint closed-loop evaluation on a reference
 > R9700 with AMD+EGL, matched Reference/shifted rollouts, and H.264 video and report
 > evidence audit passed. This does not establish a stable success rate, OOD
-> robustness, or sim-to-real transfer.
+> robustness, or sim-to-real transfer. L14 is an optional advanced practicum outside
+> the completion path for the 13 core lessons. It currently has only a `planned`
+> structural scaffold, not a runnable lesson or compatibility evidence.
 
 RoboGenesis 101 is a Datawhale open-source course for learners with basic Python experience who want a structured, hands-on introduction to robot learning. Using Genesis as its simulation platform, the course connects environment diagnostics, scenes, and rigid-body physics with robot control, inverse kinematics, grasping, demonstration data, imitation learning, policy training, and closed-loop evaluation.
 
@@ -47,6 +49,9 @@ The course follows these dependencies:
 2. robot degrees of freedom, joint control, inverse kinematics, end-effector poses, cameras, and parallel simulation;
 3. grasping tasks, scripted experts, demonstration acquisition, and data recording;
 4. datasets, imitation learning, domain randomization, ACT/SmolVLA training, and closed-loop evaluation.
+5. optional L14 practice with RoboTwin data, LingBot-VLA-v2 LoRA, checkpoint merge,
+   and matched closed-loop evaluation in a separate external runtime; it is not a
+   prerequisite for completing the 13 core lessons.
 
 Training loss or open-loop action prediction is not treated as task success. The final evaluation uses closed-loop rollouts and explicit success criteria.
 
@@ -69,6 +74,7 @@ Training loss or open-loop action prediction is not treated as task success. The
 | L11 | [Domain Randomization](docs/en/lessons/l11-domain-randomization.md) | 90 min | `gpu-recommended` | `gpu-verified` |
 | L12 | [Training ACT and SmolVLA Policies](docs/en/lessons/l12-act-and-smolvla-policy-training.md) | 150 min | `gpu-required` | `gpu-verified` |
 | L13 | [Closed-Loop Evaluation and Capstone](docs/en/lessons/l13-closed-loop-evaluation-and-capstone.md) | 120 min | `gpu-required` | `gpu-verified` |
+| L14 | [Optional Advanced Practicum: Fine-Tuning LingBot-VLA-v2 with RoboTwin Data](docs/en/lessons/l14-robotwin-lingbot-vla-fine-tuning.md) | 180 min | `gpu-required` | `planned` |
 
 Statuses progress from `planned` to `draft`, `reviewed`, `cpu-verified` or
 `gpu-verified`, and finally `published`. See the [course content guide](CONTENT_GUIDE.md) for the evidence required at each stage.

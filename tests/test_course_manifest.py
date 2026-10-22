@@ -27,19 +27,31 @@ def test_repository_manifest_defines_the_canonical_learning_path() -> None:
     assert manifest.course.default_locale == "zh"
     assert manifest.course.locales == ("zh", "en")
     assert [lesson.id for lesson in manifest.lessons] == [
-        f"L{number:02d}" for number in range(1, 14)
+        f"L{number:02d}" for number in range(1, 15)
     ]
     assert [lesson.status for lesson in manifest.lessons] == [
         *([CourseStatus.CPU_VERIFIED] * 7),
         *([CourseStatus.GPU_VERIFIED] * 2),
         CourseStatus.CPU_VERIFIED,
         *([CourseStatus.GPU_VERIFIED] * 3),
+        CourseStatus.PLANNED,
     ]
     assert [lesson.hardware for lesson in manifest.lessons] == [
         *([HardwareRequirement.CPU_OK] * 7),
         *([HardwareRequirement.GPU_RECOMMENDED] * 4),
-        *([HardwareRequirement.GPU_REQUIRED] * 2),
+        *([HardwareRequirement.GPU_REQUIRED] * 3),
     ]
+
+    l14 = manifest.lesson("L14")
+    assert l14.slug == "robotwin-lingbot-vla-fine-tuning"
+    assert l14.title.zh == "可选进阶实践：使用 RoboTwin 数据微调 LingBot-VLA-v2"
+    assert l14.title.en == (
+        "Optional Advanced Practicum: Fine-Tuning LingBot-VLA-v2 "
+        "with RoboTwin Data"
+    )
+    assert l14.duration_minutes == 180
+    assert l14.hardware is HardwareRequirement.GPU_REQUIRED
+    assert l14.status is CourseStatus.PLANNED
 
 
 def test_course_status_enum_matches_the_public_contract() -> None:

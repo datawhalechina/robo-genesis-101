@@ -1,6 +1,6 @@
 # RoboGenesis 101 当前工作交接
 
-最后核对日期：2026-10-10（Asia/Shanghai）。
+最后核对日期：2026-10-22（Asia/Shanghai）。
 
 本文件只记录新 thread 最容易遗漏的当前状态、近期验收结论、项目负责人偏好、未决事项和
 恢复顺序。通用协作规则以根目录 `AGENTS.md` 为准；课程总状态与步骤门禁以本地
@@ -9,11 +9,16 @@
 
 ## 1. 一句话恢复状态
 
-- M0、M1、M2、M3 已全部完成并通过项目负责人验收。
+- 原 M0–M3 / L01–L13 已全部完成并通过项目负责人验收。
 - L13 的 `M3.L13.1`–`M3.L13.6` 已全部验收；公开状态为 `gpu-verified`。
-- L13 是 M3 最后一讲。当前没有进行中的课程开发子步骤。
-- M4 尚未开始。只有项目负责人明确说“开始 `M4.1`”后，才进入全课程集成与发布前回归；
-  不要因为 M3 已完成而自动启动 M4。
+- 项目负责人已决定规划正式但可选的 L14：使用 RoboTwin 数据微调 LingBot-VLA-v2，目标
+  结构为“13 core lessons + 1 optional advanced practicum”。公开 `planned` 结构已经迁移，
+  当前课程 manifest 共 14 讲。
+- 项目负责人已于 2026-10-22 明确启动并验收 `M3.R14.1`；结构、来源、许可、硬件与证据合同
+  已冻结。随后明确启动 `M3.R14.2`；14 讲 manifest、L14 双语 `planned` skeleton、公开表格、
+  动态 sidebar 输入和合同测试已于同日通过项目负责人验收。当前等待另行启动 `M3.L14.1`。
+- M4 尚未开始，也不再是直接下一动作。它暂停到 `M3.L14.6` 验收完成，或项目负责人明确取消
+  L14 扩展之后；届时仍需项目负责人另行明确启动 `M4.1`。
 - M5 也未开始。L13 已有固定 Hugging Face fallback，不等于 M5 的版本化 artifact 发布、
   checksum、license/model card、下载工具和 V1 发布流程已经完成。
 
@@ -21,10 +26,10 @@
 
 更新本文件前的快照：
 
-- 当前分支：`main`；
-- HEAD、本地 `main`、`origin/main` 与 `origin/HEAD` 均为
-  `a2441789c7b2693688224cbc550787f327a8d956`；
-- HEAD 标题：`a244178 update COMPATIBILITY doc after l13`；
+- 当前分支：`lingbot_chapter`；
+- HEAD 与本地 `main`：`c4fef0ae7d9c03c39016d0ae41dc5d5963a3090d`；
+- `origin/main` 与 `origin/HEAD`：`a2441789c7b2693688224cbc550787f327a8d956`；
+- HEAD 标题：`c4fef0a update current doc after l13`；
 - 近期 L13 提交：
   - `bf9f3ad verified en/zh notebooks of l13 closed loop evaluation`；
   - `b25f66c add en/zh notebooks of l13 closed loop evaluation`；
@@ -38,8 +43,8 @@ git status --short --branch
 git log -5 --oneline --decorate
 ```
 
-本次 handoff 更新前 tracked 工作树为 clean；更新后预期只有
-`docs/handoffs/current.md` 是 tracked 修改。下列 untracked 内容在 handoff 前已经存在，属于
+本次 L14 规划更新前 tracked 工作树为 clean；更新后预期只有
+`docs/handoffs/current.md` 是 tracked 修改。下列 untracked 内容在本轮前已经存在，属于
 本地配置、补丁或开发记录，必须保留，不得清理、覆盖或误当成新 thread 生成的垃圾文件：
 
 - `.vscode/`；
@@ -51,18 +56,23 @@ git log -5 --oneline --decorate
 - `genesis_公开课体系规划_2ba5d82e.plan.md`；
 - `robo_genesis_101_course_development.plan.md`。
 
-根开发计划和逐课档案位于 untracked 路径，但仍是当前开发状态的重要真相源；不要因为
-`git diff` 不显示其内容变化而忽略或删除。本次 handoff 不创建 commit、不 push、不发布外部
-artifact。
+根开发计划、`MIGRATION.md` 和逐课档案位于 untracked 路径，但仍是当前开发状态的重要真相源；
+本轮已在这些路径追加 L14 规划。不要因为普通 `git diff` 不显示其内容变化而忽略或删除。
+本次 handoff 不创建 commit、不 push、不发布外部 artifact。
 
 ## 3. 当前公开课程状态
 
-`course.json` 是课程元数据的唯一结构化来源。当前共 13 讲：
+`course.json` 是课程元数据的唯一结构化来源。当前共 14 讲，即 13 讲核心课程加 1 讲可选
+进阶实践：
 
 - L01–L07、L10：8 个 `cpu-verified`；
 - L08、L09、L11、L12、L13：5 个 `gpu-verified`；
-- 0 个 `planned`；
+- L14：1 个 `planned`；
 - 0 个 `published`。
+
+L14 已以 180 分钟、`gpu-required`、slug `robotwin-lingbot-vla-fine-tuning` 写入 manifest，并
+新增双语 lecture/notebook skeleton。它仍不是可运行或已验证课程；前 13 讲的顺序、路径、硬件
+和状态未改变。
 
 L13 的 120 分钟时长、`closed-loop-evaluation-and-capstone` slug、双语路径和
 `gpu-required` hardware 没有因状态晋级而改变。以下来源已一致同步为 `gpu-verified`：
@@ -205,6 +215,16 @@ L13 `.6` 状态同步后的门禁：
 - 普通与 `EDGEONE=1` 文档构建：通过；
 - EN/ZH L13 notebook parity、clean outputs、状态残留扫描和 `git diff --check`：通过。
 
+`M3.R14.2` 当前公开结构迁移门禁：
+
+- course validation：14 lessons、34 localized Markdown files、28 notebooks、42 Python files；
+- manifest/validation targeted tests：14 passed；完整 pytest：95 passed；
+- compileall：通过；
+- `npm ci --no-audit`：按 lockfile 安装 190 packages；
+- 文档构建：通过，仅有既有 large-chunk warning；
+- L14 双语 lecture/notebook metadata、代码 parity、clean outputs、公开课程表和动态 sidebar
+  输入均由 repository gate 覆盖。
+
 已知但未自动修复的 warning：
 
 - `npm ci` 报告 14 项既有 advisory（4 low、1 moderate、9 high）；没有运行 `npm audit fix`，
@@ -215,34 +235,57 @@ L13 `.6` 状态同步后的门禁：
 - managed sandbox 中默认 uv cache 可能不可写；使用任务专用
   `UV_CACHE_DIR=/tmp/<task-cache>` 运行 `uv lock --check`。
 
-## 9. 下一步 M4 的边界
+## 9. L14 扩展的当前边界
 
-M4 是全课程集成与发布前回归，不是继续扩写或重做某一讲。根计划冻结的步骤为：
+`M3.R14.1` 已按明确指令启动、交付并于 2026-10-22 通过项目负责人验收；`M3.R14.2` 随后按
+明确指令启动并完成公开 `planned` 结构迁移，也于同日通过验收。已冻结的信息为：
 
-1. `M4.1`：按 L01→L13 审计先修关系、跨讲链接、练习输入输出和术语首次解释位置；
-2. `M4.2`：核对 EN/ZH 讲义结构、命令、结论、notebook Markdown 与 glossary 一致性；
-3. `M4.3`：按课程顺序执行适用的 CPU clean-kernel notebook、Python 门禁和文档构建；
-4. `M4.4`：在参考 AMD 环境验证指定 GPU notebook，以及数据→训练→checkpoint→闭环评估的
-   纵向接口；
-5. `M4.5`：同步 manifest、README、首页、sidebar、frontmatter、notebook metadata、兼容性
-   记录和真实状态；
-6. `M4.6`：完成 setup、fallback paths、API cheatsheet、instructor guide、引用和第三方许可
-   总审计，形成进入 M5 前的验收材料。
+- 中文标题：`可选进阶实践：使用 RoboTwin 数据微调 LingBot-VLA-v2`；
+- 英文标题：`Optional Advanced Practicum: Fine-Tuning LingBot-VLA-v2 with RoboTwin Data`；
+- slug：`robotwin-lingbot-vla-fine-tuning`；180 分钟；`gpu-required`；
+- 最低完整验证平台：4× AMD W7900 48 GiB；无 CPU/no-cloud fallback；
+- companion：`ZiguanWang/Robotwin-radeon-cloud` `main` commit
+  `27b2f6fcb6c715e2cbb6db4431381f87c94b86ed`；
+- 核心路线：来源/环境审计 → 数据合同 → base 10 episodes → 4-GPU 100-step LoRA →
+  DCP audit/HF merge → merged model 同协议 10 episodes → `k/n`、Wilson、matched outcomes、
+  视频与 evidence card；
+- 1000 episodes、1000–5000-step LoRA、8 GPU 和完整 depth/video-teacher SFT 是可选扩展；
+- 100 steps 只验证 pipeline，不能声称模型质量提升；
+- runtime truth 留在 pinned companion，不复制完整 Docker/patch stack，不 rehost 6B model、
+  RoboTwin 数据或 image。
 
-只有项目负责人明确启动后才执行 `M4.1`。M4 发现单讲问题时，应回到对应讲次做范围明确的修复
-和回归，不进行无关重写；每个 M4 子步骤仍需单独交付和验收，不自动前进。
+本步还冻结了 4-GPU 100-step LoRA 参数、base/merged 的 `adjust_bottle` 10+10 matched protocol、
+实际 resolved seed 对账、Wilson interval、逐 episode JSONL 和 video audit。详细内容见
+`course_development/lessons/l14.md`。
+
+`M3.R14.2` 已验收：公开 L14 `planned` skeleton、lesson count、public tables、动态 sidebar
+输入和合同测试均已冻结。`M3.L14.1` 是下一候选步骤，但仍需项目负责人另行明确启动；之后才
+依次完成设计、英文、中文、notebook/代码、4× W7900 实测和状态同步。
+
+直接上游声明已在本步记录：RoboTwin 为 MIT，XPolicyLab 与 LingBot source 为 Apache-2.0，
+base model card 为 Apache-2.0，RoboTwin2.0 dataset card 为 MIT，Qwen card 为 Apache-2.0，
+MoGe card 为 MIT。该记录不授权 rehost，也不覆盖数据/镜像内部第三方资产；具体复用文件仍须
+逐项写入 `MIGRATION.md`/`NOTICE.md`。当前也不得把任何 L14 runtime 描述成已验证。
+
+M4 暂停在 `M3.L14.6` 验收或项目负责人明确取消本扩展之后。若 L14 完成，M4 范围为
+L01→L14，但必须保持 L01–L13 核心链与 L14 external stack 隔离；若扩展取消，M4 恢复为
+L01→L13。两种情况下都不能自动启动 M4。
 
 ## 10. 新 thread 恢复顺序
 
 1. 完整读取根目录 `AGENTS.md`。
 2. 运行第 2 节 Git 快照命令，确认 handoff 后是否出现新提交或用户修改。
 3. 完整读取本文件与 `robo_genesis_101_course_development.plan.md`。
-4. 核对 `course.json` 当前状态统计为 8 个 `cpu-verified`、5 个 `gpu-verified`、0 个
+4. 核对 `course.json` 当前状态统计为 8 个 `cpu-verified`、5 个 `gpu-verified`、1 个
    `planned`、0 个 `published`。
-5. 若任务涉及 L13，读取 `course_development/lessons/l13.md` 和 `COMPATIBILITY.md`
+5. 若任务涉及 L14，先完整读取 `course_development/lessons/l14.md` 与 `MIGRATION.md` 的
+   companion mapping。`M3.R14.1`–`.R14.2` 已验收；只有在项目负责人另行明确启动
+   `M3.L14.1` 时才开始教学设计和 43-cell mapping，不得提前实现 runtime、完整 notebook 或
+   修改 `COMPATIBILITY.md`。
+6. 若任务涉及 L13，读取 `course_development/lessons/l13.md` 和 `COMPATIBILITY.md`
    第 23–24 节；不要重复已经验收的 GPU rollout 或把已清理的手动 5/5 output 当成正式证据。
-6. 若项目负责人明确说“开始 `M4.1`”，先按第 9 节和根计划建立 M4 审计范围；否则只报告当前
-   状态，不自动开始 M4。
+7. 只有 `M3.L14.6` 已验收或项目负责人明确取消扩展，并且随后明确说“开始 `M4.1`”时，
+   才按根计划建立 M4 审计范围；否则不自动开始 M4。
 
 持续适用的协作边界：每个子步骤完成后单独等待项目负责人验收，不自动开始下一步；不创建
 commit、不 push、不发布外部 artifact，除非项目负责人明确要求。

@@ -38,7 +38,9 @@ features:
 > L13 is `gpu-verified` after its bilingual diagnostics, single-checkpoint closed-loop
 > evaluation on a reference R9700 with AMD+EGL, matched Reference/shifted rollouts,
 > and H.264 video and report evidence audit passed. This does not establish a stable
-> success rate, OOD robustness, or sim-to-real transfer.
+> success rate, OOD robustness, or sim-to-real transfer. L14 is an optional advanced
+> practicum outside the completion path for the 13 core lessons. It currently has only
+> a `planned` structural scaffold, not a runnable lesson or compatibility evidence.
 
 | Lesson | Topic | Planned duration | Hardware | Status |
 |---|---|---:|---|---|
@@ -55,3 +57,4 @@ features:
 | L11 | [Domain Randomization](/en/lessons/l11-domain-randomization) | 90 min | `gpu-recommended` | `gpu-verified` |
 | L12 | [Training ACT and SmolVLA Policies](/en/lessons/l12-act-and-smolvla-policy-training) | 150 min | `gpu-required` | `gpu-verified` |
 | L13 | [Closed-Loop Evaluation and Capstone](/en/lessons/l13-closed-loop-evaluation-and-capstone) | 120 min | `gpu-required` | `gpu-verified` |
+| L14 | [Optional Advanced Practicum: Fine-Tuning LingBot-VLA-v2 with RoboTwin Data](/en/lessons/l14-robotwin-lingbot-vla-fine-tuning) | 180 min | `gpu-required` | `planned` |
