@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">L14 必做路线与保留的比赛扩展</title>
+  <desc id="desc">蓝色水平通道展示 180 分钟必做路线：身份与数据审计、base evaluation、四卡 100-step 动作专家 LoRA、分布式检查点审计与 Hugging Face merge、合并后模型的配对评估，以及有边界的证据卡。紫色卡片在同一讲中保留三个比赛扩展：official RoboTwin checkpoint 的四卡或八卡 1000 回合 benchmark、更长 LoRA 与合并后 checkpoint benchmark，以及带 depth/video teacher、转换、评估和 benchmark 的全参数 SFT。扩展必须显式开启，未运行时不构成课程证据。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="purpleArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#7c3aed"/>
+    </marker>
+    <style>
+      .title { font: 700 31px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .lane { font: 700 17px Inter, ui-sans-serif, system-ui, sans-serif; }
+      .step { font: 700 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .tag { font: 700 11px Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.6px; }
+      .code { font: 600 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .flow { stroke: #2563eb; stroke-width: 2.6; fill: none; marker-end: url(#arrow); }
+      .optional { stroke: #7c3aed; stroke-width: 2.4; fill: none; marker-end: url(#purpleArrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" rx="24" fill="#f8fafc"/>
+  <text x="800" y="45" text-anchor="middle" class="title">一条必做证据路线，完整保留比赛技术覆盖</text>
+  <text x="800" y="77" text-anchor="middle" class="subtitle">蓝色是 180 分钟课程合同；紫色章节仍在同一本 notebook 中，以独立身份显式开启。</text>
+
+  <rect x="40" y="112" width="1520" height="390" rx="24" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+  <rect x="64" y="132" width="342" height="34" rx="17" fill="#dbeafe"/>
+  <text x="235" y="155" text-anchor="middle" class="lane" fill="#1d4ed8">必做 · 4 × W7900 · 10 + 10 回合</text>
+  <text x="1534" y="154" text-anchor="end" class="small">训练 wall time 和第一次准备模型/数据不计入 180 分钟教学时间。</text>
+
+  <rect x="65" y="205" width="215" height="205" rx="18" fill="#ffffff" stroke="#93c5fd" stroke-width="1.8"/>
+  <rect x="83" y="222" width="72" height="25" rx="12" fill="#dbeafe"/>
+  <text x="119" y="239" text-anchor="middle" class="tag" fill="#1d4ed8">门禁 1</text>
+  <text x="172" y="278" text-anchor="middle" class="step">身份与数据</text>
+  <text x="172" y="301" text-anchor="middle" class="step">preflight</text>
+  <text x="172" y="334" text-anchor="middle" class="body">revisions · 4 GPUs · EGL</text>
+  <text x="172" y="356" text-anchor="middle" class="body">50 datasets · manifest</text>
+  <text x="172" y="378" text-anchor="middle" class="small">消耗 GPU 前先失败</text>
+
+  <path d="M280 307 H310" class="flow"/>
+  <rect x="310" y="205" width="215" height="205" rx="18" fill="#ffffff" stroke="#93c5fd" stroke-width="1.8"/>
+  <rect x="328" y="222" width="72" height="25" rx="12" fill="#dbeafe"/>
+  <text x="364" y="239" text-anchor="middle" class="tag" fill="#1d4ed8">门禁 2</text>
+  <text x="417" y="278" text-anchor="middle" class="step">Base model</text>
+  <text x="417" y="301" text-anchor="middle" class="step">闭环运行</text>
+  <text x="417" y="334" text-anchor="middle" class="body">adjust_bottle · 10 回合</text>
+  <text x="417" y="356" text-anchor="middle" class="body">resolved seeds · videos</text>
+  <text x="417" y="378" text-anchor="middle" class="small">部署参考，不是质量证明</text>
+
+  <path d="M525 307 H555" class="flow"/>
+  <rect x="555" y="205" width="215" height="205" rx="18" fill="#ffffff" stroke="#60a5fa" stroke-width="2.2"/>
+  <rect x="573" y="222" width="72" height="25" rx="12" fill="#bfdbfe"/>
+  <text x="609" y="239" text-anchor="middle" class="tag" fill="#1d4ed8">训练</text>
+  <text x="662" y="278" text-anchor="middle" class="step">动作专家</text>
+  <text x="662" y="301" text-anchor="middle" class="step">LoRA smoke</text>
+  <text x="662" y="334" text-anchor="middle" class="code">4 GPU · 100 steps</text>
+  <text x="662" y="356" text-anchor="middle" class="code">r=8 · α=16 · seed=42</text>
+  <text x="662" y="378" text-anchor="middle" class="small">证明管线贯通，不证明收敛</text>
+
+  <path d="M770 307 H800" class="flow"/>
+  <rect x="800" y="205" width="215" height="205" rx="18" fill="#ffffff" stroke="#93c5fd" stroke-width="1.8"/>
+  <rect x="818" y="222" width="72" height="25" rx="12" fill="#dbeafe"/>
+  <text x="854" y="239" text-anchor="middle" class="tag" fill="#1d4ed8">门禁 3</text>
+  <text x="907" y="278" text-anchor="middle" class="step">DCP 审计 →</text>
+  <text x="907" y="301" text-anchor="middle" class="step">HF merge</text>
+  <text x="907" y="334" text-anchor="middle" class="body">base + adapter + config</text>
+  <text x="907" y="356" text-anchor="middle" class="body">weight index + health</text>
+  <text x="907" y="378" text-anchor="middle" class="small">fresh serving artifact</text>
+
+  <path d="M1015 307 H1045" class="flow"/>
+  <rect x="1045" y="205" width="215" height="205" rx="18" fill="#ffffff" stroke="#93c5fd" stroke-width="1.8"/>
+  <rect x="1063" y="222" width="72" height="25" rx="12" fill="#dbeafe"/>
+  <text x="1099" y="239" text-anchor="middle" class="tag" fill="#1d4ed8">门禁 4</text>
+  <text x="1152" y="278" text-anchor="middle" class="step">Merged model</text>
+  <text x="1152" y="301" text-anchor="middle" class="step">配对运行</text>
+  <text x="1152" y="334" text-anchor="middle" class="body">同协议 · 10 回合</text>
+  <text x="1152" y="356" text-anchor="middle" class="body">按实际 resolved seed join</text>
+  <text x="1152" y="378" text-anchor="middle" class="small">只改变 checkpoint identity</text>
+
+  <path d="M1260 307 H1290" class="flow"/>
+  <rect x="1290" y="205" width="245" height="205" rx="18" fill="#dbeafe" stroke="#3b82f6" stroke-width="2.2"/>
+  <rect x="1308" y="222" width="88" height="25" rx="12" fill="#ffffff"/>
+  <text x="1352" y="239" text-anchor="middle" class="tag" fill="#1d4ed8">证据</text>
+  <text x="1412" y="278" text-anchor="middle" class="step">有边界的证据卡</text>
+  <text x="1412" y="316" text-anchor="middle" class="code">k/n + Wilson 95%</text>
+  <text x="1412" y="340" text-anchor="middle" class="body">四类 matched outcome</text>
+  <text x="1412" y="362" text-anchor="middle" class="body">unmatched seeds · video audit</text>
+  <text x="1412" y="386" text-anchor="middle" class="small">保留小样本限制</text>
+
+  <rect x="40" y="535" width="1520" height="310" rx="24" fill="#faf5ff" stroke="#c084fc" stroke-width="2"/>
+  <rect x="64" y="555" width="390" height="34" rx="17" fill="#f3e8ff"/>
+  <text x="259" y="578" text-anchor="middle" class="lane" fill="#7e22ce">保留的比赛扩展 · 显式开启</text>
+  <text x="1534" y="578" text-anchor="end" class="small">每个扩展使用新的 checkpoint、run、output 和 evidence identity。</text>
+
+  <rect x="65" y="620" width="440" height="145" rx="18" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.8"/>
+  <text x="285" y="652" text-anchor="middle" class="step">Official RoboTwin checkpoint 参考</text>
+  <text x="285" y="682" text-anchor="middle" class="body">base 与 official post-training checkpoint evaluation</text>
+  <text x="285" y="704" text-anchor="middle" class="code">official or base checkpoint</text>
+  <path d="M150 720 H420" class="optional"/>
+  <text x="285" y="746" text-anchor="middle" class="code">4 / 8 GPU · 100 tasks × 10 回合</text>
+
+  <rect x="580" y="620" width="440" height="145" rx="18" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.8"/>
+  <text x="800" y="652" text-anchor="middle" class="step">更长、更广的 merged-LoRA 运行</text>
+  <text x="800" y="682" text-anchor="middle" class="body">1,000–5,000 steps · held-out checkpoint 选择</text>
+  <text x="800" y="704" text-anchor="middle" class="code">merged HF checkpoint</text>
+  <path d="M665 720 H935" class="optional"/>
+  <text x="800" y="746" text-anchor="middle" class="code">4 / 8 GPU · 1,000 回合 benchmark</text>
+
+  <rect x="1095" y="620" width="440" height="145" rx="18" fill="#ffffff" stroke="#d8b4fe" stroke-width="1.8"/>
+  <text x="1315" y="652" text-anchor="middle" class="step">全参数 SFT</text>
+  <text x="1315" y="682" text-anchor="middle" class="body">depth/video teachers · global batch 256 · full DCP</text>
+  <text x="1315" y="704" text-anchor="middle" class="code">full-model DCP</text>
+  <path d="M1180 720 H1450" class="optional"/>
+  <text x="1315" y="746" text-anchor="middle" class="code">gather / convert · 10 回合 + benchmark</text>
+
+  <rect x="230" y="790" width="1140" height="46" rx="17" fill="#ffffff" stroke="#e9d5ff"/>
+  <text x="800" y="819" text-anchor="middle" class="body">可见的 <tspan class="code">RUN_...=False</tspan> 使长章节能够顺序执行，但不会把“已跳过”写成“已验证”。</text>
+  <text x="800" y="874" text-anchor="middle" class="small">RoboGenesis 101 L14 课程原创示意图；未复制上游截图或结果图。</text>
+</svg>

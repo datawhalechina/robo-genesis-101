@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Action-expert LoRA and four-GPU FSDP2 training profile</title>
+  <desc id="desc">The frozen LingBot vision-language base supplies representations to an action expert. Only rank-eight, alpha-sixteen LoRA updates on the action expert's q, k, v, and o projections are trained. Each frozen projection weight receives a scaled low-rank B times A update. Four W7900 workers each use micro batch one. FSDP2 data-parallel shard size four and gradient accumulation one produce global batch four. The one-hundred-step run writes a distributed checkpoint and establishes pipeline execution rather than convergence or policy improvement. An optional eight-GPU profile has global batch eight.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#475569"/>
+    </marker>
+    <marker id="trainArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#ea580c"/>
+    </marker>
+    <style>
+      .title { font: 700 31px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .lane { font: 700 17px Inter, ui-sans-serif, system-ui, sans-serif; }
+      .heading { font: 700 17px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .tag { font: 700 11px Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.6px; }
+      .code { font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .flow { stroke: #475569; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .train { stroke: #ea580c; stroke-width: 2.6; fill: none; marker-end: url(#trainArrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" rx="24" fill="#f8fafc"/>
+  <text x="800" y="45" text-anchor="middle" class="title">LoRA changes a narrow action-expert scope; FSDP2 distributes the training state</text>
+  <text x="800" y="77" text-anchor="middle" class="subtitle">Rank, alpha, target projections, process count, micro batch, and accumulation are all part of the resolved experiment identity.</text>
+
+  <rect x="40" y="112" width="1520" height="425" rx="24" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <rect x="65" y="135" width="365" height="34" rx="17" fill="#e2e8f0"/>
+  <text x="247" y="158" text-anchor="middle" class="lane" fill="#334155">MODEL SCOPE · WHAT RECEIVES UPDATES?</text>
+
+  <rect x="70" y="210" width="310" height="230" rx="20" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+  <rect x="92" y="230" width="92" height="26" rx="13" fill="#dbeafe"/>
+  <text x="138" y="248" text-anchor="middle" class="tag" fill="#1d4ed8">FROZEN</text>
+  <text x="225" y="291" text-anchor="middle" class="heading">LingBot-VLA-v2 base</text>
+  <text x="225" y="325" text-anchor="middle" class="body">vision encoder + language model</text>
+  <text x="225" y="350" text-anchor="middle" class="body">base representations and conditioning</text>
+  <rect x="105" y="378" width="240" height="40" rx="12" fill="#ffffff" stroke="#bfdbfe"/>
+  <text x="225" y="404" text-anchor="middle" class="code">W_base remains unchanged</text>
+
+  <path d="M380 325 H455" class="flow"/>
+
+  <rect x="455" y="190" width="690" height="290" rx="22" fill="#fff7ed" stroke="#fb923c" stroke-width="2.2"/>
+  <rect x="477" y="210" width="122" height="26" rx="13" fill="#ffedd5"/>
+  <text x="538" y="228" text-anchor="middle" class="tag" fill="#c2410c">TRAINABLE LORA</text>
+  <text x="800" y="268" text-anchor="middle" class="heading">Action expert attention projections</text>
+  <text x="800" y="296" text-anchor="middle" class="code">W′ = W + (α / r) B A</text>
+
+  <rect x="495" y="326" width="135" height="105" rx="16" fill="#ffffff" stroke="#fdba74" stroke-width="1.7"/>
+  <text x="562" y="356" text-anchor="middle" class="heading">q_proj</text>
+  <text x="562" y="383" text-anchor="middle" class="code">B_q A_q</text>
+  <text x="562" y="408" text-anchor="middle" class="small">rank 8</text>
+  <rect x="650" y="326" width="135" height="105" rx="16" fill="#ffffff" stroke="#fdba74" stroke-width="1.7"/>
+  <text x="717" y="356" text-anchor="middle" class="heading">k_proj</text>
+  <text x="717" y="383" text-anchor="middle" class="code">B_k A_k</text>
+  <text x="717" y="408" text-anchor="middle" class="small">rank 8</text>
+  <rect x="805" y="326" width="135" height="105" rx="16" fill="#ffffff" stroke="#fdba74" stroke-width="1.7"/>
+  <text x="872" y="356" text-anchor="middle" class="heading">v_proj</text>
+  <text x="872" y="383" text-anchor="middle" class="code">B_v A_v</text>
+  <text x="872" y="408" text-anchor="middle" class="small">rank 8</text>
+  <rect x="960" y="326" width="135" height="105" rx="16" fill="#ffffff" stroke="#fdba74" stroke-width="1.7"/>
+  <text x="1027" y="356" text-anchor="middle" class="heading">o_proj</text>
+  <text x="1027" y="383" text-anchor="middle" class="code">B_o A_o</text>
+  <text x="1027" y="408" text-anchor="middle" class="small">rank 8</text>
+  <text x="1088" y="227" text-anchor="end" class="code">α=16</text>
+
+  <path d="M1145 325 H1215" class="train"/>
+  <rect x="1215" y="210" width="315" height="230" rx="20" fill="#faf5ff" stroke="#c084fc" stroke-width="2"/>
+  <rect x="1237" y="230" width="116" height="26" rx="13" fill="#f3e8ff"/>
+  <text x="1295" y="248" text-anchor="middle" class="tag" fill="#7e22ce">100-STEP OUTPUT</text>
+  <text x="1372" y="291" text-anchor="middle" class="heading">FSDP2 distributed checkpoint</text>
+  <text x="1372" y="325" text-anchor="middle" class="code">global_step_100</text>
+  <text x="1372" y="354" text-anchor="middle" class="body">sharded model / optimizer state</text>
+  <text x="1372" y="378" text-anchor="middle" class="body">saved config · scheduler · RNG</text>
+  <text x="1372" y="411" text-anchor="middle" class="small">training artifact, not serving format</text>
+
+  <rect x="40" y="570" width="1520" height="250" rx="24" fill="#eef2ff" stroke="#818cf8" stroke-width="2"/>
+  <rect x="65" y="590" width="500" height="34" rx="17" fill="#e0e7ff"/>
+  <text x="315" y="613" text-anchor="middle" class="lane" fill="#4338ca">REQUIRED DISTRIBUTED PROFILE · GLOBAL BATCH 4</text>
+
+  <rect x="70" y="655" width="190" height="105" rx="17" fill="#ffffff" stroke="#a5b4fc" stroke-width="1.7"/>
+  <text x="165" y="683" text-anchor="middle" class="heading">GPU rank 0</text>
+  <text x="165" y="711" text-anchor="middle" class="code">micro batch = 1</text>
+  <text x="165" y="738" text-anchor="middle" class="small">W7900 48 GiB</text>
+  <rect x="285" y="655" width="190" height="105" rx="17" fill="#ffffff" stroke="#a5b4fc" stroke-width="1.7"/>
+  <text x="380" y="683" text-anchor="middle" class="heading">GPU rank 1</text>
+  <text x="380" y="711" text-anchor="middle" class="code">micro batch = 1</text>
+  <text x="380" y="738" text-anchor="middle" class="small">W7900 48 GiB</text>
+  <rect x="500" y="655" width="190" height="105" rx="17" fill="#ffffff" stroke="#a5b4fc" stroke-width="1.7"/>
+  <text x="595" y="683" text-anchor="middle" class="heading">GPU rank 2</text>
+  <text x="595" y="711" text-anchor="middle" class="code">micro batch = 1</text>
+  <text x="595" y="738" text-anchor="middle" class="small">W7900 48 GiB</text>
+  <rect x="715" y="655" width="190" height="105" rx="17" fill="#ffffff" stroke="#a5b4fc" stroke-width="1.7"/>
+  <text x="810" y="683" text-anchor="middle" class="heading">GPU rank 3</text>
+  <text x="810" y="711" text-anchor="middle" class="code">micro batch = 1</text>
+  <text x="810" y="738" text-anchor="middle" class="small">W7900 48 GiB</text>
+
+  <path d="M165 655 V638 H935 V707 H970" class="flow"/>
+  <path d="M380 655 V638" stroke="#475569" stroke-width="2.5" fill="none"/>
+  <path d="M595 655 V638" stroke="#475569" stroke-width="2.5" fill="none"/>
+  <path d="M810 655 V638" stroke="#475569" stroke-width="2.5" fill="none"/>
+  <rect x="970" y="640" width="535" height="135" rx="19" fill="#ffffff" stroke="#818cf8" stroke-width="2"/>
+  <text x="1237" y="671" text-anchor="middle" class="heading">FSDP2 + batch arithmetic</text>
+  <text x="1237" y="705" text-anchor="middle" class="code">1 micro × 4 processes × 1 accumulation = 4 global</text>
+  <text x="1237" y="735" text-anchor="middle" class="body">data_parallel_shard_size=4 · max_steps=100 · save_steps=100</text>
+  <text x="1237" y="759" text-anchor="middle" class="small">optional 8-GPU profile: 1 × 8 × 1 = global batch 8</text>
+
+  <text x="800" y="853" text-anchor="middle" class="body">A completed optimizer update and DCP save establish execution of this configuration—not loss convergence or better closed-loop behavior.</text>
+  <text x="800" y="882" text-anchor="middle" class="small">Course-created schematic for RoboGenesis 101 L14.</text>
+</svg>

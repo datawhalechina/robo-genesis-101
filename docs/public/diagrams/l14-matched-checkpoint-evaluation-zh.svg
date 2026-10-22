@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">按 resolved seed 配对评估 base 与 merged checkpoint</title>
+  <desc id="desc">base checkpoint 与 merged LoRA checkpoint 分别通过同一套冻结的 task、expert、backend、server、video、episode counting 和 output protocol 接受评估。每次运行输出按 task name、task configuration 和实际 resolved seed 标识的 counted episode rows，并保留不计入分母的 setup attempts。两组 rows 按上述 key 连接，而不是按 episode index 配对。matched pairs 分为 success 不变、failure 不变、failure 到 success、success 到 failure 四类。base-only 与 merged-only seeds 继续可见。evidence card 报告 raw success counts、Wilson intervals、matched changes、unmatched seeds、video reconciliation、identities 和 small-sample limitations。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#475569"/>
+    </marker>
+    <marker id="blueArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="orangeArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#ea580c"/>
+    </marker>
+    <style>
+      .title { font: 700 31px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 16px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .lane { font: 700 17px Inter, ui-sans-serif, system-ui, sans-serif; }
+      .heading { font: 700 17px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 400 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #334155; }
+      .small { font: 500 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .tag { font: 700 11px Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.6px; }
+      .code { font: 600 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1e293b; }
+      .flow { stroke: #475569; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .base { stroke: #2563eb; stroke-width: 2.6; fill: none; marker-end: url(#blueArrow); }
+      .merged { stroke: #ea580c; stroke-width: 2.6; fill: none; marker-end: url(#orangeArrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" rx="24" fill="#f8fafc"/>
+  <text x="800" y="45" text-anchor="middle" class="title">用同一协议和实际 resolved-seed key 比较 checkpoints</text>
+  <text x="800" y="77" text-anchor="middle" class="subtitle">Episode position 不是 matching key：不稳定的 setup 可能在 policy episode 开始前推进内部 seed。</text>
+
+  <rect x="40" y="112" width="1520" height="180" rx="24" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <rect x="64" y="132" width="300" height="34" rx="17" fill="#e2e8f0"/>
+  <text x="214" y="155" text-anchor="middle" class="lane" fill="#334155">冻结的评估协议</text>
+  <rect x="70" y="195" width="220" height="58" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="180" y="218" text-anchor="middle" class="code">adjust_bottle</text>
+  <text x="180" y="239" text-anchor="middle" class="small">demo_clean · 10 回合</text>
+  <rect x="310" y="195" width="220" height="58" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="420" y="218" text-anchor="middle" class="code">seed CLI = 0</text>
+  <text x="420" y="239" text-anchor="middle" class="small">记录每个 resolved seed</text>
+  <rect x="550" y="195" width="220" height="58" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="660" y="218" text-anchor="middle" class="code">expert_check=true</text>
+  <text x="660" y="239" text-anchor="middle" class="small">保留 failure information</text>
+  <rect x="790" y="195" width="220" height="58" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="900" y="218" text-anchor="middle" class="code">EGL · MPLib</text>
+  <text x="900" y="239" text-anchor="middle" class="small">禁用 CuRobo</text>
+  <rect x="1030" y="195" width="220" height="58" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="1140" y="218" text-anchor="middle" class="code">video = true</text>
+  <text x="1140" y="239" text-anchor="middle" class="small">使用相同 counting semantics</text>
+  <rect x="1270" y="195" width="260" height="58" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="1400" y="218" text-anchor="middle" class="code">fresh separate outputs</text>
+  <text x="1400" y="239" text-anchor="middle" class="small">不以成功重试替换失败</text>
+
+  <rect x="40" y="325" width="460" height="355" rx="24" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+  <rect x="64" y="345" width="190" height="34" rx="17" fill="#dbeafe"/>
+  <text x="159" y="368" text-anchor="middle" class="lane" fill="#1d4ed8">BASE 运行</text>
+  <rect x="75" y="405" width="185" height="90" rx="17" fill="#ffffff" stroke="#93c5fd" stroke-width="1.7"/>
+  <text x="167" y="436" text-anchor="middle" class="heading">Base checkpoint</text>
+  <text x="167" y="466" text-anchor="middle" class="small">pipeline reference identity</text>
+  <path d="M260 450 H300" class="base"/>
+  <rect x="300" y="405" width="165" height="90" rx="17" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.8"/>
+  <text x="382" y="436" text-anchor="middle" class="heading">10 次 rollout</text>
+  <text x="382" y="466" text-anchor="middle" class="code">base k / 10</text>
+  <rect x="75" y="530" width="390" height="115" rx="17" fill="#ffffff" stroke="#93c5fd" stroke-width="1.7"/>
+  <text x="270" y="559" text-anchor="middle" class="heading">计入分母的 episode rows</text>
+  <text x="270" y="587" text-anchor="middle" class="code">(task, config, resolved_seed)</text>
+  <text x="270" y="613" text-anchor="middle" class="body">outcome · termination · video · checkpoint</text>
+  <text x="270" y="635" text-anchor="middle" class="small">setup attempts 单独保留且始终可见</text>
+  <path d="M382 495 V530" class="base"/>
+
+  <rect x="1100" y="325" width="460" height="355" rx="24" fill="#fff7ed" stroke="#fb923c" stroke-width="2"/>
+  <rect x="1124" y="345" width="210" height="34" rx="17" fill="#ffedd5"/>
+  <text x="1229" y="368" text-anchor="middle" class="lane" fill="#c2410c">MERGED-LORA 运行</text>
+  <rect x="1135" y="405" width="185" height="90" rx="17" fill="#ffffff" stroke="#fdba74" stroke-width="1.7"/>
+  <text x="1227" y="436" text-anchor="middle" class="heading">Merged checkpoint</text>
+  <text x="1227" y="466" text-anchor="middle" class="small">唯一预期发生改变的变量</text>
+  <path d="M1320 450 H1360" class="merged"/>
+  <rect x="1360" y="405" width="165" height="90" rx="17" fill="#ffedd5" stroke="#f97316" stroke-width="1.8"/>
+  <text x="1442" y="436" text-anchor="middle" class="heading">10 次 rollout</text>
+  <text x="1442" y="466" text-anchor="middle" class="code">merged k / 10</text>
+  <rect x="1135" y="530" width="390" height="115" rx="17" fill="#ffffff" stroke="#fdba74" stroke-width="1.7"/>
+  <text x="1330" y="559" text-anchor="middle" class="heading">计入分母的 episode rows</text>
+  <text x="1330" y="587" text-anchor="middle" class="code">(task, config, resolved_seed)</text>
+  <text x="1330" y="613" text-anchor="middle" class="body">outcome · termination · video · checkpoint</text>
+  <text x="1330" y="635" text-anchor="middle" class="small">setup attempts 单独保留且始终可见</text>
+  <path d="M1442 495 V530" class="merged"/>
+
+  <path d="M500 585 H570" class="base"/>
+  <path d="M1100 585 H1030" class="merged"/>
+  <rect x="570" y="325" width="460" height="355" rx="24" fill="#faf5ff" stroke="#c084fc" stroke-width="2"/>
+  <rect x="594" y="345" width="240" height="34" rx="17" fill="#f3e8ff"/>
+  <text x="714" y="368" text-anchor="middle" class="lane" fill="#7e22ce">RESOLVED-SEED JOIN</text>
+  <text x="800" y="411" text-anchor="middle" class="code">key = (task_name, task_config, resolved_seed)</text>
+  <text x="800" y="438" text-anchor="middle" class="small">绝不配对互不相关的 episode indices</text>
+
+  <rect x="605" y="470" width="180" height="70" rx="15" fill="#d1fae5" stroke="#34d399"/>
+  <text x="695" y="497" text-anchor="middle" class="heading">success → success</text>
+  <text x="695" y="521" text-anchor="middle" class="small">成功保持不变</text>
+  <rect x="815" y="470" width="180" height="70" rx="15" fill="#e2e8f0" stroke="#94a3b8"/>
+  <text x="905" y="497" text-anchor="middle" class="heading">failure → failure</text>
+  <text x="905" y="521" text-anchor="middle" class="small">失败保持不变</text>
+  <rect x="605" y="555" width="180" height="70" rx="15" fill="#dcfce7" stroke="#22c55e"/>
+  <text x="695" y="582" text-anchor="middle" class="heading">failure → success</text>
+  <text x="695" y="606" text-anchor="middle" class="small">观察到改善翻转</text>
+  <rect x="815" y="555" width="180" height="70" rx="15" fill="#fee2e2" stroke="#ef4444"/>
+  <text x="905" y="582" text-anchor="middle" class="heading">success → failure</text>
+  <text x="905" y="606" text-anchor="middle" class="small">观察到退化翻转</text>
+  <text x="800" y="655" text-anchor="middle" class="body">同时报告 base-only 与 merged-only seed sets</text>
+
+  <path d="M800 680 V720" class="flow"/>
+  <rect x="225" y="720" width="1150" height="120" rx="22" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="800" y="751" text-anchor="middle" class="heading">有边界的证据卡</text>
+  <text x="800" y="781" text-anchor="middle" class="body">base 与 merged <tspan class="code">k/n</tspan> + Wilson 95% · 四类 matched counts · unmatched seeds · setup attempts · checkpoint/run identities</text>
+  <text x="800" y="808" text-anchor="middle" class="body">JSONL ↔ video reconciliation · 100-step 与 10+10 小样本限制 · 不汇总 retries</text>
+  <text x="800" y="832" text-anchor="middle" class="small">merged count 更高只是这项协议下的 observation，不能证明 policy 普遍更优。</text>
+  <text x="800" y="882" text-anchor="middle" class="small">RoboGenesis 101 L14 课程原创示意图。</text>
+</svg>
