@@ -17,8 +17,11 @@
 > R9700 with AMD+EGL, matched Reference/shifted rollouts, and H.264 video and report
 > evidence audit passed. This does not establish a stable success rate, OOD
 > robustness, or sim-to-real transfer. L14 is an optional advanced practicum outside
-> the completion path for the 13 core lessons. It currently has only a `planned`
-> structural scaffold, not a runnable lesson or compatibility evidence.
+> the completion path for the 13 core lessons. Its required path is `gpu-verified`
+> in the pinned companion runtime on four W7900D GPUs: base `0/10`, 100-step LoRA,
+> DCP-to-HF merge, merged `0/10`, and a 20-video audit. These are independent small
+> aggregate observations, not evidence of improvement; resolved-seed matching,
+> eight-GPU runs, 1,000-episode benchmarks, and full SFT remain unverified.
 
 RoboGenesis 101 is a Datawhale open-source course for learners with basic Python experience who want a structured, hands-on introduction to robot learning. Using Genesis as its simulation platform, the course connects environment diagnostics, scenes, and rigid-body physics with robot control, inverse kinematics, grasping, demonstration data, imitation learning, policy training, and closed-loop evaluation.
 
@@ -50,7 +53,7 @@ The course follows these dependencies:
 3. grasping tasks, scripted experts, demonstration acquisition, and data recording;
 4. datasets, imitation learning, domain randomization, ACT/SmolVLA training, and closed-loop evaluation.
 5. optional L14 practice with RoboTwin data, LingBot-VLA-v2 LoRA, checkpoint merge,
-   and matched closed-loop evaluation in a separate external runtime; it is not a
+   and controlled aggregate closed-loop evaluation in a separate external runtime; it is not a
    prerequisite for completing the 13 core lessons.
 
 Training loss or open-loop action prediction is not treated as task success. The final evaluation uses closed-loop rollouts and explicit success criteria.
@@ -74,7 +77,7 @@ Training loss or open-loop action prediction is not treated as task success. The
 | L11 | [Domain Randomization](docs/en/lessons/l11-domain-randomization.md) | 90 min | `gpu-recommended` | `gpu-verified` |
 | L12 | [Training ACT and SmolVLA Policies](docs/en/lessons/l12-act-and-smolvla-policy-training.md) | 150 min | `gpu-required` | `gpu-verified` |
 | L13 | [Closed-Loop Evaluation and Capstone](docs/en/lessons/l13-closed-loop-evaluation-and-capstone.md) | 120 min | `gpu-required` | `gpu-verified` |
-| L14 | [Optional Advanced Practicum: Fine-Tuning LingBot-VLA-v2 with RoboTwin Data](docs/en/lessons/l14-robotwin-lingbot-vla-fine-tuning.md) | 180 min | `gpu-required` | `planned` |
+| L14 | [Optional Advanced Practicum: Fine-Tuning LingBot-VLA-v2 with RoboTwin Data](docs/en/lessons/l14-robotwin-lingbot-vla-fine-tuning.md) | 180 min | `gpu-required` | `gpu-verified` |
 
 Statuses progress from `planned` to `draft`, `reviewed`, `cpu-verified` or
 `gpu-verified`, and finally `published`. See the [course content guide](CONTENT_GUIDE.md) for the evidence required at each stage.
@@ -84,9 +87,10 @@ Statuses progress from `planned` to `draft`, `reviewed`, `cpu-verified` or
 - Python: `3.12.x`; the declared project range is `>=3.12,<3.13`.
 - Genesis: `genesis-world==1.3.3`.
 - LeRobot: the data and training extras pin `lerobot==0.6.0`.
-- Full-training reference platform: Linux x86_64, AMD Radeon AI PRO R9700, system ROCm 7.2.0, and the tested ROCm 7.2.1 PyTorch wheels.
+- Core-course full-training reference platform: Linux x86_64, AMD Radeon AI PRO R9700, system ROCm 7.2.0, and the tested ROCm 7.2.1 PyTorch wheels.
+- Separate L14 reference profile: 4× AMD Radeon PRO W7900D, the pinned companion runtime, Python 3.12.3, PyTorch `2.9.1+rocm7.2.1.gitff65f5bc`, and HIP `7.2.53211-e1a6bc5663`.
 
-Other AMD GPUs, NVIDIA CUDA, the complete CPU-only path, Apple Silicon, Windows, and other Python versions have not been verified. See the [compatibility matrix](COMPATIBILITY.md) for exact versions, wheel checksums, verified capabilities, and limitations.
+GPU/ROCm combinations other than those two recorded AMD profiles, the complete CPU-only training path, Apple Silicon, Windows, and other Python versions have not been verified. See the [compatibility matrix](COMPATIBILITY.md) for exact versions, wheel checksums, verified capabilities, and limitations.
 
 ## Quick start
 

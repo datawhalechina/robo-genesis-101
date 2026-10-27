@@ -5,14 +5,16 @@ locale: zh
 title: "可选进阶实践：使用 RoboTwin 数据微调 LingBot-VLA-v2"
 duration_minutes: 180
 hardware: gpu-required
-status: planned
+status: gpu-verified
 ---
 
 # L14 · 可选进阶实践：使用 RoboTwin 数据微调 LingBot-VLA-v2
 
-> **课程状态：** `planned`。本讲解释已经完成 review 的 L14 工作流，但双语 notebook、
-> 课程侧辅助代码和必做四卡执行证据尚未交付。不要把下面的命令当作 RoboGenesis 已验证
-> 的运行，也不要把引用的比赛测量写成课程实验结果。
+> **课程状态：** `gpu-verified`。必做路径已在固定 companion runtime 和四张 AMD Radeon
+> PRO W7900D 上通过真实验证，包括数据/运行时 preflight、base 评估、100-step 动作专家
+> LoRA、DCP 审计、Hugging Face 合并、merged model 评估及 20 个视频的审计。base 与 merged
+> 都是独立的 `0/10` aggregate 观测，因此本次运行不能证明策略得到提升；resolved-seed
+> matching 和可选比赛扩展仍未验证。
 
 ## 本实践在课程中的位置
 
@@ -52,7 +54,7 @@ benchmark、合并后 LoRA benchmark，以及带 depth/video teacher 的全参�
 
 完整必做运行有严格的最低条件：
 
-- 四张 AMD Radeon Pro W7900 48 GiB GPU；
+- 四张 AMD Radeon PRO W7900D 48 GiB-class GPU，与已验证 profile 一致；
 - 固定版本的 companion container/runtime，以及已挂载的模型和数据；
 - companion 定义的 Python 3.12、PyTorch 2.9.1 和 ROCm 7.2.1；
 - EGL 渲染、MPLib 末端执行器规划，并关闭 CuRobo；
@@ -146,8 +148,10 @@ companion 有意使用以下 container paths：
 ```
 
 确认 port `13400` 空闲、`/workspace/runtime` 可写，并且新的 run names 不会与旧 artifact 冲突。
-记录 `/`、`/workspace` 和 runtime output root 的剩余空间。L14 在四卡验证实际测量之前，不发布
-RoboGenesis 最低存储数字。
+记录 `/`、`/workspace` 和 runtime output root 的剩余空间。已验证的必做运行在课程 run root 下
+产生了 `37,464,653,433` bytes，并在 100-GiB workspace 上保留 `69,851,938,816`
+bytes 可用空间。这是一次实测 footprint，不是最低容量；更长 LoRA、benchmark 和 full SFT
+可能需要更多持久存储。
 
 教学 notebook 绝不能静默删除先前输出。保留的 full-SFT storage cell 只列出精确 cleanup
 candidates 并执行 dry run；只有在最终 artifact 已复制到持久存储后，学习者才能显式决定是否
@@ -224,8 +228,8 @@ companion 中有两个重要的 checkpoint 角色：
 | official RoboTwin post-training checkpoint | 可选的效果验证与 benchmark 参考 | 只用于 evaluation；比赛复现不能从它初始化 |
 
 official RoboTwin checkpoint path 会继续保留在 notebook 中，但在把这条可选路径描述为
-RoboGenesis 已验证、或把课程状态从 `planned` 晋级前，必须固定其精确 artifact revision。
-这项 provenance 要求不阻塞 base→LoRA/full-SFT 主线的实现和教学。
+RoboGenesis 已验证前，必须固定其精确 artifact revision。它当前仍是未运行的扩展，
+不为必做的 base→LoRA 主线提供证据。
 
 ### 一次只启动一个 server，并等待 health
 
@@ -291,19 +295,11 @@ PYOPENGL_PLATFORM=egl \
 静默过滤相应 seed。课程保留 companion 未修改的 serial evaluator，并在课程 notebook 中增加
 collection loop。
 
-课程在四卡 W7900 环境进行真实验证时，发现 serial `eval_batch=false` loop 存在一个重要的
-分母错位：它会在 expert check 之后、第二次环境 setup 之前先消耗一个 requested slot。如果
-第二次 setup 不稳定，它可能只完成较少的 policy episode，却仍打印请求时的固定分母。例如真实
-执行只完成了 5 个 episode，最后却输出 `Final success rate: 0/10`。
-
-因此 notebook 读取最后一条 incremental `Success rate: k/n`，以其中的 `n` 作为本次 invocation
-真实完成的 policy episode 数。如果 `n` 小于 requested slots，就只为剩余 episode 启动下一次
-serial invocation，并按上一段 requested range 推进 `--seed_start`。每个 invocation 保存独立 raw
-log，并立即把视频归档到 invocation-specific 目录。这样即使每个源目录的 basename 都从
-`episode0.mp4` 重新开始，invocation 边界仍然清楚；版本化 attempts JSON 与合成 aggregate
-summary 记录请求数、完成数和视频路径。只有累计
-恰好 10 个 policy episode、并归档到恰好 10 个新视频时，collection 才结束。若 evaluator 因
-基础设施错误以非零状态退出，则仍中止该 run。整个过程不修改 companion 源文件。
+serial evaluator 在环境 setup 不稳定时，可能打印请求的分母，即使实际完成的 policy
+episode 更少。notebook 因此以最后一条 incremental `Success rate: k/n` 作为完成分母，
+为剩余 episode 启动 fresh invocation，并保留每次 invocation 的 log 和视频。只有恰好完成
+10 个 policy episode 并归档 10 个视频时，collection 才成功；基础设施错误仍会中止 run。
+这样可以在不修改 companion 的前提下，让分母对应真正完成的 episode。
 
 当前固定 companion 尚不按延期 JSONL schema 输出每个 resolved seed 的 policy outcome。课程侧
 attempts JSON 只是 invocation-level collection evidence，不能替代这些 episode rows。当前 notebook
@@ -625,7 +621,8 @@ L14 在完整保留比赛参考工作流的同时，为它增加了课程证据�
 - 在必做四卡 profile 上训练 rank-8/alpha-16 动作专家 LoRA；
 - 把 DCP 视为 distributed training state，并通过正确的 LoRA merge 生成 fresh、可部署的
   Hugging Face checkpoint；
-- 在同一个、能够感知 resolved seed 的冻结闭环协议下比较 base 与 merged policy；
+- 在同一个冻结闭环协议下比较 base 与 merged policy，报告当前独立 aggregate，并把
+  resolved-seed matching 留给真正包含 episode 实际 seed 的证据；
 - 保留 4/8-GPU 完整 benchmark 和全参数 SFT，但不把未运行的可选章节冒充课程验证；
 - 把 100 steps 与 10+10 回合的结论限制在这些观测真正能够支持的范围内。
 

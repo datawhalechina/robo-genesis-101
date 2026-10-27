@@ -35,7 +35,10 @@ features:
 > provenance 验证，状态为 `gpu-verified`。L13 已通过双语诊断、参考 R9700 AMD+EGL 单
 > checkpoint 闭环评估、matched reference/shifted rollout、H.264 视频与报告证据审计，状态为
 > `gpu-verified`；这不表示已经证明稳定成功率、OOD 鲁棒性或 sim-to-real。L14 是不影响核心
-> 13 讲完成路径的可选进阶实践，当前仅为 `planned` 结构骨架，尚未形成可运行课程或兼容性证据。
+> 13 讲完成路径的可选进阶实践，已在固定 companion runtime 和 4× W7900D 上完成 base
+> `0/10`、100-step LoRA、DCP→HF merge、merged `0/10` 及 20 个视频的必做路径验证，状态为
+> `gpu-verified`。两组结果是独立 aggregate 小样本，不能证明策略提升；resolved-seed matching、
+> 8 卡、1000 回合 benchmark 和 full SFT 尚未验证。
 
 | 讲次 | 主题 | 预计时长 | 硬件 | 状态 |
 |---|---|---:|---|---|
@@ -52,4 +55,4 @@ features:
 | L11 | [域随机化](/zh/lessons/l11-domain-randomization) | 90 分钟 | `gpu-recommended` | `gpu-verified` |
 | L12 | [ACT 与 SmolVLA 策略训练](/zh/lessons/l12-act-and-smolvla-policy-training) | 150 分钟 | `gpu-required` | `gpu-verified` |
 | L13 | [闭环评估与 Capstone](/zh/lessons/l13-closed-loop-evaluation-and-capstone) | 120 分钟 | `gpu-required` | `gpu-verified` |
-| L14 | [可选进阶实践：使用 RoboTwin 数据微调 LingBot-VLA-v2](/zh/lessons/l14-robotwin-lingbot-vla-fine-tuning) | 180 分钟 | `gpu-required` | `planned` |
+| L14 | [可选进阶实践：使用 RoboTwin 数据微调 LingBot-VLA-v2](/zh/lessons/l14-robotwin-lingbot-vla-fine-tuning) | 180 分钟 | `gpu-required` | `gpu-verified` |

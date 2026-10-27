@@ -277,7 +277,7 @@
         "zh": "docs/zh/lessons/l14-robotwin-lingbot-vla-fine-tuning.md",
         "en": "docs/en/lessons/l14-robotwin-lingbot-vla-fine-tuning.md"
       },
-      "status": "planned"
+      "status": "gpu-verified"
     }
   ]
 }

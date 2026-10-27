@@ -33,8 +33,7 @@ def test_repository_manifest_defines_the_canonical_learning_path() -> None:
         *([CourseStatus.CPU_VERIFIED] * 7),
         *([CourseStatus.GPU_VERIFIED] * 2),
         CourseStatus.CPU_VERIFIED,
-        *([CourseStatus.GPU_VERIFIED] * 3),
-        CourseStatus.PLANNED,
+        *([CourseStatus.GPU_VERIFIED] * 4),
     ]
     assert [lesson.hardware for lesson in manifest.lessons] == [
         *([HardwareRequirement.CPU_OK] * 7),
@@ -51,7 +50,7 @@ def test_repository_manifest_defines_the_canonical_learning_path() -> None:
     )
     assert l14.duration_minutes == 180
     assert l14.hardware is HardwareRequirement.GPU_REQUIRED
-    assert l14.status is CourseStatus.PLANNED
+    assert l14.status is CourseStatus.GPU_VERIFIED
 
 
 def test_course_status_enum_matches_the_public_contract() -> None:

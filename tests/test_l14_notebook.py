@@ -172,7 +172,7 @@ def test_l14_notebooks_preserve_the_companion_coverage_without_fake_matching() -
             "locale": locale,
             "duration_minutes": 180,
             "hardware": "gpu-required",
-            "status": "planned",
+            "status": "gpu-verified",
         }
         assert all(cell["execution_count"] is None for cell in code_cells)
         assert all(cell["outputs"] == [] for cell in code_cells)

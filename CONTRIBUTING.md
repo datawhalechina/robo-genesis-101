@@ -4,7 +4,7 @@
 
 ## 中文
 
-感谢你帮助改进 RoboGenesis 101。本项目当前处于 Alpha 阶段：仓库基础设施和公共 Python 代码已经建立；13 讲核心课程包含 8 个 `cpu-verified` 和 5 个 `gpu-verified` 讲次，新增的可选 L14 进阶实践仍为 `planned`。提交内容时，请准确描述已经完成和实际验证的部分，不要因为文件存在就提高课程状态。
+感谢你帮助改进 RoboGenesis 101。本项目当前处于 Alpha 阶段：仓库基础设施和公共 Python 代码已经建立；14 讲课程当前包含 8 个 `cpu-verified` 和 6 个 `gpu-verified` 讲次，其中 L14 仍是不影响核心 13 讲完成路径的可选进阶实践。提交内容时，请准确描述已经完成和实际验证的部分，不要因为文件存在就提高课程状态。
 
 ### 可以贡献什么
 
@@ -86,7 +86,7 @@ git diff --check
 
 ## English
 
-Thank you for helping improve RoboGenesis 101. The project is currently in Alpha: repository infrastructure and shared Python code exist; the 13 core lessons comprise 8 `cpu-verified` and 5 `gpu-verified` lessons, while the new optional L14 advanced practicum remains `planned`. Describe completed and actually verified work accurately; the existence of a file does not justify advancing its course status.
+Thank you for helping improve RoboGenesis 101. The project is currently in Alpha: repository infrastructure and shared Python code exist; the 14 lessons currently comprise 8 `cpu-verified` and 6 `gpu-verified` lessons, with L14 remaining an optional advanced practicum outside the completion path for the 13 core lessons. Describe completed and actually verified work accurately; the existence of a file does not justify advancing its course status.
 
 ### What to contribute
 

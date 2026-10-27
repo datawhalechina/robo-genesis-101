@@ -19,6 +19,10 @@ V1 的完整训练参考平台确定为 **Python 3.12 + Linux x86_64 + AMD Radeo
 
 这些 smoke 结果只证明接口和最小执行链路可用，不证明策略已经收敛，也不构成闭环抓取成功率结果。
 
+可选 L14 使用独立外部 runtime，不把 W7900 结果外推到上述核心课程栈。2026-10-27，固定
+companion 在 4× AMD Radeon PRO W7900D 上完成了 L14 必做的 base evaluation、四卡
+100-step LoRA、DCP→HF merge、merged evaluation 和视频审计；精确环境、结果与限制见第 25 节。
+
 ## 2. 状态定义
 
 | 状态 | 含义 |
@@ -114,6 +118,8 @@ M0.7 在断网模式下从已有 Hugging Face 缓存读取以下 revision：
 | ACT checkpoint 加载与推理 | **已验证** | 通用加载接口在 GPU 上返回有限的 `(9,) float32` 动作。 |
 | SmolVLA 训练 smoke | **已验证** | 干净环境 1 step，loss `6.305`，gradient norm `42.467`，checkpoint 已保存。 |
 | SmolVLA checkpoint 加载与推理 | **已验证** | 恢复 `world/wrist → camera1/camera2` 映射，在 GPU 上返回有限的 `(9,) float32` 动作。 |
+| L14 四卡 LoRA 与 DCP→HF merge | **已验证** | 固定 companion、4× W7900D、100 steps；四卡训练、134-file DCP 审计、144-layer LoRA merge 和 3-shard HF artifact 均完成。 |
+| L14 base/merged 闭环 aggregate | **已验证** | `adjust_bottle/demo_clean` 各完成 10 个 policy episodes 和 10 个 H.264 视频；两者均为 `0/10`，resolved-seed matching 不可用。 |
 | 长训练、收敛和闭环成功率 | **未验证** | 1 step loss 和单次开环推理不能代替闭环 rollout；后续里程碑单独验证。 |
 | 从空 Hugging Face 缓存下载 SmolVLA | **未验证** | 本轮主动使用离线模式和本机已有缓存。 |
 
@@ -124,7 +130,8 @@ ACT 和 SmolVLA 的 checkpoint 都由 M0.7 干净环境生成，随后通过源�
 | 平台 | 状态 | V1 说明 |
 | --- | --- | --- |
 | Linux x86_64 / R9700 / 系统 ROCm 7.2.0 / 本文 wheel | **已验证** | 完整训练参考平台。 |
-| 其他 AMD GPU 或 ROCm 组合 | **未验证** | 不能从 R9700 结果外推；欢迎后续补充实测矩阵。 |
+| 固定 L14 companion / 4× W7900D / PyTorch 2.9.1 / HIP 7.2.53211 | **已验证** | 仅支持第 25 节记录的 L14 必做路径；不是核心课程默认安装或通用 W7900 兼容性声明。 |
+| 其他 AMD GPU 或 ROCm 组合 | **未验证** | 不能从 R9700 或 L14 W7900D 结果外推；欢迎后续补充实测矩阵。 |
 | NVIDIA CUDA | **未验证** | 解析器出现 CUDA 包不构成验证；V1 不承诺完整链路支持。 |
 | CPU-only 完整链路 | **部分验证** | L01–L07 的 CPU 最小实验已实际通过并完成对应运行验收，状态均为 `cpu-verified`；训练全链路未在 CPU-only 环境验证。 |
 | Apple Silicon / macOS | **未验证** | 本轮没有执行 MPS、Genesis 或 LeRobot 兼容性测试。 |
@@ -1971,3 +1978,117 @@ manifest 输出 `status=gpu-verified`，dataset audit 为 `PASS`，固定远端 
 
 项目负责人于 2026-10-10 确认 `M3.L13.6` 验收通过。L13 当前公开状态为
 `gpu-verified`；M3 至此全部完成，未自动开始 M4。
+
+## 25. L14 / M3.L14.5–M3.L14.6 四卡 W7900D 验证与公开状态同步
+
+> 验证日期：2026-10-27（Asia/Shanghai）
+>
+> 范围：固定外部 companion 中的 L14 必做路径，包括输入/运行时 preflight、base 10 episodes、
+> 四卡 100-step action-expert LoRA、DCP 审计、LoRA→Hugging Face merge、merged 10 episodes、
+> 视频/资源审计，以及验收后的 `gpu-verified` 公开状态同步。
+
+本节记录 L14 独立 runtime 的实测证据，不改变第 3 节核心课程 R9700 依赖基线，也不把外部
+companion 变成 RoboGenesis 安装、文档构建或 L01–L13 的依赖。完整机器可读记录保留在本地
+开发档案中，不属于公开仓库；本节保留面向公开课程的完整证据摘要。
+
+### 25.1 平台、来源与输入身份
+
+| 项目 | 实测值 |
+| --- | --- |
+| GPU | 4× `AMD Radeon PRO W7900D`，`gfx1100` |
+| 每卡显存身份 | PyTorch `51,522,830,336` bytes；`amd-smi` `49,136 MB` |
+| 系统内存 | 503 GiB |
+| Python | `3.12.3` |
+| PyTorch / HIP | `2.9.1+rocm7.2.1.gitff65f5bc` / `7.2.53211-e1a6bc5663` |
+| companion | `27b2f6fcb6c715e2cbb6db4431381f87c94b86ed`；worktree 未修改 |
+| RoboTwin | `266f3aadf505a4f7fe9af0faa41a20f5f47cd123` |
+| XPolicyLab | `c37109c500be67d0dea6b36bf7337bbd26e763cd` |
+| LingBot-VLA-v2 | `951475ae1b1d87553e7dc47c97b53a3d695c0d13` |
+| AITER | `9bab8388c35936814a659b4ebd245c491e1b940a` |
+| 必需环境 | `AITER_TRITON_ONLY=1`、`FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE`、课程 `src` 与 `/opt/aiter` 进入 `PYTHONPATH` |
+
+preflight 核对了 50 个 `demo_clean` task、50 个 LeRobot task dataset 和 50 条 training manifest
+entry。抽样数据的原始 state/action 均为 14 维；semantic mapping 分别得到 12 维 arm 与 2 维
+effector group。`.L14.5` 执行输入所对应的课程 notebook SHA-256 为
+`ec2ac4a225016e06e5c5e47f3ed765f26d8e993b90970eb0e8de729ad929ca42`，课程 helper 为
+`d367009abdaad33ef71aafcae30cd1b36629f0658b58cf4e2a93fd26048b4974`。执行副本包含全部
+20 个 code cell，error cell 为 0；执行副本、模型、数据、checkpoint 和视频均未提交到 Git。
+
+### 25.2 必做路径的实际结果
+
+run identity 为 `l14-adjust-bottle-4gpu-20261027t0822z`，任务为
+`adjust_bottle/demo_clean`，protocol 为 `lingbot_vla_v2`。完整执行约 83.1 分钟。
+
+| 阶段 | 实际结果 | 证据边界 |
+| --- | --- | --- |
+| Base evaluation | `0/10`；95% Wilson `[0.0, 0.2775401688]`；约 36.02 分钟 | 10 个实际完成 policy episodes，不是稳定成功率估计 |
+| Action-expert LoRA | 4 GPU、rank 8、alpha 16、global batch 4、seed 42、100 steps；约 6.01 分钟 | 证明分布式 data/forward/backward/update/save 链路，不证明收敛或质量提升 |
+| DCP | 134 files，`24,970,824,371` bytes | 保存日志与 artifact 审计通过 |
+| LoRA merge | 144 个 LoRA layers；HF 14 files、3 个 weight shards、`12,467,433,466` bytes | fresh serving artifact 审计通过 |
+| Merged evaluation | `0/10`；95% Wilson `[0.0, 0.2775401688]`；约 37.60 分钟 | 与 base 是独立 aggregate 观测 |
+| Aggregate comparison | observed rate difference `0.0` | resolved-seed matching 不可用，不产生 matched improvement/regression 结论 |
+
+训练日志最后记录的 loss、gradient norm 和 step time 只属于本次 100-step pipeline observation，
+不是跨环境阈值，也不能用于选择“最佳”checkpoint。`gpu-verified` 表示上述必做执行链和证据
+合同在该固定环境通过，不表示微调后策略优于 base。
+
+### 25.3 分母、日志与视频证据
+
+未修改的 serial evaluator 在环境 setup 不稳定时会按请求数打印固定的 final denominator，即使
+实际完成的 policy episodes 更少。课程 notebook 以最后一条 incremental `Success rate: k/n`
+确定完成分母，再为剩余 episodes 启动 fresh invocation。base 与 merged 都以 `5+4+1` 三次
+invocation 补齐 10 个实际 policy episodes；每次 invocation 的 raw log、attempt summary 和视频
+立即隔离归档。evaluator 非零退出仍作为基础设施错误终止 run。
+
+当前固定 companion 不输出逐 resolved-seed policy outcomes。attempt summaries 只能证明每次
+invocation 的请求数、完成数和视频路径，不能替代逐 episode rows，因此本轮只允许比较两个
+独立 aggregate。延期的 JSONL 增强不会阻塞训练、merge、serving 或 aggregate evaluation，
+但落地前不能声称 resolved-seed matched improvement 或 regression。
+
+base 与 merged 各归档 10 个视频。20 个文件全部通过 probe：H.264、320×240、400 frames、
+40 秒。首尾 episode contact sheet 的人工检查确认存在非空机器人/物体运动且未见解码损坏；
+success/failure 仍以 evaluator log 为准，不能从抽帧主观改写标签。
+
+### 25.4 资源与存储观察
+
+- 979 个约 5 秒间隔的 GPU metric samples 中，四卡峰值显存分别为
+  `25,720 / 24,239 / 24,239 / 25,720 MB`；峰值 gfx activity 为
+  `95 / 95 / 95 / 94%`。
+- course run root 总计 `37,464,653,433` bytes；100-GiB workspace 在执行后仍有
+  `69,851,938,816` bytes 可用。
+- 这些数值是该 100-step、10+10 路径的一次实测 footprint，不是最低容量承诺。更长 LoRA、
+  1,000-episode benchmark、8-GPU profile 和 full SFT 可能显著增加存储与运行时间。
+- 训练结束后观察到 allocator deprecation/unsupported-option warning 和 NFS `.nfs` 临时目录
+  cleanup warning；训练命令成功返回，step 100 与 DCP 保存已在 merge 前确认。
+
+### 25.5 未运行项与兼容性边界
+
+本轮没有运行 official RoboTwin checkpoint evaluation、official/base/merged-LoRA 的
+100-task × 10-episode benchmarks、8-GPU competition profile、长 LoRA、full-parameter SFT，
+以及 full-SFT conversion/serving/evaluation/benchmark。也没有验证其他 GPU、ROCm、容器、
+操作系统或无云环境。L14 没有 CPU、单卡或无 companion 的完整运行 fallback。
+
+### 25.6 M3.L14.6 公开状态同步
+
+`.L14.5` 证据通过项目负责人验收后，L14 的 canonical status 从 `planned` 原子同步为
+`gpu-verified`。同步范围包括 `course.json`、双语讲义 frontmatter/状态说明、双语 notebook
+metadata、双语 README/首页、贡献指南和状态合同测试。同步后的 14 讲状态统计为 8 个
+`cpu-verified`、6 个 `gpu-verified`、0 个 `planned` 和 0 个 `published`。
+
+VitePress sidebar 直接从 `course.json` 读取 lesson path/title，不维护独立状态 literal，因此本步
+无需修改 sidebar 配置。状态同步没有修改 companion、训练/evaluation 实现、运行结果或
+aggregate-only 结论边界。仓库门禁结果将在 `.L14.6` 交付检查完成后记录到本节。
+
+状态同步后的交付门禁结果：
+
+- `course.json` 与 EN/ZH notebook 均通过 JSON 解析；两份 notebook 仍为 43 cells / 20 code
+  cells，code cell ID/source 一致，提交版 outputs 为空且 `execution_count: null`；
+- L14 定向 manifest/notebook/workflow tests：21 passed；
+- 全量 pytest：107 passed；compileall 通过；
+- course validation：14 lessons、34 localized Markdown files、28 notebooks、45 Python files；
+- `npm ci`：安装 190 个包并审计 191 个包，保留 15 项既有 advisory（4 low、1 moderate、
+  10 high），没有执行 `npm audit fix`；
+- VitePress 文档构建通过，仅保留既有 large-chunk warning；
+- learner-facing L14 `planned`/scaffold 残留扫描、状态表一致性和 `git diff --check` 通过。
+
+`M3.L14.6` 的实现与门禁已交付，等待项目负责人验收；本步不自动开始 M4。

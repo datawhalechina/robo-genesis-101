@@ -20,5 +20,5 @@ features:
   - title: Bilingual by design
     details: Lectures and notebooks use paired English and Chinese structures.
   - title: 当前状态 · Current status
-    details: The 13 core lessons are verified; the optional L14 practicum is planned and not yet runnable.
+    details: The 13 core lessons are verified; the optional L14 required path is also gpu-verified on four W7900D GPUs, with its higher-cost extensions still unverified.
 ---

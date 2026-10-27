@@ -5,15 +5,18 @@ locale: en
 title: "Optional Advanced Practicum: Fine-Tuning LingBot-VLA-v2 with RoboTwin Data"
 duration_minutes: 180
 hardware: gpu-required
-status: planned
+status: gpu-verified
 ---
 
 # L14 · Optional Advanced Practicum: Fine-Tuning LingBot-VLA-v2 with RoboTwin Data
 
-> **Course status:** `planned`. This lecture explains the reviewed L14 workflow,
-> but the bilingual notebook, course-side helpers, and required four-GPU execution
-> evidence have not been delivered yet. Do not treat the commands below as a
-> RoboGenesis-verified run or the cited competition measurements as course results.
+> **Course status:** `gpu-verified`. The required path passed in the pinned
+> companion runtime on four AMD Radeon PRO W7900D GPUs: data/runtime preflight,
+> base evaluation, 100-step action-expert LoRA, DCP audit, Hugging Face merge,
+> merged-model evaluation, and 20-video audit. Base and merged were both `0/10`
+> independent aggregate observations, so this run does not establish policy
+> improvement; resolved-seed matching and the optional competition extensions
+> remain unverified.
 
 ## Where this practicum fits
 
@@ -58,7 +61,8 @@ an optional branch is not evidence that RoboGenesis executed it.*
 
 The complete required run has a strict minimum:
 
-- four AMD Radeon Pro W7900 GPUs with 48 GiB each;
+- four AMD Radeon PRO W7900D GPUs with 48 GiB-class memory each, matching the
+  verified profile;
 - the pinned companion container/runtime and mounted model/data content;
 - Python 3.12, PyTorch 2.9.1, and ROCm 7.2.1 as defined by that companion;
 - EGL rendering, MPLib end-effector planning, and CuRobo disabled;
@@ -162,8 +166,11 @@ The companion uses container paths intentionally:
 
 Confirm that port `13400` is free, `/workspace/runtime` is writable, and the
 new run names do not collide with old artifacts. Record free space for `/`,
-`/workspace`, and the runtime output root. L14 does not publish a RoboGenesis
-minimum-storage number until the four-GPU verification step measures it.
+`/workspace`, and the runtime output root. The verified required run produced
+`37,464,653,433` bytes under its course run root and left `69,851,938,816`
+bytes available on a 100-GiB workspace. Treat that as one observed footprint,
+not a minimum: longer LoRA, benchmarks, and full SFT can require substantially
+more persistent storage.
 
 Never let a teaching notebook silently delete previous outputs. The retained
 full-SFT storage cell will list exact cleanup candidates and perform a dry run;
@@ -248,9 +255,8 @@ The companion contains two important checkpoint roles:
 
 The official RoboTwin checkpoint path remains in the notebook, but its exact
 artifact revision must be pinned before that optional path is described as
-RoboGenesis-verified or the lesson advances beyond `planned`. This provenance
-requirement does not block implementing or teaching the base-to-LoRA/full-SFT
-workflow.
+RoboGenesis-verified. It remains an unrun extension and does not provide
+evidence for the required base-to-LoRA workflow.
 
 ### Start one server, then wait for health
 
@@ -319,27 +325,14 @@ available even when the expert plan/task check fails instead of silently
 filtering such seeds. The course keeps the companion's unmodified serial
 evaluator and wraps it with a course-side collection loop.
 
-During the course's four-GPU W7900 validation run, the serial
-`eval_batch=false` loop exposed an important denominator mismatch. A requested
-slot is consumed after the expert check but before the second environment
-setup. If that second setup is unstable, the serial evaluator can complete
-fewer policy episodes while still printing the requested denominator—for
-example, five completed episodes followed by a fixed `Final success rate:
-0/10`.
-
-The notebook therefore reads the last incremental `Success rate: k/n` line,
-which reflects the policy episodes that actually completed in that invocation.
-If `n` is smaller than the requested slot count, it starts another serial
-invocation for exactly the remaining number of episodes and advances
-`--seed_start` by the preceding requested range. Each invocation has its own raw
-log, and its videos are archived immediately under an invocation-specific
-directory. This keeps invocation boundaries explicit even though each source
-directory may begin again at the `episode0.mp4` basename. A versioned
-attempts JSON and a synthesized aggregate summary record the requested slots,
-completed count, and archived video paths. Collection stops only when exactly
-ten policy episodes and ten newly archived videos are present. An infrastructure
-failure that exits the evaluator still aborts the run. No companion source file
-is modified.
+The serial evaluator can print the requested denominator even when an unstable
+setup causes fewer policy episodes to finish. The notebook therefore treats
+the last incremental `Success rate: k/n` as the completed denominator, starts
+a fresh invocation for any remaining episodes, and preserves each invocation's
+log and videos. Collection succeeds only after exactly ten completed policy
+episodes and ten archived videos; an infrastructure failure still aborts the
+run. This keeps the denominator tied to observed episodes without modifying
+the companion.
 
 The current pinned companion does not yet emit per-resolved-seed policy outcomes
 in the deferred JSONL schema. The course-side attempts JSON is invocation-level
@@ -693,8 +686,9 @@ course evidence structure:
 - train rank-8/alpha-16 action-expert LoRA on the required four-GPU profile;
 - treat DCP as distributed training state and create a fresh deployable Hugging
   Face checkpoint through the correct LoRA merge;
-- compare base and merged policies under one frozen, resolved-seed-aware
-  closed-loop protocol;
+- compare base and merged policies under one frozen closed-loop protocol,
+  report the current independent aggregates, and reserve resolved-seed matching
+  for evidence that contains the actual episode seeds;
 - retain 4/8-GPU full benchmarks and full-parameter SFT without pretending that
   unrun optional sections are course verification; and
 - limit 100-step and 10+10-episode conclusions to what those observations can
