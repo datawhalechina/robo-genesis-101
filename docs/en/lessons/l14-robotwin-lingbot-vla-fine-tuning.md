@@ -40,7 +40,7 @@ base-model closed-loop evaluation
         ↓
 merge into a deployable Hugging Face checkpoint
         ↓
-matched merged-model evaluation → scoped evidence card
+merged-model aggregate evaluation → scoped evidence card
 ```
 
 The same source notebook also covers an official RoboTwin post-training
@@ -86,8 +86,8 @@ first model/data preparation, server startup waits, and training wall time.
 | 50–75 min | Base server and ten-episode evaluation protocol | Freeze checkpoint, expert, seed, video, and denominator semantics |
 | 75–105 min | Action-expert LoRA, batch arithmetic, and FSDP2 | Explain the update scope and audit the four-GPU command |
 | 105–130 min | DCP identity and Hugging Face merge | Distinguish a training checkpoint from a serving artifact |
-| 130–155 min | Merged-model evaluation and resolved-seed matching | Build matched, base-only, and merged-only seed sets |
-| 155–175 min | Wilson intervals, JSONL/video reconciliation, and evidence card | Write a scoped 10+10-episode conclusion |
+| 130–155 min | Merged-model evaluation and aggregate comparison | Preserve independent run identities, logs, videos, and denominators |
+| 155–175 min | Wilson intervals and evidence card | Write a scoped 10+10-episode conclusion and mark matched outcomes unavailable |
 | 175–180 min | Summary and one-variable extension design | Register a follow-up without mixing it into the core denominator |
 
 The official checkpoint, full 1,000-episode benchmarks, eight-GPU profiles,
@@ -246,10 +246,11 @@ The companion contains two important checkpoint roles:
 | `robbyant/lingbot-vla-v2-6b` base | deployment and pipeline reference; initialization for LoRA/full SFT | required starting point |
 | official RoboTwin post-training checkpoint | optional effect-validation and benchmark reference | evaluation only; never initialize the competition reproduction from it |
 
-The official RoboTwin checkpoint path remains in the source notebook, but the
-public course must pin its exact artifact revision before the notebook is
-implemented. This is a provenance requirement, not a reason to remove the
-validated path.
+The official RoboTwin checkpoint path remains in the notebook, but its exact
+artifact revision must be pinned before that optional path is described as
+RoboGenesis-verified or the lesson advances beyond `planned`. This provenance
+requirement does not block implementing or teaching the base-to-LoRA/full-SFT
+workflow.
 
 ### Start one server, then wait for health
 
@@ -324,9 +325,12 @@ remains in the denominator with a termination reason.
 
 The current pinned companion reliably reports aggregate `Final success rate:
 k/n`, but its single-task JSONL is written before policy rollout and does not
-yet contain per-resolved-seed policy outcomes. Before `M3.L14.4`, the companion
-must gain reviewed per-attempt/episode JSONL. This course-evidence augmentation
-does not dispute the path validation of the competition notebook.
+yet contain per-resolved-seed policy outcomes. The current course notebook
+therefore completes the full LoRA/full-SFT workflow without changing the
+companion and reports base and merged results as independent aggregate
+observations. Per-attempt JSONL remains a future evidence enhancement; its
+absence limits comparison claims but does not block training, conversion,
+serving, or aggregate closed-loop evaluation.
 
 ## Optional 100-task × 10-episode benchmarks
 
@@ -334,7 +338,9 @@ The benchmark script covers 50 clean and 50 randomized tasks, ten episodes per
 task. With four or eight selected GPUs, it launches one model server and one
 evaluation worker per GPU and assigns the next unfinished task from a shared
 queue. `--resume` skips task completion markers in the same run directory;
-change `--run-name` for an independent rerun.
+change `--run-name` for an independent rerun. The course notebook defaults
+each benchmark resume switch to `False`, rejects an existing output directory,
+and requires an explicit opt-in to resume an already identified run.
 
 The pinned companion notebook reports the following wall-clock observations.
 They are **upstream competition-reference measurements**, not RoboGenesis
@@ -484,6 +490,12 @@ Before serving, audit at least:
 
 ## Compare base and merged checkpoints by resolved seed
 
+This section defines the stronger comparison protocol to use once final
+per-resolved-seed outcomes are available. The current pinned companion cannot
+perform this join: the notebook reports the two `k/n` values and Wilson
+intervals, marks matched outcomes as unavailable, and does not infer seed
+identity from episode index.
+
 Stop the training processes, launch the merged checkpoint on the same GPU,
 port, and flags as the base checkpoint, then repeat ten episodes. Checkpoint
 identity is the intended variable; task, config, evaluator, expert semantics,
@@ -516,15 +528,23 @@ merged-only seeds. Mark the complete matched comparison as unsatisfied. Do not
 replace a failed row with a successful retry or pool a new run into the old
 denominator.
 
-The evidence card must reconcile:
+The current aggregate evidence card must reconcile:
 
 - base and merged `k/n`;
 - both Wilson intervals;
-- all counted episode rows and non-counted setup attempts;
-- matched outcome changes and unmatched seed sets;
 - checkpoint and run identities;
-- JSONL rows against actual video paths; and
+- raw logs and the available videos; and
 - limitations, including 100-step training and 10+10 small samples.
+
+Because the unchanged evaluator writes below its shared `eval_result` tree,
+the notebook snapshots MP4 metadata immediately before each required run and
+copies only new or replaced videos into condition-specific directories under
+the fresh course run. This preserves separate base and merged evidence without
+changing the companion evaluator.
+
+After the companion gains final per-attempt outcomes, the enhanced card should
+also reconcile counted rows, setup attempts, matched outcome changes,
+unmatched seed sets, and JSONL rows against actual video paths.
 
 Even if the merged count is higher, the correct conclusion is an observation
 about this run, not that 100-step LoRA has established a generally better

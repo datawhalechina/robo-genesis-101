@@ -42,7 +42,7 @@ def test_repository_passes_all_course_gates() -> None:
     assert summary.lessons == 14
     assert summary.markdown_files == 34
     assert summary.notebooks == 28
-    assert summary.python_files == 42
+    assert summary.python_files == 45
 
 
 def test_bilingual_project_documents_have_matching_heading_structure() -> None:

@@ -36,7 +36,7 @@ base model 闭环评估
         ↓
 合并为可部署的 Hugging Face checkpoint
         ↓
-合并后模型的配对评估 → 有边界的证据卡
+合并后模型的 aggregate 评估 → 有边界的证据卡
 ```
 
 同一本源 notebook 还覆盖 official RoboTwin post-training checkpoint、4/8-GPU 的 1000 回合
@@ -78,8 +78,8 @@ HIP 和实际 AMD 设备。
 | 50–75 分钟 | Base server 与 10 回合评估协议 | 冻结 checkpoint、expert、seed、video 和分母语义 |
 | 75–105 分钟 | 动作专家 LoRA、batch arithmetic 与 FSDP2 | 解释更新范围并审计四卡命令 |
 | 105–130 分钟 | DCP 身份与 Hugging Face merge | 区分训练 checkpoint 与 serving artifact |
-| 130–155 分钟 | 合并后模型评估与 resolved-seed 配对 | 构造 matched、base-only 和 merged-only seed 集合 |
-| 155–175 分钟 | Wilson 区间、JSONL/video 对账和 evidence card | 写出范围恰当的 10+10 回合结论 |
+| 130–155 分钟 | 合并后模型评估与 aggregate 对比 | 保留两个独立 run 的身份、日志、视频和分母 |
+| 155–175 分钟 | Wilson 区间和 evidence card | 写出范围恰当的 10+10 回合结论，并标明 matched outcomes 不可用 |
 | 175–180 分钟 | 总结与单变量扩展设计 | 注册一个不混入核心分母的后续实验 |
 
 official checkpoint、完整 1000 回合 benchmark、八卡 profile、更长 LoRA 运行和 full SFT 仍会
@@ -223,8 +223,9 @@ companion 中有两个重要的 checkpoint 角色：
 | `robbyant/lingbot-vla-v2-6b` base | 部署与管线参考；LoRA/full SFT 的初始化 | 必需起点 |
 | official RoboTwin post-training checkpoint | 可选的效果验证与 benchmark 参考 | 只用于 evaluation；比赛复现不能从它初始化 |
 
-official RoboTwin checkpoint path 会继续保留在源 notebook 中，但公开课程必须在 notebook
-实现前固定它的精确 artifact revision。这是 provenance 要求，不是删除已验证路径的理由。
+official RoboTwin checkpoint path 会继续保留在 notebook 中，但在把这条可选路径描述为
+RoboGenesis 已验证、或把课程状态从 `planned` 晋级前，必须固定其精确 artifact revision。
+这项 provenance 要求不阻塞 base→LoRA/full-SFT 主线的实现和教学。
 
 ### 一次只启动一个 server，并等待 health
 
@@ -294,9 +295,10 @@ policy exception 都按 evaluator 的 outcome semantics 处理，保留 terminat
 进入分母。
 
 当前固定 companion 能可靠报告 aggregate `Final success rate: k/n`，但它的 single-task JSONL
-在 policy rollout 之前写入，尚不包含每个 resolved seed 的 policy outcome。在 `M3.L14.4`
-之前，companion 必须增加通过 review 的 per-attempt/episode JSONL。这个课程证据增强不否定
-比赛 notebook 已经走通的路径。
+在 policy rollout 之前写入，尚不包含每个 resolved seed 的 policy outcome。当前课程 notebook
+因此在不修改 companion 的前提下完成完整 LoRA/full-SFT 工作流，并把 base 与 merged 结果报告为
+两个独立的 aggregate 观测。per-attempt JSONL 保留为未来证据增强；缺少它会限制对比结论，但
+不会阻塞训练、转换、serving 或 aggregate 闭环评测。
 
 ## 可选的 100 tasks × 10 episodes benchmark
 
@@ -304,6 +306,8 @@ benchmark script 覆盖 50 个 clean tasks 和 50 个 randomized tasks，每个�
 选择四张或八张 GPU 后，它会在每张 GPU 上启动一个 model server 和一个 evaluation worker，
 再从共享 queue 中领取下一个未完成任务。`--resume` 会跳过同一 run directory 中已有的 task
 completion markers；独立 rerun 必须更换 `--run-name`。
+课程 notebook 中每个 benchmark 的 resume switch 默认均为 `False`，已有输出目录会被拒绝；
+只有明确要续跑同一已识别 run 时，才应显式开启 resume。
 
 固定 companion notebook 报告了以下 wall-clock 观测。这些数字是**上游比赛参考测量**，不是
 RoboGenesis compatibility evidence；这里有意不列 success-rate 细节：
@@ -444,6 +448,10 @@ serving 之前至少审计：
 
 ## 按 resolved seed 比较 base 与 merged checkpoint
 
+本节定义的是获得最终逐 resolved-seed outcome 后应采用的更强比较协议。当前固定 companion
+还不能完成这种 join：notebook 只报告两个 `k/n` 与 Wilson intervals，把 matched outcomes
+标记为 unavailable，并且不根据 episode index 猜测 seed identity。
+
 停止 training processes，在与 base checkpoint 相同的 GPU、port 和 flags 上启动 merged
 checkpoint，然后再次运行 10 回合。checkpoint identity 是有意改变的变量；task、config、
 evaluator、expert semantics、backend、video setting 和 output schema 保持不变。
@@ -473,15 +481,21 @@ evaluator 从 CLI `--seed 0` 派生的 seed 开始，但不稳定 setup 可能�
 “完整 matched comparison”标记为不满足。不能用成功 retry 替换失败 row，也不能把一次新 run
 混进旧分母。
 
-evidence card 必须对账：
+当前 aggregate evidence card 必须对账：
 
 - base 与 merged 的 `k/n`；
 - 两个 Wilson intervals；
-- 所有 counted episode rows 和不计数的 setup attempts；
-- matched outcome changes 与 unmatched seed sets；
 - checkpoint 和 run identities；
-- JSONL rows 与实际 video paths；
+- raw logs 与现有 videos；
 - limitations，包括 100-step training 与 10+10 小样本。
+
+由于未修改的 evaluator 会把结果写到共享的 `eval_result` tree，notebook 会在每个必做 run 前
+快照 MP4 metadata，并只把本次新增或被替换的视频复制到 fresh course run 下按 condition
+隔离的目录。这样无需修改 companion evaluator，也能分别保留 base 与 merged 视频证据。
+
+未来 companion 提供最终逐 attempt outcome 后，增强版 evidence card 再增加 counted rows、setup
+attempts、matched outcome changes、unmatched seed sets，以及 JSONL rows 与实际 video paths 的
+逐项对账。
 
 即使 merged count 更高，正确结论也只是对本次 run 的观察，而不是 100-step LoRA 已证明
 RoboTwin policy 普遍更好。
