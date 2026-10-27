@@ -15,6 +15,7 @@ from robo_genesis.l14_workflow import (
     build_single_task_eval_command,
     l14_output_paths,
     parse_final_success_rate,
+    parse_last_progress_rate,
     require_fresh_paths,
     run_command_logged,
     snapshot_files,
@@ -73,6 +74,7 @@ def test_l14_eval_command_uses_unmodified_companion_interface() -> None:
         task_config="demo_clean",
         episodes=10,
         video=True,
+        seed_start=100000,
     )
 
     assert command[:2] == (
@@ -82,6 +84,10 @@ def test_l14_eval_command_uses_unmodified_companion_interface() -> None:
     assert command[command.index("--test_num") + 1] == "10"
     assert command[command.index("--expert_check") + 1] == "true"
     assert command[command.index("--accept_expert_info_on_failure") + 1] == "true"
+    assert command[command.index("--seed_start") + 1] == "100000"
+    assert command[command.index("--eval_batch") + 1] == "false"
+    assert "--num_workers" not in command
+    assert "--max_seed_attempts" not in command
     assert command[command.index("--additional_info") + 1] == "eval_video_log=true"
     assert "--episode_info_output" not in command
 
@@ -93,7 +99,7 @@ def test_l14_aggregate_card_does_not_invent_seed_matching(tmp_path: Path) -> Non
         log_path=tmp_path / "base.log",
     )
     merged = parse_final_success_rate(
-        "Final success rate: 4/10 = 40.0%\n",
+        "Final batch success rate: 4/10 = 40.0%\n",
         condition="merged_lora",
         log_path=tmp_path / "merged.log",
     )
@@ -128,6 +134,17 @@ def test_l14_aggregate_parser_rejects_missing_or_invalid_result() -> None:
         parse_final_success_rate(
             "Final success rate: 11/10 = 110.0%", condition="base"
         )
+
+
+def test_l14_serial_progress_parser_uses_actual_completed_denominator() -> None:
+    text = (
+        "Success rate: \x1b[96m0/1\x1b[0m => 0.0%\n"
+        "Success rate: \x1b[96m1/5\x1b[0m => 20.0%\n"
+        "Final success rate: 1/10 = 10.0%\n"
+    )
+
+    assert parse_last_progress_rate(text) == (1, 5)
+    assert parse_last_progress_rate("Final success rate: 0/10 = 0.0%\n") is None
 
 
 def test_l14_json_artifact_is_fresh_and_readable(tmp_path: Path) -> None:
@@ -190,3 +207,26 @@ def test_l14_archives_only_files_changed_by_one_evaluation(tmp_path: Path) -> No
     ]
     assert (tmp_path / "archive/adjust_bottle/new.mp4").read_bytes() == b"new"
     assert (tmp_path / "archive/adjust_bottle/old.mp4").read_bytes() == b"replaced"
+
+
+def test_l14_per_invocation_archives_preserve_reused_video_names(
+    tmp_path: Path,
+) -> None:
+    eval_root = tmp_path / "eval_result"
+    episode = eval_root / "adjust_bottle/episode0.mp4"
+    episode.parent.mkdir(parents=True)
+
+    before_first = snapshot_files(eval_root)
+    episode.write_bytes(b"first invocation")
+    first = archive_changed_files(
+        eval_root, before_first, tmp_path / "videos/attempt_00"
+    )
+
+    before_second = snapshot_files(eval_root)
+    episode.write_bytes(b"second invocation")
+    second = archive_changed_files(
+        eval_root, before_second, tmp_path / "videos/attempt_01"
+    )
+
+    assert Path(first[0]).read_bytes() == b"first invocation"
+    assert Path(second[0]).read_bytes() == b"second invocation"

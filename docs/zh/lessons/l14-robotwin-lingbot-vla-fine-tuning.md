@@ -276,6 +276,7 @@ PYOPENGL_PLATFORM=egl \
   --port 13400 \
   --device_id 0 \
   --seed 0 \
+  --seed_start 100000 \
   --test_num 10 \
   --expert_check true \
   --accept_expert_info_on_failure true \
@@ -287,15 +288,25 @@ PYOPENGL_PLATFORM=egl \
 
 `expert_check=true` 要求环境在 policy rollout 之前准备 expert information。
 `accept_expert_info_on_failure=true` 表示即使 expert plan/task check 失败也保留这些信息，而不是
-静默过滤相应 seed。
+静默过滤相应 seed。课程保留 companion 未修改的 serial evaluator，并在课程 notebook 中增加
+collection loop。
 
-episode 开始前发生基础设施失败应中止该 run。一次不稳定的 setup attempt 可能推进内部 seed，
-必须记录为不计入分母的 attempt。一旦 policy episode 已开始，任务失败、timeout 或 evaluator/
-policy exception 都按 evaluator 的 outcome semantics 处理，保留 termination reason，并继续
-进入分母。
+课程在四卡 W7900 环境进行真实验证时，发现 serial `eval_batch=false` loop 存在一个重要的
+分母错位：它会在 expert check 之后、第二次环境 setup 之前先消耗一个 requested slot。如果
+第二次 setup 不稳定，它可能只完成较少的 policy episode，却仍打印请求时的固定分母。例如真实
+执行只完成了 5 个 episode，最后却输出 `Final success rate: 0/10`。
 
-当前固定 companion 能可靠报告 aggregate `Final success rate: k/n`，但它的 single-task JSONL
-在 policy rollout 之前写入，尚不包含每个 resolved seed 的 policy outcome。当前课程 notebook
+因此 notebook 读取最后一条 incremental `Success rate: k/n`，以其中的 `n` 作为本次 invocation
+真实完成的 policy episode 数。如果 `n` 小于 requested slots，就只为剩余 episode 启动下一次
+serial invocation，并按上一段 requested range 推进 `--seed_start`。每个 invocation 保存独立 raw
+log，并立即把视频归档到 invocation-specific 目录。这样即使每个源目录的 basename 都从
+`episode0.mp4` 重新开始，invocation 边界仍然清楚；版本化 attempts JSON 与合成 aggregate
+summary 记录请求数、完成数和视频路径。只有累计
+恰好 10 个 policy episode、并归档到恰好 10 个新视频时，collection 才结束。若 evaluator 因
+基础设施错误以非零状态退出，则仍中止该 run。整个过程不修改 companion 源文件。
+
+当前固定 companion 尚不按延期 JSONL schema 输出每个 resolved seed 的 policy outcome。课程侧
+attempts JSON 只是 invocation-level collection evidence，不能替代这些 episode rows。当前 notebook
 因此在不修改 companion 的前提下完成完整 LoRA/full-SFT 工作流，并把 base 与 merged 结果报告为
 两个独立的 aggregate 观测。per-attempt JSONL 保留为未来证据增强；缺少它会限制对比结论，但
 不会阻塞训练、转换、serving 或 aggregate 闭环评测。

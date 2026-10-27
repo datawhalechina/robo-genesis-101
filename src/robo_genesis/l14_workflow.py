@@ -27,7 +27,11 @@ ROBOTWIN_COMMIT = "266f3aadf505a4f7fe9af0faa41a20f5f47cd123"
 AGGREGATE_EVIDENCE_MODE = "independent-aggregate"
 
 _SUCCESS_RATE_RE = re.compile(
-    r"Final success rate:\s*(?P<successes>\d+)\s*/\s*(?P<episodes>\d+)"
+    r"Final(?: batch)? success rate:\s*(?P<successes>\d+)\s*/\s*(?P<episodes>\d+)"
+)
+_ANSI_ESCAPE_RE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+_PROGRESS_RATE_RE = re.compile(
+    r"(?m)^\s*Success rate:\s*(?P<successes>\d+)\s*/\s*(?P<episodes>\d+)"
 )
 
 
@@ -258,14 +262,32 @@ def build_single_task_eval_command(
     episodes: int,
     port: int = 13400,
     video: bool = True,
+    batch: bool = False,
+    num_workers: int = 1,
+    max_seed_attempts: int | None = None,
+    seed_start: int | None = None,
 ) -> tuple[str, ...]:
-    """Build the pinned companion's unmodified single-task evaluator command."""
+    """Build the pinned companion's one-task evaluator command.
+
+    ``seed_start`` lets the course continue with a fresh seed range when the
+    companion's serial evaluator consumes requested slots on unstable setup.
+    The companion command and evaluator source remain unmodified.
+    """
 
     if episodes <= 0:
         raise L14ContractError("episodes must be positive")
     if not (1 <= int(port) <= 65535):
         raise L14ContractError("port must be between 1 and 65535")
-    return (
+    if num_workers <= 0:
+        raise L14ContractError("num_workers must be positive")
+    seed_attempt_limit = (
+        int(max_seed_attempts)
+        if max_seed_attempts is not None
+        else int(episodes) * 50
+    )
+    if seed_attempt_limit < episodes:
+        raise L14ContractError("max_seed_attempts must cover all episodes")
+    command = [
         str(python),
         str(Path(robotwin_root) / "scripts/eval_policy_xpolicylab.py"),
         "--task_name",
@@ -284,6 +306,11 @@ def build_single_task_eval_command(
         "0",
         "--seed",
         "0",
+    ]
+    if seed_start is not None:
+        command.extend(("--seed_start", str(int(seed_start))))
+    command.extend(
+        (
         "--test_num",
         str(episodes),
         "--expert_check",
@@ -291,10 +318,21 @@ def build_single_task_eval_command(
         "--accept_expert_info_on_failure",
         "true",
         "--eval_batch",
-        "false",
+        str(bool(batch)).lower(),
         "--additional_info",
         f"eval_video_log={str(video).lower()}",
+        )
     )
+    if batch:
+        command.extend(
+            (
+                "--num_workers",
+                str(num_workers),
+                "--max_seed_attempts",
+                str(seed_attempt_limit),
+            )
+        )
+    return tuple(command)
 
 
 def command_text(command: Sequence[str]) -> str:
@@ -344,11 +382,14 @@ def parse_final_success_rate(
     condition: str,
     log_path: str | Path | None = None,
 ) -> AggregateEvaluation:
-    """Parse the last aggregate ``Final success rate: k/n`` line from a log."""
+    """Parse the last aggregate serial or batch ``Final ... rate: k/n`` line."""
 
     matches = list(_SUCCESS_RATE_RE.finditer(text))
     if not matches:
-        raise L14ContractError("evaluator log has no Final success rate: k/n line")
+        raise L14ContractError(
+            "evaluator log has no Final success rate or "
+            "Final batch success rate: k/n line"
+        )
     match = matches[-1]
     successes = int(match.group("successes"))
     episodes = int(match.group("episodes"))
@@ -364,6 +405,26 @@ def parse_final_success_rate(
         wilson_high=high,
         log_path=str(Path(log_path)) if log_path is not None else None,
     )
+
+
+def parse_last_progress_rate(text: str) -> tuple[int, int] | None:
+    """Parse the last completed-episode progress line from a serial log.
+
+    This deliberately ignores the companion's fixed final requested-slot
+    denominator.  A serial invocation that completed no policy episode returns
+    ``None``.
+    """
+
+    clean_text = _ANSI_ESCAPE_RE.sub("", text)
+    matches = list(_PROGRESS_RATE_RE.finditer(clean_text))
+    if not matches:
+        return None
+    match = matches[-1]
+    successes = int(match.group("successes"))
+    episodes = int(match.group("episodes"))
+    if episodes <= 0 or successes > episodes:
+        raise L14ContractError("invalid completed-episode progress count")
+    return successes, episodes
 
 
 def parse_success_rate_file(

@@ -303,6 +303,7 @@ PYOPENGL_PLATFORM=egl \
   --port 13400 \
   --device_id 0 \
   --seed 0 \
+  --seed_start 100000 \
   --test_num 10 \
   --expert_check true \
   --accept_expert_info_on_failure true \
@@ -315,17 +316,34 @@ PYOPENGL_PLATFORM=egl \
 `expert_check=true` asks the environment to prepare expert information before
 the policy rollout. `accept_expert_info_on_failure=true` keeps that information
 available even when the expert plan/task check fails instead of silently
-filtering such seeds.
+filtering such seeds. The course keeps the companion's unmodified serial
+evaluator and wraps it with a course-side collection loop.
 
-Infrastructure failure before an episode starts aborts the run. An unstable
-setup attempt can advance the internal seed and must be recorded as a
-non-counted attempt. Once a policy episode starts, its task failure, timeout,
-or evaluator/policy exception follows the evaluator's outcome semantics and
-remains in the denominator with a termination reason.
+During the course's four-GPU W7900 validation run, the serial
+`eval_batch=false` loop exposed an important denominator mismatch. A requested
+slot is consumed after the expert check but before the second environment
+setup. If that second setup is unstable, the serial evaluator can complete
+fewer policy episodes while still printing the requested denominator—for
+example, five completed episodes followed by a fixed `Final success rate:
+0/10`.
 
-The current pinned companion reliably reports aggregate `Final success rate:
-k/n`, but its single-task JSONL is written before policy rollout and does not
-yet contain per-resolved-seed policy outcomes. The current course notebook
+The notebook therefore reads the last incremental `Success rate: k/n` line,
+which reflects the policy episodes that actually completed in that invocation.
+If `n` is smaller than the requested slot count, it starts another serial
+invocation for exactly the remaining number of episodes and advances
+`--seed_start` by the preceding requested range. Each invocation has its own raw
+log, and its videos are archived immediately under an invocation-specific
+directory. This keeps invocation boundaries explicit even though each source
+directory may begin again at the `episode0.mp4` basename. A versioned
+attempts JSON and a synthesized aggregate summary record the requested slots,
+completed count, and archived video paths. Collection stops only when exactly
+ten policy episodes and ten newly archived videos are present. An infrastructure
+failure that exits the evaluator still aborts the run. No companion source file
+is modified.
+
+The current pinned companion does not yet emit per-resolved-seed policy outcomes
+in the deferred JSONL schema. The course-side attempts JSON is invocation-level
+collection evidence, not a substitute for those episode rows. The notebook
 therefore completes the full LoRA/full-SFT workflow without changing the
 companion and reports base and merged results as independent aggregate
 observations. Per-attempt JSONL remains a future evidence enhancement; its
