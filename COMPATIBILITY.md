@@ -2091,4 +2091,5 @@ aggregate-only 结论边界。仓库门禁结果将在 `.L14.6` 交付检查完�
 - VitePress 文档构建通过，仅保留既有 large-chunk warning；
 - learner-facing L14 `planned`/scaffold 残留扫描、状态表一致性和 `git diff --check` 通过。
 
-`M3.L14.6` 的实现与门禁已交付，等待项目负责人验收；本步不自动开始 M4。
+项目负责人于 2026-10-28 确认 `M3.L14.6` 验收通过。L14 当前公开状态为
+`gpu-verified`；可选 L14 开发轮次至此完成，本次验收不自动开始 M4。
