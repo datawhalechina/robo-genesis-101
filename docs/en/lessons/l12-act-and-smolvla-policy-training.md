@@ -470,12 +470,26 @@ required files locally, then forwards the VLM directory as
 
 ## Level 1 lab: audit both dry-run commands
 
-Choose the dataset that you produced and inspected in the preceding lessons:
+L09–L11 produce deliberately small teaching datasets: L09 writes
+`local/l09_banana_demo` under `datasets/l09_banana_demo`, while L11 writes
+`local/l11_banana_dr` under `datasets/l11_banana_dr` together with domain
+provenance. They establish the recording, schema, and provenance contracts, but
+their smoke-scale episode counts are not presented as a sufficient training
+budget.
+
+The verified L12/L13 path instead defaults to a separately prepared,
+training-sized dataset identity:
 
 ```sh
 RG101_REPO_ID=genesis/fruit_pick
 RG101_DATASET_ROOT=datasets/fruit_pick
 ```
+
+Use that default only when the matching local dataset has been provisioned and
+audited. To exercise the pipeline with an earlier smoke dataset, set both
+variables to its matching logical ID and root; keep the resulting claim at the
+pipeline-smoke level rather than treating the small input as a trained-policy
+quality baseline.
 
 First ask the wrapper to print the ACT command:
 
@@ -753,10 +767,11 @@ universally sufficient configuration. If the long job was not run, write **not
 run**; do not invent its curve, duration, memory use, or checkpoint quality.
 
 Learners without training hardware can still complete the conceptual checks,
-dataset gate, and dry-run. If a versioned course checkpoint is published, it can
-provide the handoff to L13, but do not assume that artifact exists until its
-metadata and download instructions are available. Using one must be reported as
-using a provided artifact, not as completing the L12 GPU training lab.
+dataset gate, and dry-run. L13 currently declares a pinned SmolVLA checkpoint
+and matching dataset metadata fallback for its closed-loop lab. Using that
+fallback must be reported as using the provided L13 artifact, not as completing
+the L12 GPU training lab. It is also not a substitute for a future versioned
+dataset and checkpoint release with checksums, licenses, and artifact metadata.
 
 ## Diagnose failures in layers
 

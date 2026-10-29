@@ -31,6 +31,10 @@ fruit-picking task in simulation. The lessons build that result in order:
 - L08–L11 generate demonstrations, turn them into training data, and vary the training distribution; and
 - L12–L13 train policies and test them in closed-loop rollouts.
 
+Optional L14 reuses the data, training, checkpoint, and evaluation ideas from
+L10, L12, and L13 in a separate RoboTwin and LingBot-VLA-v2 runtime. It is an
+advanced extension, not a prerequisite for completing the 13-lesson core path.
+
 Training loss and a plausible open-loop action are not task success. The final
 evidence comes from applying the policy in the simulator and measuring the task
 outcome.

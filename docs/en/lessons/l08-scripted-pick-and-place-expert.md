@@ -222,8 +222,8 @@ state_t  = measured [arm_q(7), finger_q(2)]
 action_t = commanded [arm_target(7), finger_target(2)]
 ```
 
-The planned L08 notebook keeps these values in memory. A minimal recorder has
-one responsibility:
+The L08 notebook keeps these values in memory. A minimal recorder has one
+responsibility:
 
 ```python
 from robo_genesis.course_utils import to_numpy

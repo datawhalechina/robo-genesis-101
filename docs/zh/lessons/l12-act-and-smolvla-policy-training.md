@@ -406,12 +406,22 @@ Hub 仓库名指向的内容可能变化。已验证的参考内容为：
 
 ## 第一级实验：审计两个 dry-run 命令
 
-选择你在前面课程中生成并检查过的数据集：
+L09–L11 生成的是刻意保持很小的教学数据集：L09 在
+`datasets/l09_banana_demo` 写入 `local/l09_banana_demo`，L11 则在
+`datasets/l11_banana_dr` 写入带 domain provenance 的 `local/l11_banana_dr`。
+它们建立录制、schema 与 provenance 合同，但这些 smoke 规模的 episode 数量并不代表
+已经具备充分的训练预算。
+
+经过验证的 L12/L13 路径默认使用另一份预先准备、规模适合训练的数据身份：
 
 ```sh
 RG101_REPO_ID=genesis/fruit_pick
 RG101_DATASET_ROOT=datasets/fruit_pick
 ```
+
+只有在对应本地数据已经准备并通过审计时，才能使用这组默认值。若要用前面讲次的
+smoke 数据检查管线，应同时把两个变量改为匹配的逻辑 ID 和 root，并把结论限制在
+管线 smoke，不能把小规模输入包装成策略质量基线。
 
 先让 wrapper 打印 ACT 命令：
 
@@ -671,10 +681,10 @@ uv run python -m robo_genesis.train_policy smolvla \
 或隐藏默认值误当成在所有情形下都充分的配置。若长时间任务没有运行，就写明
 **未运行**；不要编造曲线、耗时、显存用量或 checkpoint 质量。
 
-没有训练硬件的学员仍可完成概念检查、数据门禁和 dry-run。如果课程将来发布带版本的
-checkpoint，它可以作为 L13 的输入，但在对应元数据和下载说明可用之前，不能假设该
-产物存在。使用课程提供的产物时，必须报告为“使用提供的产物”，不能声称自己完成了
-L12 GPU 训练实验。
+没有训练硬件的学员仍可完成概念检查、数据门禁和 dry-run。L13 当前为闭环实验声明了
+固定 revision 的 SmolVLA checkpoint 和匹配的数据集 metadata fallback。使用该 fallback
+时必须报告为“使用 L13 提供的 artifact”，不能声称自己完成了 L12 GPU 训练实验；它也
+不能替代未来带 checksum、许可和 artifact metadata 的版本化数据集与 checkpoint 发布。
 
 ## 分层诊断故障
 

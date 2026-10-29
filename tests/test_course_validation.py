@@ -36,6 +36,15 @@ def _notebook(code: str, *, outputs: list[object] | None = None) -> dict[str, ob
     }
 
 
+def _notebook_code(path: Path) -> str:
+    notebook = json.loads(path.read_text(encoding="utf-8"))
+    return "\n".join(
+        "".join(cell.get("source", []))
+        for cell in notebook["cells"]
+        if cell.get("cell_type") == "code"
+    )
+
+
 def test_repository_passes_all_course_gates() -> None:
     summary = validate_repository(PROJECT_ROOT)
 
@@ -126,3 +135,68 @@ def test_paired_files_ignore_jupyter_checkpoints(tmp_path: Path) -> None:
         {path.as_posix() for path in files} == {"lesson.ipynb"}
         for files in localized.values()
     )
+
+
+def test_cross_lesson_dataset_and_checkpoint_handoffs_remain_explicit() -> None:
+    notebooks = PROJECT_ROOT / "notebooks" / "en"
+    l09 = _notebook_code(notebooks / "l09-synthetic-data-recording-and-throughput.ipynb")
+    l10 = _notebook_code(notebooks / "l10-dataset-anatomy-and-imitation-learning.ipynb")
+    l11 = _notebook_code(notebooks / "l11-domain-randomization.ipynb")
+    l12 = _notebook_code(notebooks / "l12-act-and-smolvla-policy-training.ipynb")
+    l13 = _notebook_code(notebooks / "l13-closed-loop-evaluation-and-capstone.ipynb")
+
+    assert "REPO_ID = 'local/l09_banana_demo'" in l09
+    assert "dataset_parent = DATASETS_DIR.resolve()" in l09
+    assert "dataset_parent / 'l09_banana_demo'" in l09
+    assert "DATASETS_DIR / 'l09_banana_demo'" in l10
+    assert "'RG101_L11_BASELINE_REPO_ID', 'local/l09_banana_demo'" in l11
+    assert "DATASETS_DIR / 'l09_banana_demo'" in l11
+    assert "DR_REPO_ID = 'local/l11_banana_dr'" in l11
+    assert "DATASETS_DIR / 'l11_banana_dr'" in l11
+
+    assert 'os.environ.get("RG101_REPO_ID", "genesis/fruit_pick")' in l12
+    assert 'str(DATASETS_DIR / "fruit_pick")' in l12
+    assert "'dataset_repo_id': 'genesis/fruit_pick'" in l13
+    assert "'dataset_root': 'datasets/fruit_pick'" in l13
+    assert "COURSE_DEFAULT_DATASET = {" in l13
+    assert "COURSE_DEFAULT_CHECKPOINT = {" in l13
+
+
+def test_core_lessons_do_not_require_the_l14_companion_runtime() -> None:
+    forbidden_runtime_fragments = (
+        "/RoboTwin",
+        "/opt/robotwin-env",
+        "/opt/lerobot-env",
+        "robo_genesis.l14_workflow",
+    )
+    notebooks = PROJECT_ROOT / "notebooks" / "en"
+    for path in sorted(notebooks.glob("l*.ipynb")):
+        if path.name.startswith("l14-"):
+            continue
+        code = _notebook_code(path)
+        assert not any(fragment in code for fragment in forbidden_runtime_fragments), path
+
+    pyproject = (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8").casefold()
+    for dependency_name in ("robotwin", "lingbot", "xpolicylab", "aiter"):
+        assert dependency_name not in pyproject
+
+    for path in sorted((PROJECT_ROOT / "src" / "robo_genesis").rglob("*.py")):
+        if path.name == "l14_workflow.py":
+            continue
+        source = path.read_text(encoding="utf-8")
+        assert not any(fragment in source for fragment in forbidden_runtime_fragments), path
+
+
+def test_verified_lessons_do_not_describe_available_notebooks_as_planned() -> None:
+    lesson_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for locale in ("en", "zh")
+        for path in sorted((PROJECT_ROOT / "docs" / locale / "lessons").glob("*.md"))
+    )
+    for stale_phrase in (
+        "The companion notebook, when published",
+        "配套 notebook 发布后",
+        "The planned L08 notebook",
+        "规划中的 L08 notebook",
+    ):
+        assert stale_phrase not in lesson_text

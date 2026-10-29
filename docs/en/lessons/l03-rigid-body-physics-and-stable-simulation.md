@@ -448,7 +448,7 @@ duration, initial velocity, seed, and measurement duration remain fixed.
 
 ## Companion notebook workflow
 
-The companion notebook, when published, follows this sequence:
+The companion notebook follows this sequence:
 
 1. report versions, requested backend mode, rendering mode, actual child-process
    backend, and output directory;

@@ -192,7 +192,7 @@ state_t  = measured [arm_q(7), finger_q(2)]
 action_t = commanded [arm_target(7), finger_target(2)]
 ```
 
-规划中的 L08 notebook 只把这些值保存在内存中。最小 recorder 只承担一个职责：
+L08 notebook 只把这些值保存在内存中。最小 recorder 只承担一个职责：
 
 ```python
 from robo_genesis.course_utils import to_numpy

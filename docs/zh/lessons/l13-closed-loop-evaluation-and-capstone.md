@@ -697,6 +697,13 @@ preflight、audit、rollout 和 report cells 中收集完整版本字段、特�
 - Checkpoint sweep 是可选扩展，成本随已保存 checkpoint 数量增长；必须描述实际观察到的曲线，
   不能假定它一定上升。
 
+## 可选下一步：L14
+
+13 讲核心课程在这里已经完成。[L14](/zh/lessons/l14-robotwin-lingbot-vla-fine-tuning)
+是可选进阶实践，会在独立的 RoboTwin/LingBot-VLA-v2 companion runtime 中复用 L10、L12
+和 L13 建立的数据合同、checkpoint、部署与闭环证据方法。它要求已记录的四卡 W7900
+环境，不是核心课程的依赖。
+
 ## 参考资料
 
 - Wilson，[“Probable Inference, the Law of Succession, and Statistical

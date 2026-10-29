@@ -817,6 +817,14 @@ an evidence-based recommendation.
 - Checkpoint sweeps are optional extensions whose cost grows with the number of
   saved checkpoints; their curves must be observed, not assumed to rise.
 
+## Optional next step: L14
+
+The 13-lesson core course is complete at this point. [L14](/en/lessons/l14-robotwin-lingbot-vla-fine-tuning)
+is an optional advanced practicum that reuses the data-contract, checkpoint,
+deployment, and closed-loop evidence discipline from L10, L12, and L13 in a
+separate RoboTwin/LingBot-VLA-v2 companion runtime. It requires the recorded
+four-W7900 profile and is not a dependency of the core course.
+
 ## Sources
 
 - Wilson, [“Probable Inference, the Law of Succession, and Statistical
