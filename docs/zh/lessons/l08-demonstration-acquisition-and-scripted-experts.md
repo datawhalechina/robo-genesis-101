@@ -79,7 +79,7 @@ L08 将为这个场景加入一个能够完成整套抓取放置任务的专家�
 - 拖动示教（kinesthetic teaching）；
 - 脚本化专家（scripted expert）；
 - 使用仿真特权状态的学习型专家；
-- 从 seed demonstration 出发的自动扩增；
+- 从种子演示数据（seed demonstration）出发的自动扩增；
 - 人类视频迁移与 retargeting。
 
 比较会先区分每条路线的原始信号，以及将其转换成机器人学习演示所需的 adapter，再把

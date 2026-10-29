@@ -537,7 +537,7 @@ schema、video path、transaction boundary 与 reader 能够协同工作。它�
 - 数据集多样性或覆盖度；
 - 任一相机带来的因果收益；
 - 数据量足以训练 ACT 或 SmolVLA；
-- policy loss、open-loop accuracy 或 closed-loop success；
+- policy loss、开环预测准确率（open-loop accuracy）或闭环成功（closed-loop success）；
 - sim-to-real transfer。
 
 L10 会从本讲验证过的持久化 row 与 metadata 出发，解释 dataset anatomy、decoded sample

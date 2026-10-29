@@ -23,13 +23,13 @@ schema、相机键、行为克隆（behavior cloning）和动作分块（action 
 L12 将把一份带版本记录的演示数据集转化为两类策略 checkpoint：
 
 ```text
-LeRobot dataset
-  → validate one real sample
-  → assemble the training command
-  → ACT or SmolVLA optimization
-  → checkpoint + saved preprocessing
-  → reload on one real sample
-  → closed-loop evaluation in L13
+LeRobot 数据集
+  → 验证一个真实 sample
+  → 组装训练命令
+  → ACT 或 SmolVLA 优化
+  → checkpoint + 已保存的预处理
+  → 在一个真实 sample 上重新加载
+  → L13 闭环评估
 ```
 
 最后一个箭头尤其重要。本讲能够证明训练和加载链路可以运行，却不能证明学到的
@@ -400,7 +400,7 @@ Hub 仓库名指向的内容可能变化。已验证的参考内容为：
 
 若要进行可审计的本地运行，通过 `--policy-path` 传入 base snapshot，并通过
 `--smolvla-vlm-path` 传入 VLM snapshot。wrapper 接受 Hugging Face 中精确的
-`snapshots/<40 位十六进制 commit>` 目录，或带 `robo_genesis_snapshot.json` 来源记录的
+`snapshots/<40-hex-commit>` 目录，或带 `robo_genesis_snapshot.json` 来源记录的
 复制目录。它会在本地核验两个 revision 和必要文件，再把 VLM 目录作为
 `policy.vlm_model_name` 传给 LeRobot；审计过程不会下载模型。
 

@@ -64,7 +64,7 @@ ID、一条真实的行为克隆 sample，以及一个带有明确边界 mask �
 
 完成 L10 后，你应该能够：
 
-1. 说明录制的机器人演示如何组织成可用于模仿学习的数据集；
+1. 说明录制的机器人演示如何组织成可用于模仿学习（imitation learning）的数据集；
 2. 检查一份真实数据集，并总结训练前已经验证了什么、还有哪些问题尚不能回答；
 3. 解释行为克隆如何把专家演示转化为学习目标，以及为什么需要保留轨迹结构；
 4. 区分离线 action 预测质量与闭环任务成功。
@@ -360,28 +360,28 @@ L12 解释。二者共同依赖的数据语义是：observation 和专家 target
 虽然优化形式看起来像监督学习，部署过程却是时序性的。数据集中的状态由专家产生，部署后的
 policy 则通过自己的 action 产生未来状态。一个小误差就可能把机器人带到演示中很少出现、甚至
 从未出现的 observation，随后误差还可能继续累积。这种 distribution shift 正是 training loss
-或 open-loop prediction 不能取代 closed-loop evaluation 的原因。
+或开环预测（open-loop prediction）不能取代闭环评估的原因。
 
-### Offline evaluation 与 closed-loop evaluation 衡量不同内容
+### 离线评估与闭环评估衡量不同内容
 
-Offline evaluation 把 policy action 与 held-out expert action 比较，并报告 behavior-cloning
-action loss 等指标。它不会在 simulator 中执行预测 action，因此 policy 既不能改变未来
+离线评估（offline evaluation）把 policy action 与 held-out expert action 比较，并报告
+behavior-cloning action loss 等指标。它不会在 simulator 中执行预测 action，因此 policy 既不能改变未来
 observation，也无法证明自己能否从错误中恢复。
 
-Closed-loop evaluation 在 Genesis 中逐步执行 policy。每个预测 action 都会改变机器人状态和
-下一条 observation，因此误差可能累积，policy 也可能遇到专家演示之外的状态。此时它才有机会
+闭环评估（closed-loop evaluation）在 Genesis 中逐步执行 policy。每个预测 action 都会改变
+机器人状态和下一条 observation，因此误差可能累积，policy 也可能遇到专家演示之外的状态。此时它才有机会
 作出反应并尝试恢复。最终结果使用 task-level success criterion 衡量，例如物体是否在 release
 和 settling 后成功放入目标。
 
 因此：
 
 ```text
-held-out behavior-cloning loss ≠ closed-loop task success
-offline evaluation             ≠ closed-loop evaluation
+held-out behavior-cloning loss ≠ 闭环任务成功
+离线评估                        ≠ 闭环评估
 ```
 
 可靠的评估流程应先按完整 episode 或 trajectory 划分数据，避免 train/eval leakage，再使用
-closed-loop rollout 衡量真实任务表现。
+闭环 rollout 衡量真实任务表现。
 
 ## 把单步 target 扩展成 action chunk
 
@@ -536,8 +536,8 @@ statistics、episode boundary、split ID 和 action-window 行为，但不能证
 - 演示数量或 domain coverage 足以支持学习；
 - domain randomization 带来了收益；
 - training loss 有限、训练收敛或 checkpoint 质量可靠；
-- open-loop policy prediction 足够准确；
-- closed-loop grasp success 或 sim-to-real transfer。
+- 开环策略预测（open-loop policy prediction）足够准确；
+- 闭环抓取成功（closed-loop grasp success）或 sim-to-real transfer。
 
 [L11](./l11-domain-randomization.md) 接下来会讨论如何改变外观、物体位置、相机和动力学分布，
 同时不破坏任务语义。[L12](./l12-act-and-smolvla-policy-training.md) 随后消费本讲的数据合同，
@@ -572,7 +572,7 @@ statistics、episode boundary、split ID 和 action-window 行为，但不能证
   — 面向 policy 的 normalization 与 action unnormalization 行为。
 - [A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning](https://proceedings.mlr.press/v15/ross11a.html)
   — 对时序 distribution shift 和误差累积问题的形式化讨论，说明为何监督 BC loss 之外还需要
-  closed-loop evaluation。
+  闭环评估。
 - [Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware](https://arxiv.org/abs/2304.13705)
   — ACT 论文，也是 action chunking 的依据。
 - [SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics](https://arxiv.org/abs/2506.01844)

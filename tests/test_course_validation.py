@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 
 from robo_genesis.course_validation import (
@@ -43,6 +44,45 @@ def _notebook_code(path: Path) -> str:
         for cell in notebook["cells"]
         if cell.get("cell_type") == "code"
     )
+
+
+def _notebook_markdown(path: Path) -> str:
+    notebook = json.loads(path.read_text(encoding="utf-8"))
+    return "\n".join(
+        "".join(cell.get("source", []))
+        for cell in notebook["cells"]
+        if cell.get("cell_type") == "markdown"
+    )
+
+
+def _fenced_blocks(text: str, *, languages: set[str]) -> tuple[tuple[str, str], ...]:
+    blocks: list[tuple[str, str]] = []
+    marker: str | None = None
+    language = ""
+    body: list[str] = []
+
+    for line in text.splitlines():
+        stripped = line.lstrip()
+        if marker is None:
+            match = re.fullmatch(r"(`{3,}|~{3,})(.*)", stripped)
+            if match is None:
+                continue
+            marker = match.group(1)
+            language = match.group(2).strip().split(maxsplit=1)[0].casefold()
+            body = []
+            continue
+
+        if re.fullmatch(rf"{re.escape(marker[0])}{{{len(marker)},}}\s*", stripped):
+            if language in languages:
+                blocks.append((language, "\n".join(body)))
+            marker = None
+            language = ""
+            body = []
+            continue
+
+        body.append(line)
+
+    return tuple(blocks)
 
 
 def test_repository_passes_all_course_gates() -> None:
@@ -200,3 +240,71 @@ def test_verified_lessons_do_not_describe_available_notebooks_as_planned() -> No
         "规划中的 L08 notebook",
     ):
         assert stale_phrase not in lesson_text
+
+
+def test_bilingual_shell_commands_remain_identical() -> None:
+    shell_languages = {"bash", "console", "sh", "shell"}
+    lecture_root = PROJECT_ROOT / "docs"
+
+    for en_path in sorted((lecture_root / "en" / "lessons").glob("*.md")):
+        zh_path = lecture_root / "zh" / "lessons" / en_path.name
+        en_blocks = _fenced_blocks(
+            en_path.read_text(encoding="utf-8"), languages=shell_languages
+        )
+        zh_blocks = _fenced_blocks(
+            zh_path.read_text(encoding="utf-8"), languages=shell_languages
+        )
+        assert zh_blocks == en_blocks, en_path.name
+
+    notebook_root = PROJECT_ROOT / "notebooks"
+    for en_path in sorted((notebook_root / "en").glob("*.ipynb")):
+        zh_path = notebook_root / "zh" / en_path.name
+        en_blocks = _fenced_blocks(
+            _notebook_markdown(en_path), languages=shell_languages
+        )
+        zh_blocks = _fenced_blocks(
+            _notebook_markdown(zh_path), languages=shell_languages
+        )
+        assert zh_blocks == en_blocks, en_path.name
+
+
+def test_chinese_course_material_uses_canonical_glossary_terms() -> None:
+    lectures = PROJECT_ROOT / "docs" / "zh" / "lessons"
+    notebooks = PROJECT_ROOT / "notebooks" / "zh"
+
+    l08_overview = (
+        lectures / "l08-demonstration-acquisition-and-scripted-experts.md"
+    ).read_text(encoding="utf-8")
+    l08_methods = (
+        lectures / "l08-demonstration-acquisition-methods.md"
+    ).read_text(encoding="utf-8")
+    l10 = (lectures / "l10-dataset-anatomy-and-imitation-learning.md").read_text(
+        encoding="utf-8"
+    )
+    l11 = (lectures / "l11-domain-randomization.md").read_text(encoding="utf-8")
+    l12_en = (
+        PROJECT_ROOT / "docs" / "en" / "lessons" / "l12-act-and-smolvla-policy-training.md"
+    ).read_text(encoding="utf-8")
+    l12_zh = (lectures / "l12-act-and-smolvla-policy-training.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "scripted rollout" in l08_overview
+    assert "scripted rollout（" not in l08_overview
+    assert "演示数据（demonstration）" in l08_methods
+    assert "模仿学习（imitation learning）" in l10
+    assert "闭环评估（closed-loop evaluation）" in l10
+    assert "域随机化（domain randomization，DR）" in l11
+    assert "`snapshots/<40-hex-commit>`" in l12_en
+    assert "`snapshots/<40-hex-commit>`" in l12_zh
+
+    chinese_learner_text = "\n".join(
+        [
+            *(
+                path.read_text(encoding="utf-8")
+                for path in sorted(lectures.glob("*.md"))
+            ),
+            *(_notebook_markdown(path) for path in sorted(notebooks.glob("*.ipynb"))),
+        ]
+    )
+    assert "snapshots/<40 位十六进制 commit>" not in chinese_learner_text

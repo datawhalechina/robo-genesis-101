@@ -35,9 +35,9 @@ L12：ACT / SmolVLA 优化与 checkpoint 重载
 L13：在已声明条件下进行闭环评估
 ```
 
-域随机化比本课程的 recorder 更广。它是一种从一族仿真环境中生成数据或经验的方法。配套实验
-使用 L09 recorder，是因为模仿学习是本课程下一位数据消费者；强化学习 rollout、感知数据和
-鲁棒控制实验同样可以使用这一思想。
+域随机化（domain randomization，DR）比本课程的 recorder 更广。它是一种从一族仿真环境中
+生成数据或经验的方法。配套实验使用 L09 recorder，是因为模仿学习是本课程下一位数据消费者；
+强化学习 rollout、感知数据和鲁棒控制实验同样可以使用这一思想。
 
 开始之前，你应该已经能够：
 
@@ -229,8 +229,8 @@ Muratore et al. 以 static、adaptive 和 adversarial randomization 组织算法
 | Adaptive DR | 更新分布以减小仿真/目标 trajectory mismatch | target-domain data 和 update rule | 概念概览 |
 | Adversarial / active DR | 寻找困难或信息量高且仍有效的 domain | adversary、acquisition objective 或 robustness criterion | 概念概览 |
 
-例如，OpenAI 的 automatic domain randomization（ADR）从窄范围开始，再根据 performance 调整
-各个边界。它是在训练期间修改 `p_phi(xi)` 的方法，而不是一种新的物理参数类别。
+例如，OpenAI 的自动域随机化（automatic domain randomization，ADR）从窄范围开始，再根据
+performance 调整各个边界。它是在训练期间修改 `p_phi(xi)` 的方法，而不是一种新的物理参数类别。
 
 常见的 independent-uniform 设计很方便：
 
@@ -436,9 +436,9 @@ success quota。使用 `dr_rebuild_every=1` 时，触发下一个 appearance bui
 
 ### 为什么失败 attempt 也属于 provenance
 
-L09 正确地把失败 attempt 排除在 success-only demonstration dataset 之外。这个事务规则会在
-DR 下产生 **selection effect**：scripted expert 更容易失败的 domain 会贡献更少、甚至完全没有
-committed demonstration。请求采样的分布可能不同于最终保存数据集中的分布。
+L09 正确地把失败 attempt 排除在只保留成功结果的演示数据集之外。这个事务规则会在
+DR 下产生 **selection effect**：脚本化专家更容易失败的 domain 会贡献更少、甚至完全没有
+已提交的演示数据。请求采样的分布可能不同于最终保存数据集中的分布。
 
 把失败 frame 保存成训练演示不是解决办法。应该在标准 sample schema 之外保留 audit trace。
 L11 实验合同使用课程自有的 provenance sidecar，至少包含：
@@ -616,7 +616,7 @@ diversity、generalization 或 robustness 结果。
 | 冻结 policy 在已声明 simulated holdout 上改善 | 该 simulator protocol 下的证据 | 真实世界迁移 |
 | 冻结 policy 在真实机器人 protocol 上改善 | 针对该机器人、任务和条件集的证据 | 普遍鲁棒性 |
 
-本讲止于 dataset 与 provenance 证据。L12 训练 policy，L13 执行 closed-loop evaluation。不要把
+本讲止于 dataset 与 provenance 证据。L12 训练 policy，L13 执行闭环评估。不要把
 结论沿这条阶梯向上偷换。
 
 ## 按边界诊断失败

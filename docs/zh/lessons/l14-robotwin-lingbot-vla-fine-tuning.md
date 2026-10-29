@@ -91,7 +91,7 @@ official checkpoint、完整 1000 回合 benchmark、八卡 profile、更长 LoR
 
 完成 L14 后，你应当能够：
 
-1. 解释 RoboTwin demonstrations 如何成为 LingBot-VLA-v2 的训练输入；
+1. 解释 RoboTwin 演示数据如何成为 LingBot-VLA-v2 的训练输入；
 2. 为 VLA 微调配置并比较动作专家 LoRA 与全参数 SFT；
 3. 将分布式训练检查点转换为可部署的 Hugging Face 模型，并通过推理服务加载模型；
 4. 在受控闭环评估下比较 base 与 fine-tuned policy，并报告范围恰当的结论。
@@ -305,7 +305,7 @@ episode 更少。notebook 因此以最后一条 incremental `Success rate: k/n` 
 attempts JSON 只是 invocation-level collection evidence，不能替代这些 episode rows。当前 notebook
 因此在不修改 companion 的前提下完成完整 LoRA/full-SFT 工作流，并把 base 与 merged 结果报告为
 两个独立的 aggregate 观测。per-attempt JSONL 保留为未来证据增强；缺少它会限制对比结论，但
-不会阻塞训练、转换、serving 或 aggregate 闭环评测。
+不会阻塞训练、转换、serving 或 aggregate 闭环评估。
 
 ## 可选的 100 tasks × 10 episodes benchmark
 
@@ -407,7 +407,7 @@ unset ROCR_VISIBLE_DEVICES CUDA_VISIBLE_DEVICES
 
 100 steps 用来检验 data loading、distributed forward/backward、optimizer update、DCP 保存、
 merge、load 和 evaluation plumbing。它不能证明 loss 收敛或 policy 改善。companion 建议把
-1000–5000 steps 作为实验规模，但 checkpoint 选择仍需要 held-out closed-loop evidence，不能
+1000–5000 steps 作为实验规模，但 checkpoint 选择仍需要 held-out 闭环证据，不能
 自动选择训练时间最长的一次。
 
 ## DCP 是训练 artifact，Hugging Face 是 serving artifact
