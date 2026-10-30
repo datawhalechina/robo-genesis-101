@@ -19,7 +19,7 @@ assets have been copied into this repository.
 | Franka Emika Panda MJCF model | `franka_fruit_pick_demo/assets/robots/franka/` at the recorded `course` baseline | Model README and MuJoCo Menagerie upstream identify the model as Apache-2.0 | Do not copy the incomplete source bundle; use the model bundled with the pinned Genesis version |
 | Source-course renders and slide exports | Both source courses at their recorded baselines | Project lead confirmed on 2026-08-28 that the course code, lectures, and teaching content are original | Original portions use MIT after migration; preserve notices for depicted or embedded third-party material |
 | Datawhale template media already in this repository | `docs/public/datawhale-logo.png`, `docs/public/learning.GIF` | Inherited template README declares CC BY-NC-SA 4.0 for the work; separate trademark permission was not found | Keep outside the project MIT boundary until Datawhale brand use is confirmed or the media is replaced |
-| Datasets, checkpoints, and training/evaluation outputs | Local source worktrees and fixed external candidates | M5.1 reviewed the non-DR fruit-pick dataset payload; checkpoints and other outputs remain unreviewed | Keep outside the repository MIT License; the dataset candidate remains unreleased until its card, license, immutable version, and later M5 gates are complete |
+| Datasets, checkpoints, and training/evaluation outputs | Local source worktrees and fixed external candidates | M5.1 reviewed the non-DR fruit-pick dataset; M5.2 reviewed the matching SmolVLA payload and defined the ACT generation contract | Keep outside the repository MIT License; none is a completed RoboGenesis release until its card, license files, immutable version, manifest, and later M5 gates are complete |
 
 The course MIT License must not be presented as relicensing any item in this
 table. Third-party terms continue to apply to third-party material.
@@ -282,6 +282,58 @@ checkpoints, logs, or evaluation output. It also has no per-episode domain
 provenance and must not support claims about known training domains, held-out
 domains, or OOD membership.
 
+### M5.2 fruit-pick checkpoint candidates
+
+M5.2 defines separate V1 identities for `rg101-fruit-pick-act` and
+`rg101-fruit-pick-smolvla`, each initially versioned `1.0.0` under checkpoint
+schema `1.0.0`. Both must name the M5.1 `rg101-fruit-pick` dataset version,
+immutable hosting commit, and payload-manifest SHA-256. A saved
+`dataset.repo_id=genesis/fruit_pick` string alone is not sufficient provenance.
+
+No ACT release payload currently exists. The only reviewed local ACT output is
+a 200-step smoke trained on `genesis/m3_demo_banana`; it is excluded from the
+V1 candidate. M5.2 instead freezes a 20,000-step ACT generation contract on the
+M5.1 dataset. Its exact bytes, size, checksums, hosting revision, task-level
+behavior, and final release status remain unverified until the later training
+and release gates run.
+
+The SmolVLA payload candidate is the non-DR 20,000-step checkpoint at
+[`wangxun1010/smolvla-fruit-pick-0821@cdf720f162e6ee86dbc856cdf15c5dcd4a673221`](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221).
+Its seven policy/configuration files contain 906,740,620 bytes. The SHA-256 of
+the relative-path-sorted `sha256sum` stream is:
+
+```text
+97872e6db48a225a3425cbbb94894628acccaf7d7fe7c14d830526c5178ef555
+```
+
+The weight file SHA-256 is
+`205bf82449f19542f2206dfeca007bcdcf214c6633b94159778154c4aecede72`.
+It matches the local `smolvla_fruit_pick_0821/checkpoints/020000` output trained
+on `datasets/fruit_pick`; it does not match the historical
+`fruit_pick_dr` weight SHA-256
+`2b0483f9aaa7bd4b56a304aa6e6c1362abeaabab8e29b307047ddcb11d5b1d72`.
+The fixed payload commit has no card or license file. A later default-branch
+card declares Apache-2.0 but still lacks the complete RoboGenesis version,
+dataset-manifest identity, explicit license/notice files, and release manifest,
+so neither revision is yet treated as the final V1 release commit.
+
+The project lead approved Apache License 2.0 on 2026-10-30 for the
+course-created checkpoint weights and packaging. LeRobot 0.6.0, the SmolVLA
+base, and SmolVLM2 retain their upstream Apache-2.0 attribution; an ACT
+checkpoint using TorchVision ResNet18
+ImageNet-1K initialization must also retain the TorchVision BSD-3-Clause
+notice. The M5.1 dataset and rendered YCB assets remain CC BY-NC 4.0 and are
+not redistributed or relicensed by an Apache-2.0 checkpoint. The model card
+must state this boundary rather than implying that the checkpoint license
+changes the data or asset terms.
+
+Neither candidate is intended for real-robot safety, human interaction,
+high-stakes automation, or claims of sim-to-real transfer, OOD robustness, or
+stable success rate. Historical source-course logs may be described only as
+historical evidence with their exact protocol; release claims require the
+later current-course validation gates. M5.2 performs no upload and does not
+authorize external publication.
+
 ## 6. Approved decisions and remaining review
 
 The project lead approved the following M0.5 decisions on 2026-08-28:
@@ -293,6 +345,15 @@ The project lead approved the following M0.5 decisions on 2026-08-28:
    notices for depicted or embedded third-party material; and
 4. keep datasets, checkpoints, and pretrained models outside the repository-wide
    license until each artifact is reviewed for M5.
+
+The project lead approved the M5.1 fruit-pick dataset decisions on 2026-10-30,
+including Xun Wang as creator and CC BY-NC 4.0 for the complete dataset
+artifact. On the same date, the project lead approved the M5.2 checkpoint
+identities, Apache-2.0 license for the course-created checkpoint portions,
+required upstream attributions, independent CC BY-NC 4.0 dataset/YCB boundary,
+model-card contract, and immutable versioning rules. These approvals do not
+make the reviewed candidates release-ready and do not authorize upload or
+external publication.
 
 Datawhale trademark and template-media authorization remains to be confirmed.
 Until then, those materials are not covered by the project MIT License.
