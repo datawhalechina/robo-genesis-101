@@ -154,4 +154,3 @@ and actual backend, the exact input identity, the command, and every unrun check
 - GPU-required work has an audited GPU, dataset, and checkpoint rather than a silent
   diagnostic fallback.
 - L14 is run only in its pinned external companion profile.
-

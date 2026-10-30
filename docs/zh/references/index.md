@@ -129,4 +129,3 @@ M4 审计覆盖双语讲义 References 章节、公开辅助页面、`NOTICE.md`
 5. 对 vendor asset 增加 checksum 与修改记录。
 6. 除非仓库政策明确批准，否则 dataset、checkpoint 与生成媒体不进入 Git。
 7. 处理方式从链接/依赖变成复制材料时，更新 `NOTICE.md`。
-

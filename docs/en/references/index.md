@@ -142,4 +142,3 @@ Before adding an external reference or material:
 6. Keep datasets, checkpoints, and generated media out of Git unless repository policy
    explicitly approves them.
 7. Update `NOTICE.md` when the disposition changes from link/dependency to copied material.
-

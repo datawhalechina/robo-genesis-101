@@ -145,4 +145,3 @@ demonstration、dataset、checkpoint 和 closed-loop report 的纵向路径。ar
 
 课程教学完成不代表有权修改仓库 canonical 状态。只有仓库自身证据与验收门禁通过后，才修改
 `course.json`。
-

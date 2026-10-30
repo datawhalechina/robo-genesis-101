@@ -88,4 +88,3 @@
 - 只有满足声明成功判据时才使用 `success`；pipeline 阶段应使用“完成”“通过”或“已执行”。
 - 给出结论前，先说明证据属于 diagnostic、open-loop、closed-loop 还是 aggregate。
 - Genesis、LeRobot、ACT、SmolVLA、RoboTwin、LingBot-VLA-v2、Franka 与 YCB 保留上游拼写。
-

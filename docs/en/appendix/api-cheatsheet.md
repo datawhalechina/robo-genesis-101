@@ -158,4 +158,3 @@ print("success:", check_success(bundle, task))
 
 This pattern executes a real task; it is not a substitute for lesson-specific traces,
 dataset recording, or evaluation evidence.
-

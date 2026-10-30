@@ -159,4 +159,3 @@ artifacts may come from separate labs, but their identities and interfaces must 
 
 Course completion does not authorize changing canonical repository status. `course.json`
 changes only after the repository's own evidence and acceptance gates pass.
-

@@ -142,4 +142,3 @@ L13 为自己的 workflow 提供了 commit 固定、显式 opt-in 的 Hugging Fa
 - 第一段诊断输出明确显示请求的 backend 与渲染路径。
 - GPU-required 工作使用经过审计的 GPU、dataset 与 checkpoint，而不是静默诊断 fallback。
 - L14 只在固定外部 companion profile 中运行。
-
