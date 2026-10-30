@@ -26,6 +26,7 @@ Lectures and hands-on work form one learning path, not independent tracks. Reade
 - `CONTRIBUTING.md` — bilingual contribution workflow and pull-request requirements.
 - `CONTENT_GUIDE.md` — bilingual lecture, notebook, terminology, status, and evidence standards.
 - `course.json` — canonical bilingual lesson order, titles, slugs, duration, hardware requirements, paths, and publication status.
+- `artifacts/manifest.json` — canonical immutable dataset/checkpoint identities, payload files, checksums, licenses, generation evidence, and default download targets.
 - `docs/` — VitePress documentation source and course materials.
 - `docs/{zh,en}/lessons/` — paired bilingual lecture pages; M1 skeletons remain `planned` until their lesson-development gates pass.
 - `docs/{zh,en}/appendix/` — paired setup/fallback, glossary, API, and instructor support pages without lesson status metadata.
@@ -34,7 +35,7 @@ Lectures and hands-on work form one learning path, not independent tracks. Reade
 - `docs/public/` — static assets published as-is by VitePress.
 - `notebooks/{zh,en}/` — paired lesson notebooks whose code cells must remain identical across locales.
 - `src/robo_genesis/` — installable Python package and source of truth for reusable scene, data, training, and evaluation behavior.
-- `scripts/validate_course.py` — thin entry point for the installed repository-wide course validator.
+- `scripts/validate_course.py` / `scripts/fetch_artifacts.py` — thin entry points for repository validation and checksum-verified artifact downloads.
 - `tests/` — Python behavior, pure-logic, and repository-contract tests.
 - `assets/third_party/` — vendored third-party assets with directory-specific provenance and license records.
 - `COMPATIBILITY.md` — accepted runtime versions, verified platforms, evidence, and unsupported or unverified paths.
@@ -50,6 +51,7 @@ When repository structure changes, update this section and the bilingual README 
 ## Sources of Truth
 
 - `course.json` owns lesson metadata, order, localized titles, canonical paths, hardware requirements, and status.
+- `artifacts/manifest.json` owns downloadable artifact IDs, versions, availability, immutable sources, payload paths, sizes, checksums, licenses, generation evidence, and default targets.
 - English lectures are the development source for mechanism-level prose; Chinese lectures are synchronized natural adaptations shipped in the same change.
 - `src/robo_genesis/` owns reusable behavior. Notebooks are teaching entry points and must not maintain divergent copies of shared implementations.
 - `COMPATIBILITY.md` owns platform and version claims. A dependency resolving successfully does not count as runtime verification.

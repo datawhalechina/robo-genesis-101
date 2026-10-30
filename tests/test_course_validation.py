@@ -91,7 +91,7 @@ def test_repository_passes_all_course_gates() -> None:
     assert summary.lessons == 14
     assert summary.markdown_files == 44
     assert summary.notebooks == 28
-    assert summary.python_files == 45
+    assert summary.python_files == 48
 
 
 def test_supporting_materials_are_bilingual_and_exposed_in_navigation() -> None:

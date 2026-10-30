@@ -26,6 +26,7 @@ dependencies = [
 
 [project.scripts]
 robo-genesis-validate = "robo_genesis.course_validation:main"
+robo-genesis-fetch-artifacts = "robo_genesis.artifact_fetch:main"
 
 [project.optional-dependencies]
 data = [

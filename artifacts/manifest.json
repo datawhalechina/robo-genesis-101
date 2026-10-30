@@ -1,0 +1,264 @@
+{
+  "schema_version": "1.0.0",
+  "course_version": "0.1.0",
+  "payload_manifest_algorithm": "sha256sum-relative-path-v1",
+  "artifacts": [
+    {
+      "id": "rg101-fruit-pick",
+      "version": "1.0.0",
+      "kind": "dataset",
+      "status": "candidate",
+      "schema_version": "1.0.0",
+      "creator": "Xun Wang for the RoboGenesis 101 course",
+      "license": {
+        "spdx": "CC-BY-NC-4.0",
+        "notice": "The complete dataset remains noncommercial because rendered videos depict ManiSkill-distributed YCB assets under CC BY-NC 4.0. See NOTICE.md."
+      },
+      "default_target": "datasets/fruit_pick",
+      "source": {
+        "provider": "huggingface",
+        "repo_type": "dataset",
+        "repo_id": "wangxun1010/fruit_pick",
+        "revision": "475e8c6ec7079c4c52b20a0221bf959acb541abd",
+        "base_url": "https://huggingface.co/datasets/wangxun1010/fruit_pick/resolve/475e8c6ec7079c4c52b20a0221bf959acb541abd"
+      },
+      "payload": {
+        "size": 505224976,
+        "manifest_sha256": "26cb09b621aa43f3abbe39ce2e55a3c161c2f89c9fe174fbd5e317bec4426f23",
+        "files": [
+          {
+            "path": "data/chunk-000/file-000.parquet",
+            "size": 6973448,
+            "sha256": "2e31bdb08d01030aa5deb1fcd93a5bb9fb410d0db7830f595d451cc4cc583bcf"
+          },
+          {
+            "path": "meta/episodes/chunk-000/file-000.parquet",
+            "size": 579922,
+            "sha256": "41042316e63414bb25bbd355299c10c2fd4eb41c37aead92d0b583a4cdf7b740"
+          },
+          {
+            "path": "meta/info.json",
+            "size": 3860,
+            "sha256": "5d5ce1657eac554d099d32b9f75652eea5cd9de80f93a1bdef2ac5ec2b159a8b"
+          },
+          {
+            "path": "meta/stats.json",
+            "size": 14998,
+            "sha256": "ac623c79a26ffa0e4b645223acc7bd2e0215c4d3ca042301fb2cae0220cfe26f"
+          },
+          {
+            "path": "meta/tasks.parquet",
+            "size": 2227,
+            "sha256": "ce51a11a68e4eaac2b3a52a06ccfa940fe477df152c2f7a2a1769aed0b3e0b97"
+          },
+          {
+            "path": "videos/observation.images.world/chunk-000/file-000.mp4",
+            "size": 114823110,
+            "sha256": "020a542067fd310202dccfa8e701e3197670cc31ed77544271bd850d70b912b2"
+          },
+          {
+            "path": "videos/observation.images.world/chunk-000/file-001.mp4",
+            "size": 117511058,
+            "sha256": "657395babf06cd6ec4e209a99167f0609196b8e0c8b04e14222259e73b2d756c"
+          },
+          {
+            "path": "videos/observation.images.world/chunk-000/file-002.mp4",
+            "size": 105894211,
+            "sha256": "cbee620624064994d501696978f5c0b0e13849c42d06750de374b8909e48718f"
+          },
+          {
+            "path": "videos/observation.images.wrist/chunk-000/file-000.mp4",
+            "size": 159422142,
+            "sha256": "07a179266bb65cca13cb41b9bb075aa1dd31a13af0e0f9234219f774a342f494"
+          }
+        ]
+      },
+      "requires": [],
+      "generation": {
+        "source_repository": "wangxunx/franka_fruit_pick_demo",
+        "source_revision": "0de3ae0df2a91acbda7f4fb537c65d9e54190527",
+        "summary": "Three scripted-expert collections for banana, lemon, and plum were aggregated in that order; only successful episodes were retained.",
+        "configuration": {
+          "python": "3.12.3",
+          "genesis": "1.3.1",
+          "lerobot": "0.6.0",
+          "pyav": "15.1.0",
+          "hardware": "AMD Radeon AI PRO R9700",
+          "episodes": 300,
+          "frames": 71976,
+          "fps": 30,
+          "state_action_dimensions": 9,
+          "cameras": [
+            "world",
+            "wrist"
+          ],
+          "image_size": "640x360",
+          "video_codec": "AV1",
+          "base_seed": 0,
+          "log_sha256": {
+            "banana": "77f283290b29827e9c83218e8e96a70460f6130c60808d9582dabb5e1cd86f9a",
+            "lemon": "9df7f4454a1ad01a772ee9c8f05c3d1553ed25d4e0dbfaa54d1118ab3550b987",
+            "plum": "581ffc27ad3b6b75874324b46ba25484456d2a495c51ead683c1e3be9f7c3f1a"
+          }
+        }
+      },
+      "unavailable_reason": null
+    },
+    {
+      "id": "rg101-fruit-pick-act",
+      "version": "1.0.0",
+      "kind": "checkpoint",
+      "status": "unavailable",
+      "schema_version": "1.0.0",
+      "creator": "Xun Wang for the RoboGenesis 101 course",
+      "license": {
+        "spdx": "Apache-2.0",
+        "notice": "The future checkpoint must retain LeRobot Apache-2.0 notices and the TorchVision BSD-3-Clause notice; the CC BY-NC 4.0 training dataset remains separate."
+      },
+      "default_target": "checkpoints/rg101-fruit-pick-act/1.0.0/pretrained_model",
+      "source": null,
+      "payload": null,
+      "requires": [
+        {
+          "artifact_id": "rg101-fruit-pick",
+          "version": "1.0.0",
+          "payload_manifest_sha256": "26cb09b621aa43f3abbe39ce2e55a3c161c2f89c9fe174fbd5e317bec4426f23"
+        }
+      ],
+      "generation": {
+        "source_repository": "wangxunx/robo-genesis-101",
+        "source_revision": "0464bc308fe0a9bdd5406091e65eb493405e1f2d",
+        "summary": "Generation contract dry-run only; no V1 ACT payload, hosting revision, checksum, or task-performance result exists yet.",
+        "configuration": {
+          "lerobot": "0.6.0",
+          "steps": 20000,
+          "batch_size": 8,
+          "save_frequency": 2000,
+          "log_frequency": 200,
+          "workers": 4,
+          "seed": 1000,
+          "chunk_size": 100,
+          "action_steps": 100,
+          "optimizer_lr": 1e-05,
+          "backbone": "ResNet18_Weights.IMAGENET1K_V1",
+          "backbone_url": "https://download.pytorch.org/models/resnet18-f37072fd.pth",
+          "backbone_size": 46830571,
+          "backbone_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec"
+        }
+      },
+      "unavailable_reason": "The only audited ACT output is a 200-step smoke trained on a different dataset; V1 requires later 20,000-step generation and release validation."
+    },
+    {
+      "id": "rg101-fruit-pick-smolvla",
+      "version": "1.0.0",
+      "kind": "checkpoint",
+      "status": "candidate",
+      "schema_version": "1.0.0",
+      "creator": "Xun Wang for the RoboGenesis 101 course",
+      "license": {
+        "spdx": "Apache-2.0",
+        "notice": "The course-created checkpoint portions use Apache-2.0 and retain LeRobot, SmolVLA, and SmolVLM2 attribution; the CC BY-NC 4.0 training dataset remains separate. See NOTICE.md."
+      },
+      "default_target": "checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model",
+      "source": {
+        "provider": "huggingface",
+        "repo_type": "model",
+        "repo_id": "wangxun1010/smolvla-fruit-pick-0821",
+        "revision": "cdf720f162e6ee86dbc856cdf15c5dcd4a673221",
+        "base_url": "https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/resolve/cdf720f162e6ee86dbc856cdf15c5dcd4a673221"
+      },
+      "payload": {
+        "size": 906740620,
+        "manifest_sha256": "97872e6db48a225a3425cbbb94894628acccaf7d7fe7c14d830526c5178ef555",
+        "files": [
+          {
+            "path": "config.json",
+            "size": 2493,
+            "sha256": "449f58bee75f1356fa29c4acdb7580a5b4d80a77acda7c4df61924d6044c3dee"
+          },
+          {
+            "path": "model.safetensors",
+            "size": 906712520,
+            "sha256": "205bf82449f19542f2206dfeca007bcdcf214c6633b94159778154c4aecede72"
+          },
+          {
+            "path": "policy_postprocessor.json",
+            "size": 660,
+            "sha256": "dac3caecdea7e9747d9119be2bce888417a266773b0da1a81761fa2fd33ba644"
+          },
+          {
+            "path": "policy_postprocessor_step_0_unnormalizer_processor.safetensors",
+            "size": 7816,
+            "sha256": "3f176301450b7bca74d7b730f6b43b26637ddbdc9bc9e64ecee18687e1cdc5dc"
+          },
+          {
+            "path": "policy_preprocessor.json",
+            "size": 2041,
+            "sha256": "48729f54facca84e69122fee5e8155fda95783e862e2fa368d916dffc748630d"
+          },
+          {
+            "path": "policy_preprocessor_step_5_normalizer_processor.safetensors",
+            "size": 7816,
+            "sha256": "3f176301450b7bca74d7b730f6b43b26637ddbdc9bc9e64ecee18687e1cdc5dc"
+          },
+          {
+            "path": "train_config.json",
+            "size": 7274,
+            "sha256": "b9359ba90ac3953fd55a7b15c9fabe6feb667469b4c6c617b1ce9db7a2fd998f"
+          }
+        ]
+      },
+      "requires": [
+        {
+          "artifact_id": "rg101-fruit-pick",
+          "version": "1.0.0",
+          "payload_manifest_sha256": "26cb09b621aa43f3abbe39ce2e55a3c161c2f89c9fe174fbd5e317bec4426f23"
+        }
+      ],
+      "generation": {
+        "source_repository": "wangxunx/franka_fruit_pick_demo",
+        "source_revision": "47e876229cd4a4a58d5e3d313047e60f8b3a06c6",
+        "summary": "Non-DR 20,000-step SmolVLA run trained on the exact rg101-fruit-pick payload baseline with one AMD Radeon AI PRO R9700.",
+        "configuration": {
+          "python": "3.12.3",
+          "lerobot": "0.6.0",
+          "pytorch": "2.9.1+rocm7.2.1.lw.gitff65f5bc",
+          "torchvision": "0.24.0+rocm7.2.1.gitb919bd0c",
+          "transformers": "5.5.4",
+          "pyav": "15.1.0",
+          "hardware": "AMD Radeon AI PRO R9700",
+          "steps": 20000,
+          "batch_size": 64,
+          "save_frequency": 2000,
+          "log_frequency": 200,
+          "workers": 4,
+          "seed": 1000,
+          "chunk_size": 50,
+          "action_steps": 50,
+          "optimizer": "AdamW",
+          "peak_lr": 0.0001,
+          "warmup_steps": 1000,
+          "decay_steps": 30000,
+          "decay_lr": 2.5e-06,
+          "camera_rename": {
+            "world": "camera1",
+            "wrist": "camera2"
+          },
+          "freeze_vision_encoder": true,
+          "train_expert_only": true,
+          "train_state_projection": true,
+          "base_model": "lerobot/smolvla_base@c83c3163b8ca9b7e67c509fffd9121e66cb96205",
+          "vlm": "HuggingFaceTB/SmolVLM2-500M-Video-Instruct@7b375e1b73b11138ff12fe22c8f2822d8fe03467",
+          "evidence_sha256": {
+            "training_log": "13336f27225fa88c2695790dac3e7c782a5eef1908a78751e9a3df15347bbe99",
+            "wandb_metadata": "03161906d2d64acda35cbf2fb4af26e4bc4b4f50cebb371bd6b398fc3d4e6e2a",
+            "requirements": "51df0bbee41220fcef08a4cff2177d02ff9306d32734e01ca4ebc363a392a0b3",
+            "wandb_summary": "d281f8f58b9e3dc7a83736ba4b0d1b3b268dc3a0adfd33512ed23a09db44de1d",
+            "wandb_config": "5be3049f92a591dff91ae0e7511a616256e22ed794a8d10671606e91f437c5f9"
+          }
+        }
+      },
+      "unavailable_reason": null
+    }
+  ]
+}

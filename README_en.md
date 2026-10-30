@@ -180,6 +180,7 @@ src/robo_genesis/           reusable scene, data, training, and evaluation code
 scripts/                    repository-level development and validation entry points
 tests/                      pure-logic and repository-contract tests
 assets/third_party/         audited third-party assets under their original terms
+artifacts/manifest.json     versioned artifact sources, licenses, and SHA-256 identities
 course.json                 canonical course metadata and status
 ```
 

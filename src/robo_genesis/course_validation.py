@@ -21,6 +21,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 from urllib.parse import unquote, urlsplit
 
+from .artifact_fetch import ArtifactError, load_artifact_manifest
 from .course_manifest import (
     CourseManifest,
     CourseManifestError,
@@ -43,6 +44,7 @@ FRONTMATTER_FIELDS = {
 NOTEBOOK_METADATA_FIELDS = FRONTMATTER_FIELDS - {"title"}
 IMPORT_SMOKE_MODULES = (
     "robo_genesis",
+    "robo_genesis.artifact_fetch",
     "robo_genesis.course_manifest",
     "robo_genesis.paths",
     "robo_genesis.setup_assets",
@@ -1144,6 +1146,14 @@ def _validate_submodules(root: Path, errors: list[str]) -> None:
             errors.append(f"Git submodule entry is not allowed: {line.split(maxsplit=3)[-1]}")
 
 
+def _validate_artifact_manifest(root: Path, errors: list[str]) -> None:
+    manifest_path = root / "artifacts" / "manifest.json"
+    try:
+        load_artifact_manifest(manifest_path)
+    except ArtifactError as exc:
+        errors.append(f"artifacts/manifest.json: {exc}")
+
+
 def _validate_imports(errors: list[str]) -> None:
     for module_name in IMPORT_SMOKE_MODULES:
         try:
@@ -1172,6 +1182,7 @@ def validate_repository(root: Path | str = PROJECT_ROOT) -> CourseValidationSumm
     python_count = _validate_python_sources(repository_root, notebook_code, errors)
     _validate_dependencies(repository_root, errors)
     _validate_submodules(repository_root, errors)
+    _validate_artifact_manifest(repository_root, errors)
     _validate_imports(errors)
 
     if errors:

@@ -171,6 +171,7 @@ src/robo_genesis/           可复用场景、数据、训练和评估实现
 scripts/                    仓库级开发与校验入口
 tests/                      纯逻辑和仓库契约测试
 assets/third_party/         经审计并保留原许可的第三方资产
+artifacts/manifest.json     固定版本、许可、来源与 SHA-256 的 artifact 清单
 course.json                 课程元数据和状态真相源
 ```
 
