@@ -1,52 +1,43 @@
 # RoboGenesis 101 当前工作交接
 
-最后核对日期：2026-10-28（Asia/Shanghai）。
+最后核对日期：2026-10-30（Asia/Shanghai）。
 
-本文件只记录新 thread 最容易丢失的当前状态、验收边界、项目负责人偏好、未决项与
-恢复顺序。通用规则以根目录 `AGENTS.md` 为准；课程总计划与门禁以本地
-`robo_genesis_101_course_development.plan.md` 为准；L14 详细历史位于
-`course_development/lessons/l14.md`；实测兼容性公开摘要以 `COMPATIBILITY.md` 第 25 节为准。
+本文件只记录新 thread 最容易丢失的当前状态、项目负责人偏好、操作陷阱、未决项与恢复顺序。
+通用规则以根目录 `AGENTS.md` 为准；课程总计划与门禁以本地
+`robo_genesis_101_course_development.plan.md` 为准；M4 逐步验收记录位于
+`course_development/m4.md`；公开运行与平台证据以 `COMPATIBILITY.md` 为准。
 
 ## 1. 一句话恢复状态
 
-- L01–L13 核心课程已全部完成并通过项目负责人验收。
-- L14 是不影响核心 13 讲完成路径的可选进阶实践。`M3.R14.1`–`.R14.2` 与
-  `M3.L14.1`–`.L14.6` 已全部验收并冻结；L14 公开状态为 `gpu-verified`。
-- 项目负责人于 2026-10-28 明确确认 `M3.L14.6` 验收通过。L14 开发轮次至此完成。
-- M4 未启动。只有项目负责人另行明确说“开始 `M4.1`”后，才能开始跨讲整合。
-- `docs/handoffs/current.md` 只在项目负责人准备切换 thread 时更新；不要在每个小步骤
-  例行修改。
+- M0–M4 已全部完成并通过项目负责人验收。
+- M4.6 于 2026-10-30 验收通过；M4 六个小步骤至此全部完成。
+- M5 尚未启动。只有项目负责人另行明确说“开始 `M5.1`”后，才能进入 artifact 与 V1
+  发布工作。
+- 当前 canonical 状态为 8 个 `cpu-verified`、6 个 `gpu-verified`、0 个 `planned`、
+  0 个 `published`。`verified` 不等于 `published`。
+- `docs/handoffs/current.md` 只在项目负责人准备切换 thread 时更新，不要在每个小步骤例行修改。
 
-## 2. Git 快照、CI 与工作树保护
+## 2. Git 快照与工作树保护
 
 更新本文件前的快照：
 
 - 当前分支：`main`；
-- 本地 HEAD：`d22912fd0979a251c663a47044aab24e671ec961`；
-- HEAD 标题：`update COMPATIBILITY doc after l14`；
-- `origin/main` / `origin/HEAD`：
-  `1f3fa95eec9d34f2a90556d4276daf3d601a2d20`；本地 `main` 当前领先 1 个提交；
-- 最新课程验证：[Actions run 40494363506](https://github.com/datawhalechina/robo-genesis-101/actions/runs/40494363506)，`success`；
-- 最新 Pages deploy：[Actions run 40494363640](https://github.com/datawhalechina/robo-genesis-101/actions/runs/40494363640)，`success`。
+- 本地 HEAD：`ac4da71`，标题 `typo fixes`；
+- `origin/main` / `origin/HEAD`：同为 `ac4da71`；
+- M4 相关 tracked 提交依次包括：
+  - `15ecab7`：M4.1 先修、跨讲链接与 artifact 交接审计；
+  - `0aa73b4`：M4.2 双语讲义/notebook Markdown 与术语一致性；
+  - `4965f62`：M4.5 课程状态与公开入口同步；
+  - `1505b37`：M4.6 双语 appendix / references；
+  - `b1b36ac`：M4 兼容性记录；
+  - `ac4da71`：后续 typo 修正。
 
-前一个 Validate run
-[40492717208](https://github.com/datawhalechina/robo-genesis-101/actions/runs/40492717208)
-曾因 `COMPATIBILITY.md` 链接本地未跟踪的
-`course_development/evidence/l14-m3-l14-5-four-w7900-execution-2026-10-27.json` 失败。
-本地 validator 只检查文件是否存在，因而被未跟踪文件掩盖。已按项目负责人决定删除
-公开可点击链接：机器可读 evidence 只保留在本地开发档案，`COMPATIBILITY.md` 第 25 节
-保留完整公开摘要。修复后上述 Validate 和 Deploy run 均通过。
+M4.3/M4.4 主要是运行验证和本地开发档案更新，因此不应根据 tracked commit 数量误判这两步
+没有执行。详细运行记录在 `course_development/m4.md` 与 `COMPATIBILITY.md` 第 26 节。
 
-新 thread 首先重新运行：
-
-```sh
-git status --short --branch
-git log -5 --oneline --decorate
-```
-
-更新本 handoff 前除本文件已有的交接更新外，没有其他未提交 tracked 修改；更新后预期只有
-`docs/handoffs/current.md` 是 tracked 修改。下列 untracked 内容是已有本地配置、补丁或开发档案，
-必须保留，不得清理、覆盖或误当成新 thread 产生的垃圾：
+更新本 handoff 前 tracked 工作树干净；更新后预期只有 `docs/handoffs/current.md` 是 tracked
+修改。下列 untracked 内容是已有本地配置、补丁或开发档案，必须保留，不得清理、覆盖或
+误当作新 thread 产生的垃圾：
 
 - `.vscode/`；
 - `0001-4-cards-failure.patch`；
@@ -57,178 +48,169 @@ git log -5 --oneline --decorate
 - `genesis_公开课体系规划_2ba5d82e.plan.md`；
 - `robo_genesis_101_course_development.plan.md`。
 
-其中 `MIGRATION.md`、`course_development/` 和根开发计划虽然未跟踪，仍是当前开发状态的
-重要真相源。普通 `git diff` 不会显示它们的内容，不要因此忽略或删除。
+其中 `MIGRATION.md`、`course_development/` 和根开发计划虽然未跟踪，仍是重要开发真相源。
+普通 `git diff` 不会显示它们的修改，不要因此忽略或删除。
 
-## 3. 当前公开课程状态
+本次 handoff 尝试读取最新 GitHub Actions 状态时，`api.github.com` 连接失败；只能确认本地
+HEAD 与 `origin/main` 一致。新 thread 如需引用最新 CI/Pages 结论，应先重新查询，不能根据
+本 handoff 猜测。
 
-`course.json` 定义 14 讲，即 13 讲核心课程 + 1 讲可选进阶实践：
+## 3. M4 最终交付与公开课程状态
+
+`course.json` 当前定义 13 讲核心课程和 1 讲可选 L14：
 
 - L01–L07、L10：8 个 `cpu-verified`；
-- L08、L09、L11、L12、L13、L14：6 个 `gpu-verified`；
+- L08、L09、L11–L14：6 个 `gpu-verified`；
 - 0 个 `planned`；
 - 0 个 `published`。
 
-L14 保持 180 分钟、`gpu-required`、slug `robotwin-lingbot-vla-fine-tuning`。以下公开状态源
-已一致同步为 `gpu-verified`：
+M4.5 已核对 `course.json`、双语 README、根/双语首页、动态 sidebar、28 份 canonical 双语
+讲义 frontmatter 与 28 份 notebook metadata。它们保持一致，没有因“所有讲次都存在”而
+人为提升到 `published`。
 
-- `course.json`；
-- EN/ZH L14 讲义 frontmatter 与顶部状态说明；
-- EN/ZH L14 notebook metadata；
-- `README.md`、`README_en.md`、根/双语首页；
-- `CONTRIBUTING.md`；
-- manifest 与 L14 notebook 合同测试；
-- `COMPATIBILITY.md` 第 25 节。
+M4.6 新增并公开了五对非讲次辅助页面：
 
-VitePress sidebar 由 `course.json` 动态读取 lesson path/title，没有独立 status literal，
-因此 `.L14.6` 没有修改 `docs/.vitepress/config.mts`。
+- `docs/{zh,en}/appendix/setup-and-fallbacks.md`；
+- `docs/{zh,en}/appendix/glossary.md`；
+- `docs/{zh,en}/appendix/api-cheatsheet.md`；
+- `docs/{zh,en}/appendix/instructor-guide.md`；
+- `docs/{zh,en}/references/index.md`。
 
-## 4. L14 课程交付物与教学合同
+这些页面没有 lesson frontmatter 或独立课程状态。VitePress nav/sidebar、双语 README、首页和
+`AGENTS.md` 仓库结构已经同步；localized Markdown 合同计数因此从 34 变为 44。
 
-L14 讲义的四项高层学习目标为：
+## 4. M4 回归证据与结论边界
 
-1. 解释 RoboTwin demonstrations 如何转换为 LingBot-VLA-v2 训练输入；
-2. 配置并比较 action-expert LoRA 与 full-parameter SFT；
-3. 把 distributed training checkpoint 转换为可部署 Hugging Face model 并进行 serving；
-4. 在受控闭环协议下比较 base 与 fine-tuned policy，并报告边界清晰的结论。
+M4.3 按课程顺序完成 26 份适用的双语 CPU clean-kernel/diagnostic notebook；L14 外部
+companion 不加入核心 CPU 回归。
 
-EN/ZH notebook 当前均为精确 43 cells / 20 code cells / 23 Markdown cells；保持原始
-`RoboTwin_ROCm_Reproduction.ipynb` 的 cell-type 序列与技术覆盖。双语 code cell IDs 和
-source 逐字一致，提交版 outputs 为空、`execution_count: null`。
+M4.4 在参考 `AMD Radeon AI PRO R9700`、固定 ROCm/PyTorch、Genesis 1.3.3、LeRobot 0.6.0
+与 EGL 环境完成纵向接口回归：
 
-180 分钟必做路线：
+- L08、L09、L11 English AMD+EGL notebook；
+- 同轮 L09 新数据生成后由 L10 只读回读；
+- ACT/SmolVLA 1-step GPU smoke、numeric checkpoint audit 与 open-loop reload；
+- 两个 checkpoint 各进入一个 L13 15 秒 reference closed-loop episode，并生成结构化报告与
+  H.264 视频；
+- L14 复用已经验收的固定 companion + 4× W7900D evidence，没有在 R9700 上伪造或扩大
+  L14 结论。
 
-```text
-source/runtime/data preflight
-  → base 10 episodes
-  → 4-GPU 100-step action-expert LoRA
-  → DCP audit
-  → LoRA merge to fresh Hugging Face checkpoint
-  → merged 10 episodes
-  → aggregate evidence card
+这些运行只证明纵向接口和 integration contract。1-step loss、单样本 open-loop reload、
+单 episode timeout、L14 100-step LoRA 或独立 aggregate 都不能证明收敛、策略质量提升、稳定
+成功率、OOD robustness 或 sim-to-real。
+
+M4.3/M4.4 的临时 dataset、checkpoint、视频、日志和 executed notebook 不属于 M5 release
+artifact，不应在新 thread 中当成可发布资源或依赖其 `/tmp` 路径仍然存在。
+
+## 5. 项目负责人在 M4 明确的术语与写作偏好
+
+- `rollout`、`domain randomization` 等稳定技术词在中文工程语境中可以保留英文，不要为了
+  表面中文化而强行翻译。
+- `scripted rollout` 保留英文词组，不写成 `scripted rollout（回合执行）`。
+- `seed demonstration` 应在中文解释后保留英文，例如“种子演示数据（seed demonstration）”。
+- 仅中文容易产生歧义时，使用“中文解释（原英文词组）”；不要机械给所有技术词加括号。
+- dataset path、repository ID、artifact revision 和 checkpoint identity 必须分开表达。
+- 不得把 loss、open-loop playback/reload、视频主观观察或 pipeline 完成写成 closed-loop success。
+- 双语 shell 命令必须逐字一致；EN/ZH notebook code cell ID/source 继续保持相同。
+
+上述偏好已经进入公开 glossary、讲义修正和合同测试。后续修改中文材料时应继续遵守，不要
+把 M4.2 已按项目负责人反馈保留的英文技术词重新机械翻译。
+
+## 6. Setup、fallback 与 API 的冻结边界
+
+- dependency-light validation 环境不包含 Genesis、PyTorch、LeRobot 或训练栈。
+- `uv sync --locked --all-extras` 只表示完整可移植依赖解析，不构成参考 AMD ROCm 验证。
+- L01–L07、L10 有已验收 CPU 完成路径。
+- L08 的 scripted rollout 数值路径可在 CPU 执行，但关闭渲染不产生阶段图像证据。
+- L09/L11 的 `ROBO_GENESIS_RENDER=0` 只是诊断，不能冒充 dataset、preview 或 provenance
+  生成完成。
+- L12 CPU dry-run 不替代 GPU smoke；L13 CPU/no-checkpoint 诊断不替代 GPU closed-loop。
+- L14 只有固定 external companion + 4× W7900D 必做路径；没有 CPU、单卡、核心环境或无
+  companion 的完成 fallback。
+- L13 的 commit-pinned、opt-in Hugging Face source declaration 不是 M5 通用 artifact downloader。
+- API cheatsheet 只列当前 `src/robo_genesis/` 真实课程接口；以下划线开头的实现细节和
+  notebook-local helper 不应升级成公共 API。
+
+## 7. 引用、许可与发布前未决项
+
+当前许可边界：
+
+- 原创课程代码、讲义、notebook、练习和原创媒体：除另有注明外采用 MIT；
+- 四个 vendored YCB 对象：CC BY-NC 4.0，不属于 MIT；
+- Franka：使用固定 Genesis 自带模型，不 vendor 旧 source-course bundle；
+- Genesis、LeRobot、论文、外部 dataset/model：继续作为引用、链接或安装依赖；
+- LingBot-VLA-v2 base、RoboTwin dataset 与 L14 companion image：不 rehost；
+- 生成 dataset/checkpoint/log/frame/video：默认不进入 Git，也没有默认再分发授权。
+
+Datawhale 品牌和模板媒体仍是明确未决项：
+
+- `docs/public/datawhale-logo.png` 与 `docs/public/learning.GIF` 不属于项目 MIT 授权；
+- 本地没有记录 Datawhale 品牌/商标使用授权；
+- V1 release 前必须由项目负责人确认授权并补充记录，或替换/移除相应媒体；
+- 未确认前不要修改、重新设计或对外发布这些品牌素材。
+
+## 8. 构建与验证时容易遗漏的操作细节
+
+### VitePress 构建必须顺序执行
+
+不要并行运行：
+
+```sh
+npm run docs:build
+EDGEONE=1 npm run docs:build
 ```
 
-原 notebook 中的 official RoboTwin checkpoint、4/8-GPU 1000-episode benchmark、merged-LoRA benchmark
-和 full-parameter SFT 仍保留在同一 notebook 中，但都是章节内 opt-in 扩展，不得写成
-本轮 RoboGenesis 已验证结果。
+两次构建共享 `docs/.vitepress/.temp`。M4.6 中并行执行曾产生大量虚假的
+`ERR_MODULE_NOT_FOUND` 和 `Unexpected identifier`；改为顺序执行后两种 build 都通过。
 
-## 5. M3.L14.5 已验收的四卡证据
+### 站点页面不能相对链接到 `docs/` 之外
 
-成功 run：`l14-adjust-bottle-4gpu-20261027t0822z`。
+Python course validator 能解析指向仓库根文件或 `src/` 的相对路径，但 VitePress 会把站点
+源码目录之外的这些链接判为 dead link。公开 appendix/references 中链接
+`COMPATIBILITY.md`、`NOTICE.md`、`LICENSE_POLICY.md` 或 `src/robo_genesis/*.py` 时，应使用
+canonical GitHub URL，不要恢复成 `../../../...`。
 
-环境与输入：
+### 已知非阻塞 warning
 
-- 4× `AMD Radeon PRO W7900D`，`gfx1100`；
-- Python `3.12.3`；
-- PyTorch `2.9.1+rocm7.2.1.gitff65f5bc`；
-- HIP `7.2.53211-e1a6bc5663`；
-- companion `27b2f6fcb6c715e2cbb6db4431381f87c94b86ed`，worktree 未修改；
-- 50 个 demo task、50 个 LeRobot dataset 和 50 条 training manifest entry 通过 preflight。
+- `npm ci` 报告 15 项既有 advisory（4 low、1 moderate、10 high）；M4 没有运行
+  `npm audit fix` 或自动升级依赖。
+- VitePress build 保留既有 large-chunk warning，但构建成功。
 
-实际结果：
+M4.6 最终门禁：14 lessons、44 localized Markdown files、28 notebooks、45 Python files；
+114 项 pytest；compileall、238-package `uv lock --check`、`npm ci`、普通与 EdgeOne build、
+`git diff --check` 和 `git diff --cached --check` 全部通过。
 
-- base：`0/10`，Wilson 95% interval `[0.0, 0.2775401688]`；
-- 4-GPU LoRA：100 steps，rank 8，alpha 16，global batch 4，seed 42，约 6.01 分钟；
-- DCP：134 files，`24,970,824,371` bytes；
-- merge：144 LoRA layers，HF 14 files / 3 weight shards / `12,467,433,466` bytes；
-- merged：`0/10`，Wilson 95% interval `[0.0, 0.2775401688]`；
-- observed aggregate difference：`0.0`；
-- base/merged 各 10 个 H.264 视频，320×240、400 frames、40 秒，20 个全部可解码；
-- 四卡峰值显存：`25,720 / 24,239 / 24,239 / 25,720 MB`；
-- run root：`37,464,653,433` bytes。
+## 9. M5 范围与启动边界
 
-100 steps 只证明 data/forward/backward/update/save/merge/serve/evaluate 管线可执行，不证明
-loss 收敛或策略质量提升。base 与 merged 均为 `0/10` 也不能外推为模型没有潜力。
+M5 必须逐步完成，不能把 M4 已有 evidence 当成资源发布已经完成：
 
-## 6. Evaluator 分母与 resolved-seed 边界
+1. `M5.1`：示例 dataset schema、内容、许可与版本规则；
+2. `M5.2`：ACT/SmolVLA checkpoint 生成配置、许可、模型卡与版本规则；
+3. `M5.3`：artifact manifest 与 `fetch_artifacts.py` 的幂等、checksum、错误提示和目标目录；
+4. `M5.4`：使用正式发布 artifact 的双语 fallback 教程；
+5. `M5.5`：README、首页、sidebar、manifest、讲义与 notebook 状态总核对；
+6. `M5.6`：全新环境文档构建、CPU smoke 与 artifact 下载验证；
+7. `M5.7`：AMD GPU 发布验证和未运行长实验记录；
+8. `M5.8`：V1 发布清单与最终验收材料。
 
-固定 companion 的 serial `eval_batch=false` evaluator 可能在实际只完成 5 个 policy episodes
-时仍打印请求时的 `Final success rate: 0/10`。课程不修改 companion，而在 notebook 中：
+每个拟发布 artifact 至少记录 creator/source、immutable version、size、SHA-256、license、schema、
+生成配置、hosting URL 和适用课程版本。未经项目负责人明确授权，不创建 GitHub release、
+不 push 新发布内容、不上传外部 artifact，也不把任何 lesson 改为 `published`。
 
-- 以最后一条 incremental `Success rate: k/n` 确定实际完成分母；
-- 为剩余 episodes 启动 fresh serial invocation；
-- 每次 invocation 保存独立 raw log、attempt summary 和视频目录；
-- base/merged 均以 `5+4+1` 补齐真实 10 episodes；
-- 基础设施非零退出仍中止 run。
+## 10. 新 thread 恢复顺序
 
-当前 companion 不输出逐 resolved-seed policy outcome。attempt summaries 只是 invocation-level
-collection evidence，不能代替 episode rows。因此当前只能报告两个独立 aggregate，
-不得声称 resolved-seed matched improvement/regression。这个缺口不阻塞 LoRA、full-SFT、merge、
-serving 或 aggregate closed-loop evaluation 教学主线。
+1. 读取根 `AGENTS.md`、本文件、根开发计划的 M4/M5 部分、`course_development/m4.md` 尾部，
+   以及 `COMPATIBILITY.md` 第 26–27 节。
+2. 运行：
 
-面向学习者的讲义已将工程 workaround 压缩为“分母对应实际完成 episodes、notebook
-自动补齐并保存证据、基础设施错误仍中止”。requested-slot 消耗时机、basename、
-attempts JSON 等细节留在 notebook/helper/开发档案，不占用讲义主线。
+   ```sh
+   git status --short --branch
+   git log -8 --oneline --decorate
+   ```
 
-## 7. Companion 与本地 evidence 的保护边界
-
-- `Robotwin-radeon-cloud` 正在竞赛期，当前不修改 companion。
-- 已设计的版本化逐 attempt/episode JSONL 增强已冻结为本地 patch：
-  `course_development/patches/robotwin-radeon-cloud-jsonl-evidence-v1.patch`。
-- patch SHA-256：`c98cbfee0f6e69fbcf36f5e61e23ebe966d11854a77fe3ca27fff8157dc14983`；
-  详细 schema、invariants、静态验收和未来恢复步骤见
-  `course_development/issues/l14-robotwin-companion-jsonl-evidence-deferred.md`。
-- 只有项目负责人未来明确恢复该延期项时，才能对当时 companion `main` 重新审计/移植/实跑。
-- `course_development/evidence/` 下的四份 L14 JSON 为本地开发 evidence，不提交到公开仓库。
-- `COMPATIBILITY.md` 不得再建立指向上述未跟踪文件的 Markdown 链接；第 25 节的
-  精确 runtime、result、resource、video 和 limitation 摘要就是公开证据记录。
-
-## 8. 项目负责人已明确的 L14 教学偏好
-
-- 原始 `RoboTwin_ROCm_Reproduction.ipynb` 是经过路径验证的竞赛参考。原始 43 cells /
-  20 code cells 的技术覆盖必须充分保留；若认为某内容不妥，必须列出并与项目负责人
-  讨论，不得静默忽略或删除。
-- 讲义面向学习者，不得出现 `M3.L14.5` 等内部开发里程碑编号。
-- 学习目标必须是 high-level 教学目标，不能写成细碎验收项。
-- L14 hardware/runtime 说明应把 AMD 环境本身说清楚，不要引入不必要的 NVIDIA 对比。
-- 课程最重要的是教会学习者运行 VLA LoRA 与 full SFT 工作流；resolved-seed matched
-  evidence 只会收窄最终比较结论，不得阻塞整讲主线。
-- 讲义讲清原则，notebook 承载可执行步骤，helper 承载复用/安全边界；不要把工程实现流水账
-  放进讲义。
-- 结论不得超出证据：训练 loss、100-step pipeline、小样本 aggregate 和视频回放都不能
-  代替受控闭环评估或证明策略提升。
-
-## 9. M3.L14.6 交付门禁与已知 warning
-
-`.L14.6` 实现交付时的本地门禁：
-
-- `course.json` 与 EN/ZH notebook JSON 解析通过；
-- L14 manifest/notebook/workflow 定向测试：21 passed；
-- 全量 pytest：107 passed；
-- compileall：通过；
-- course validation：14 lessons、34 localized Markdown files、28 notebooks、45 Python files；
-- `npm ci`：安装 190 packages，审计 191 packages；
-- VitePress build：通过；
-- EN/ZH L14 notebook：43 cells / 20 code cells，code IDs/source 一致，outputs 为空；
-- learner-facing `planned`/scaffold 残留扫描、状态表一致性与 `git diff --check`：通过。
-
-公开 commit `1f3fa95` 的 Validate 与 Pages deploy 也均通过。
-
-已知但未自动修复：
-
-- `npm ci` 报告 15 项既有 advisory（4 low、1 moderate、10 high）；没有运行 `npm audit fix`；
-- VitePress build 有既有 large-chunk warning，但 build 成功；
-- full GPU notebook、checkpoint、logs 和视频不进入 Git；四卡执行证据由 `.L14.5` 已验收运行
-  和 `COMPATIBILITY.md` 第 25 节支持，`.L14.6` 不重复远程 GPU 训练。
-
-## 10. 下一阶段与新 thread 恢复顺序
-
-`M3.L14.6` 的验收接受了以下边界：L14 `gpu-verified` 严格限定为固定 companion +
-4× W7900D 必做路径；base/merged `0/10` 只是独立 aggregate 小样本；resolved-seed matched
-outcomes 不可用；讲义采用学习者视角压缩 evaluator workaround；`COMPATIBILITY.md` 第 25 节
-记录精确证据和未运行项；sidebar 因动态读取 manifest 无需独立修改。
-
-当前没有已启动的开发步骤。下一候选阶段是 M4 全课程集成与发布前回归，但尚未开始。
-
-新 thread 恢复顺序：
-
-1. 读取 `AGENTS.md`、本文件、`COMPATIBILITY.md` 第 25 节、
-   `course_development/lessons/l14.md` 第六节和根开发计划的 L14 部分。
-2. 运行第 2 节的 Git 快照命令，保留所有已有 untracked 内容。
-3. 确认 `.L14.6` 验收结论已经同步到根计划、L14 单课档案、`MIGRATION.md` 与
-   `COMPATIBILITY.md`。
-4. 不要因 `.L14.6` 已验收自动开始 M4；等待项目负责人另行明确启动 `M4.1`。
-5. 除非项目负责人明确恢复 companion JSONL 延期项，不要修改 `Robotwin-radeon-cloud`。
-
-M5 仍未启动。L13/L14 已有的 checkpoint/runtime 证据不等于 M5 的版本化 artifact
-发布、checksum、license/model card、下载工具和 V1 发布流程已完成。
+3. 保留第 2 节列出的所有 untracked 文件和目录。
+4. 确认 M4 已完成、M5 未启动、canonical 状态仍为 8/6/0/0。
+5. 如需引用 CI 状态，重新查询 GitHub Actions；不要沿用本文件未能联网确认的结果。
+6. 不要自动开始 M5；等待项目负责人明确启动 `M5.1`。
+7. 除非项目负责人明确恢复延期项，不修改 `Robotwin-radeon-cloud` 或应用旧 companion JSONL
+   patch。
