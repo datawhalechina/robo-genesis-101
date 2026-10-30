@@ -1,5 +1,6 @@
 import json
 import re
+from collections import Counter
 from pathlib import Path
 
 from robo_genesis.course_validation import (
@@ -160,6 +161,90 @@ def test_bilingual_project_documents_have_matching_heading_structure() -> None:
         )[0]
         en_section = text.split("\n## English\n", maxsplit=1)[1]
         assert markdown_heading_levels(zh_section) == markdown_heading_levels(en_section)
+
+
+def test_public_release_status_and_sidebar_follow_the_m5_contract() -> None:
+    manifest = json.loads((PROJECT_ROOT / "course.json").read_text(encoding="utf-8"))
+    status_counts = Counter(lesson["status"] for lesson in manifest["lessons"])
+    assert status_counts == {
+        "cpu-verified": 8,
+        "gpu-verified": 6,
+    }
+
+    public_entries = {
+        "zh": (
+            PROJECT_ROOT / "README.md",
+            PROJECT_ROOT / "docs" / "zh" / "index.md",
+        ),
+        "en": (
+            PROJECT_ROOT / "README_en.md",
+            PROJECT_ROOT / "docs" / "en" / "index.md",
+        ),
+    }
+    shared_markers = (
+        "rg101-fruit-pick@1.0.0",
+        "rg101-fruit-pick-smolvla@1.0.0",
+        "checksum",
+        "--allow-candidate",
+        "`candidate`",
+        "`unavailable`",
+        "M5.6",
+        "M5.7",
+        "M5.8",
+    )
+    stale_claims = (
+        "M5 的版本化 artifact 与发布验收尚未完成",
+        "版本化数据集/checkpoint、下载校验和全新环境发布验收属于后续 M5",
+        "the versioned artifacts and clean-environment release acceptance belong to M5",
+        "versioned datasets/checkpoints, download verification, and clean-environment "
+        "release acceptance",
+    )
+
+    for locale, paths in public_entries.items():
+        for path in paths:
+            text = path.read_text(encoding="utf-8")
+            normalized = " ".join(
+                line.removeprefix(">").strip() for line in text.splitlines()
+            )
+            for marker in shared_markers:
+                assert marker in text, (path, marker)
+            for stale_claim in stale_claims:
+                assert stale_claim not in normalized, (path, stale_claim)
+
+            if locale == "zh":
+                for marker in (
+                    "8 个 `cpu-verified`",
+                    "6 个 `gpu-verified`",
+                    "0 个 `planned`",
+                    "0 个 `published`",
+                    "正式 release",
+                ):
+                    assert marker in normalized, (path, marker)
+            else:
+                for marker in (
+                    "8 `cpu-verified`",
+                    "6 `gpu-verified`",
+                    "0 `planned`",
+                    "0 `published`",
+                    "none is a formal release",
+                ):
+                    assert marker in normalized, (path, marker)
+
+    config = (PROJECT_ROOT / "docs" / ".vitepress" / "config.mts").read_text(
+        encoding="utf-8"
+    )
+    assert "readFileSync(new URL('../../course.json'" in config
+    assert "course.lessons.map((lesson) =>" in config
+    for status in (
+        "planned",
+        "draft",
+        "reviewed",
+        "cpu-verified",
+        "gpu-verified",
+        "published",
+    ):
+        assert f"'{status}'" not in config
+        assert f'"{status}"' not in config
 
 
 def test_frontmatter_and_heading_parser_ignore_fenced_examples() -> None:

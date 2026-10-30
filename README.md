@@ -4,7 +4,12 @@
 
 > **项目状态：Alpha / 发布前集成阶段。** `course.json` 当前包含 8 个 `cpu-verified` 和
 > 6 个 `gpu-verified` 讲次，0 个 `planned`、0 个 `published`。14 讲均已达到各自声明的验证
-> 状态，但 M5 的版本化 artifact 与发布验收尚未完成，因此不提前标记为 `published`。
+> 状态。M5.1–M5.4 已冻结 `rg101-fruit-pick@1.0.0` 数据集和
+> `rg101-fruit-pick-smolvla@1.0.0` checkpoint 的候选身份、版本、许可与逐文件 checksum
+> manifest，并提供显式 `--allow-candidate` 的下载/校验流程及双语本地消费路径。两者仍是
+> `candidate`，ACT artifact 仍为 `unavailable`，都不是正式 release；M5.6 fresh-cache 全量
+> 下载与 clean-environment acceptance、M5.7 参考 AMD GPU release acceptance 和 M5.8 最终
+> V1 清单/授权尚未完成，因此不提前标记为 `published`。
 > L01–L07 已通过各自的 CPU clean-kernel 验证，
 > 状态为 `cpu-verified`；这些讲次的附加 AMD 路径也已在参考 R9700 环境按各自合同通过。
 > L08 已通过双语 CPU 数值路径、CPU+EGL 和参考 R9700 AMD+EGL 的脚本化专家验证；L09
@@ -30,8 +35,9 @@ RoboGenesis 101 是一门 Datawhale 开源课程，面向具备 Python 基础、
 - English course: <https://datawhalechina.github.io/robo-genesis-101/en/>
 
 在线站点已经提供 L01–L14 的双语讲义和 notebook。当前所有讲次都已达到验证状态；课程仍处于
-Alpha，是因为版本化数据集/checkpoint、下载校验和全新环境发布验收属于后续 M5，而不是因为
-仍有 `planned` 讲次。
+Alpha，不是因为仍有 `planned` 讲次，而是因为已提供 manifest、checksum downloader 和
+[双语 fallback 路径](docs/zh/appendix/setup-and-fallbacks.md)的数据集/checkpoint 仍为
+`candidate`，且 M5.6–M5.8 的全新环境、AMD GPU 与最终发布验收尚未完成。
 
 ## 适合谁
 

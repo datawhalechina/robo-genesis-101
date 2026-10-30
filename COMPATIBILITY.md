@@ -2354,3 +2354,60 @@ M5.4 交付源码通过：
 L10/L12/L13 candidate 消费证据、feature-specific statistics count 修正、默认本地 target 与
 无隐式课程 candidate 下载，以及未运行训练/闭环/fresh-cache 下载的边界。本次验收不自动启动
 M5.5，也不授权上传、外部发布或 status 提升。
+
+## 29. M5.5 公开状态与 metadata 总核对
+
+> 核对日期：2026-10-30（Asia/Shanghai）
+>
+> 范围：同步 M5.1–M5.4 后的公开阶段叙述，并复核 `course.json`、讲义/notebook metadata、
+> 课程表与动态 sidebar。本节不新增平台运行证据，不改变 lesson/artifact status。
+
+### 29.1 Canonical 状态与 metadata
+
+`course.json` 当前仍为 8 个 `cpu-verified`（L01–L07、L10）、6 个 `gpu-verified`（L08、L09、
+L11–L14）、0 个 `planned`、0 个 `published`。repository-wide validator 重新确认：
+
+- 28 份 canonical 双语讲义 frontmatter 与 manifest 的 lesson、slug、locale、title、duration、
+  hardware、status 一致；
+- 28 份 notebook `metadata.robo_genesis` 与 manifest 一致，双语 code cell ID/source 保持相同；
+- 双语 README 与双语首页的 14 行课程表在顺序、标题、路径、时长、硬件和 status 上一致；
+- VitePress 继续读取 `course.json` 并通过 `course.lessons.map(...)` 生成 sidebar，不复制 status
+  literal 或另一份 lesson 顺序。
+
+因此 M5.5 不修改上述 canonical metadata，也不因 artifact candidate 已可下载而把任何 lesson
+提升为 `published`。
+
+### 29.2 M5 阶段边界同步
+
+四个公开入口现已明确区分“已实现的候选能力”和“未完成的发布验收”：
+
+- M5.1–M5.4 已冻结 `rg101-fruit-pick@1.0.0` 与
+  `rg101-fruit-pick-smolvla@1.0.0` 的 candidate identity/version/license/checksum manifest，
+  提供显式 `--allow-candidate` 的 checksum downloader 与双语本地 fallback/消费路径；
+- 两项 artifact 仍为 `candidate`，ACT 仍为 `unavailable`，均不是正式 release；
+- M5.6 仍需执行 fresh-cache 全量下载、clean-environment 文档构建/CPU smoke/消费验证；
+- M5.7 仍需执行参考 AMD GPU release acceptance 并记录未运行的长训练和未验证平台；
+- M5.8 仍需提交最终 V1 清单并取得外部发布授权。
+
+这解释了所有讲次已经 verified 而仍有 0 个 `published` 的原因，不再把已经完成的 manifest、
+downloader 或 fallback 教程笼统写成未来工作。
+
+### 29.3 合同与当前验证
+
+新增公开状态合同测试，要求四个入口同时保留 8/6/0/0、两个 candidate identity、checksum、
+显式 opt-in、ACT unavailable、M5.6–M5.8 边界和 candidate 非正式 release 声明，并要求
+sidebar 继续动态读取 `course.json` 且不硬编码 status literal。
+
+当前针对性测试 `tests/test_course_validation.py` 13/13 通过；course validation 通过并报告
+14 lessons、44 localized Markdown files、28 notebooks、49 Python files。完整 126 项 pytest、
+compileall、238-package `uv lock --check`、`npm ci`、普通与 `EDGEONE=1` VitePress build 和
+`git diff --check` 均通过；npm 保留既有 15 项 advisory，两次 build 只保留既有 large-chunk
+warning。
+
+M5.5 未执行 fresh-cache 下载、CPU notebook smoke、GPU rollout、长训练或外部发布；这些仍
+分别属于 M5.6–M5.8。本步不自动启动 `M5.6`。
+
+项目负责人于 2026-10-30 确认 `M5.5` 验收通过，接受本节记录的 8/6/0/0 canonical 状态、
+讲义/notebook metadata 与课程表核对、动态 sidebar 合同、四个公开入口的 M5 阶段叙述，以及
+candidate/ACT unavailable 均非正式 release 的边界。本次验收不提升 lesson/artifact status，
+不授权上传或外部发布，也不自动启动 `M5.6`。

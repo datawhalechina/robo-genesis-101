@@ -27,8 +27,15 @@ features:
 
 > The 14 lessons currently comprise 8 `cpu-verified` and 6 `gpu-verified` lessons,
 > with 0 `planned` and 0 `published`. Every lesson has reached its declared verification
-> status; none is marked `published` before the versioned artifacts and release acceptance
-> in M5. L01–L07 are `cpu-verified` after their clean-kernel CPU verification; their
+> status. M5.1–M5.4 have frozen the candidate identity, version, license, and per-file
+> checksum manifest for the `rg101-fruit-pick@1.0.0` dataset and the
+> `rg101-fruit-pick-smolvla@1.0.0` checkpoint, and now provide an explicit
+> `--allow-candidate` download/verification workflow plus bilingual local consumption
+> paths. Both remain `candidate`, while the ACT artifact remains `unavailable`; none is
+> a formal release. M5.6 fresh-cache download and clean-environment acceptance, M5.7
+> reference AMD GPU release acceptance, and M5.8 final V1 checklist/authorization remain
+> incomplete, so no lesson is marked `published`. L01–L07 are `cpu-verified` after their
+> clean-kernel CPU verification; their
 > additional AMD paths also passed their respective contracts on the reference R9700.
 > L08 is `gpu-verified` after its bilingual CPU numerical paths, CPU+EGL path, and
 > scripted-expert path on a reference R9700 all passed. L09 is also `gpu-verified`:
