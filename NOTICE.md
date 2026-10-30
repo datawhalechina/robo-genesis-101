@@ -5,7 +5,7 @@ an audit ledger, not a replacement for the original license texts and not a
 grant of rights by this project. M0.4 approved the audit, and M0.5 approved the
 license boundary and dispositions reflected below.
 
-Audit date: 2026-08-28.
+Initial audit date: 2026-08-28. M5.1 dataset candidate review: 2026-10-30.
 
 The four YCB objects identified below were vendored during M1.4. The two
 Datawhale template files also predate this audit. No other reviewed third-party
@@ -19,7 +19,7 @@ assets have been copied into this repository.
 | Franka Emika Panda MJCF model | `franka_fruit_pick_demo/assets/robots/franka/` at the recorded `course` baseline | Model README and MuJoCo Menagerie upstream identify the model as Apache-2.0 | Do not copy the incomplete source bundle; use the model bundled with the pinned Genesis version |
 | Source-course renders and slide exports | Both source courses at their recorded baselines | Project lead confirmed on 2026-08-28 that the course code, lectures, and teaching content are original | Original portions use MIT after migration; preserve notices for depicted or embedded third-party material |
 | Datawhale template media already in this repository | `docs/public/datawhale-logo.png`, `docs/public/learning.GIF` | Inherited template README declares CC BY-NC-SA 4.0 for the work; separate trademark permission was not found | Keep outside the project MIT boundary until Datawhale brand use is confirmed or the media is replaced |
-| Datasets, checkpoints, and training/evaluation outputs | Local source worktrees only | No artifact-specific license or release metadata reviewed | Excluded by M0.2; any future release requires a separate M5 entry |
+| Datasets, checkpoints, and training/evaluation outputs | Local source worktrees and fixed external candidates | M5.1 reviewed the non-DR fruit-pick dataset payload; checkpoints and other outputs remain unreviewed | Keep outside the repository MIT License; the dataset candidate remains unreleased until its card, license, immutable version, and later M5 gates are complete |
 
 The course MIT License must not be presented as relicensing any item in this
 table. Third-party terms continue to apply to third-party material.
@@ -224,6 +224,63 @@ Genesis, ManiSkill, LeRobot, PyTorch, and other installable software packages
 are dependencies rather than vendored source in the current plan. Their exact
 versions and installation sources belong to M0.6-M0.7; any code later copied
 from them must first receive a file-level license review and a new entry here.
+
+### M5.1 fruit-pick dataset release candidate
+
+M5.1 selected the non-domain-randomized `fruit_pick` aggregation as the V1
+example-dataset candidate. It is not the similarly named `fruit_pick_dr`
+dataset used by some historical training and integration runs. The selected
+payload contains 300 successful scripted-expert episodes: 100 each for banana,
+lemon, and plum placement into a bowl, with 71,976 frames at 30 FPS, 9-D Franka
+state/action vectors, and world/wrist RGB video at 640×360.
+
+The nine LeRobot payload files contain 505,224,976 bytes. The SHA-256 of the
+relative-path-sorted `sha256sum` stream is:
+
+```text
+26cb09b621aa43f3abbe39ce2e55a3c161c2f89c9fe174fbd5e317bec4426f23
+```
+
+Those files match the fixed payload at
+[`wangxun1010/fruit_pick@475e8c6ec7079c4c52b20a0221bf959acb541abd`](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd).
+That revision currently has no dataset card, license file, or license tag, so
+its public availability is not treated as a completed RoboGenesis release. A
+later immutable revision must add the reviewed card and license without
+silently replacing the selected payload, and the final manifest must record
+every file, size, and SHA-256.
+
+The source recording was produced from
+`wangxunx/franka_fruit_pick_demo@0de3ae0df2a91acbda7f4fb537c65d9e54190527`
+with Python 3.12.3, Genesis 1.3.1, LeRobot 0.6.0, PyAV 15.1.0, and an AMD
+Radeon AI PRO R9700. The three archived recording logs confirm 100/100
+successful episodes per object and seed sequences beginning at zero. The logs
+do not contain the original shell invocation, so the future dataset card must
+label its command as reconstructed from the fixed source, defaults, metadata,
+and runtime logs rather than as an original command transcript.
+
+The proposed artifact identity is `rg101-fruit-pick` version `1.0.0`, with
+logical LeRobot ID `genesis/fruit_pick` and RoboGenesis dataset-schema version
+`1.0.0`. Artifact versions are immutable and independent of schema versions;
+any payload-byte change requires a new version and checksum set. Checkpoints
+must record this precise version, hosting commit, and payload-manifest SHA-256,
+not only the logical repo ID.
+
+The proposed dataset license is
+[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/legalcode), not
+the repository MIT License. The generated trajectories, task strings, and
+course arrangement are credited to Xun Wang for RoboGenesis 101. The rendered
+video depicts ManiSkill-distributed YCB banana, lemon, plum, and bowl assets,
+whose CC BY-NC 4.0 terms require attribution and preserve the noncommercial
+restriction. The Franka model is supplied through Genesis from the MuJoCo
+Menagerie lineage and retains its separate attribution. M5.1 project-lead
+acceptance must confirm the creator and licensing authority before this
+candidate can proceed to external release.
+
+The candidate does not include people, personal data, real-robot user data,
+depth, segmentation, force/torque, tactile signals, failed episodes,
+checkpoints, logs, or evaluation output. It also has no per-episode domain
+provenance and must not support claims about known training domains, held-out
+domains, or OOD membership.
 
 ## 6. Approved decisions and remaining review
 
