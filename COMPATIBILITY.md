@@ -2093,3 +2093,96 @@ aggregate-only 结论边界。仓库门禁结果将在 `.L14.6` 交付检查完�
 
 项目负责人于 2026-10-28 确认 `M3.L14.6` 验收通过。L14 当前公开状态为
 `gpu-verified`；可选 L14 开发轮次至此完成，本次验收不自动开始 M4。
+
+## 26. M4 全课程回归与状态总同步
+
+> 回归日期：2026-10-29 至 2026-10-30（Asia/Shanghai）
+>
+> 范围：依据 M4.3 的全课程 CPU clean-kernel/仓库门禁和 M4.4 的参考 AMD GPU、
+> 数据→训练→checkpoint→闭环纵向接口回归，重新核对 canonical manifest、公开入口、
+> 双语讲义/notebook metadata、sidebar 与本兼容性记录。M4.5 不执行发布，不把 verified
+> 状态自动提升为 `published`。
+
+### 26.1 Canonical 状态结论
+
+`course.json` 当前 14 讲的真实状态统计为：
+
+| 状态 | 数量 | 讲次 |
+|---|---:|---|
+| `cpu-verified` | 8 | L01–L07、L10 |
+| `gpu-verified` | 6 | L08、L09、L11–L14 |
+| `planned` / `draft` / `reviewed` | 0 | — |
+| `published` | 0 | — |
+
+M4.3/M4.4 没有改变任何讲次的最低硬件合同，也没有完成 M5 要求的版本化数据集/checkpoint、
+下载校验、许可/大小/SHA-256 发布清单和全新环境 release acceptance。因此本轮不修改
+`course.json` 的 14 个 status literal：全部讲次保持已经有证据支持的 verified 状态，同时明确
+不提前使用 `published`。
+
+逐项核对结果：
+
+- 28 份 canonical EN/ZH 讲义 frontmatter 的 lesson、slug、locale、duration、hardware 和 status
+  与 `course.json` 一致；L08 的四份专题扩展页不拥有独立 lesson status；
+- 28 份 EN/ZH notebook 的 `metadata.robo_genesis` 与 manifest 一致，双语 code cell ID/source
+  继续保持相同，提交版没有 output 或 execution count；
+- `README.md`、`README_en.md`、`docs/zh/index.md`、`docs/en/index.md` 的 14 行课程表与
+  manifest 的顺序、标题、路径、时长、硬件和状态一致；
+- `docs/.vitepress/config.mts` 直接读取 `course.json` 生成双语 sidebar 的 lesson 标题和链接，
+  不维护独立 status literal，因此无需复制或手动同步状态；
+- 根首页、双语 README 和双语首页现在明确写出 8 个 `cpu-verified`、6 个 `gpu-verified`、
+  0 个 `planned`、0 个 `published`，并把剩余发布工作限定到 M5。
+
+### 26.2 支撑当前状态的 M4 回归
+
+M4.3 按课程顺序完成 26 份适用的双语 CPU clean-kernel/diagnostic notebook；L14 外部 companion
+不被加入核心安装或 CPU 回归。M4.4 在单张隔离的 `AMD Radeon AI PRO R9700` 上确认
+PyTorch `2.9.1+rocm7.2.1.gitff65f5bc`、HIP `7.2.53211-e1a6bc5663`、Genesis `1.3.3`、
+LeRobot `0.6.0`、`gs.amdgpu` 与 EGL，并完成：
+
+- English L08、L09、L11 AMD+EGL notebook；L09 本轮生成 2 episodes / 85 frames，L11
+  生成 4 episodes / 173 frames 和 domain provenance；
+- L10 只读本轮 L09 数据，验证 metadata、PyAV 双相机回读、statistics、split 与 action chunk；
+- 使用 `genesis/fruit_pick` 的 300 episodes / 71,973 frames 数据分别执行 ACT/SmolVLA 1-step
+  GPU smoke、numeric checkpoint 审计和单样本 open-loop reload；
+- 两个新 checkpoint 各执行 1 个 15 秒 L13 reference episode，checkpoint load、camera adapter、
+  9-D action、Genesis control、结构化 report 和 H.264 视频均贯通；两条均为 450-step timeout，
+  只属于 integration evidence，不形成策略质量或稳定成功率结论。
+
+L14 没有在 R9700 主机伪造 W7900 结论，也没有重复约 83.1 分钟的四卡主线。本轮复核并复用
+第 25 节已经项目负责人验收的 4× W7900D evidence；课程 helper SHA-256 与 accepted evidence
+一致，L14 notebook 的后续 raw-hash 变化仅来自 `.L14.6` 的 `planned`→`gpu-verified` metadata
+更新，EN/ZH code cell 身份仍一致。该 evidence reuse 不扩大到其他 GPU、单卡、CPU 或无
+companion 环境。
+
+### 26.3 发布与兼容性边界
+
+当前 verified 状态表示对应讲次在本文件记录的 CPU、参考 R9700 或固定四卡 W7900D 合同内
+通过，不表示：
+
+- 已发布版本化课程数据集、ACT/SmolVLA checkpoint 或 L14 大模型 artifact；
+- 已完成 M5 的 artifact size、SHA-256、license、schema、生成配置和下载器验收；
+- 1-step training loss、单 episode rollout 或 L14 100-step LoRA 证明策略收敛或质量提升；
+- 已验证非 AMD GPU、其他 ROCm/PyTorch、Windows、Apple Silicon、完整 CPU-only 训练链；
+- 已运行 L13 稳定成功率评估、L14 official checkpoint、1,000-episode benchmark、8 GPU 或
+  full SFT。
+
+因此公开入口从“内容将逐步发布”收敛为“全部讲次已经 verified，但课程仍是 Alpha，并等待
+M5 release gates”。这既不降低已经验收的状态，也不把 verified 混同为 published。
+
+### 26.4 M4.5 同步后门禁
+
+- course validation：14 lessons、34 localized Markdown files、28 notebooks、45 Python files；
+- 全量 pytest：112 passed；compileall 通过；
+- `uv lock --check`：解析 238 packages；
+- `npm ci`：安装 190 个包并审计 191 个包，保留 15 项既有 advisory（4 low、1 moderate、
+  10 high），没有运行 `npm audit fix`；
+- 普通与 `EDGEONE=1` VitePress build 均通过，仅保留既有 large-chunk warning；
+- README 双语 heading parity、四张课程表、讲义/notebook metadata、双语 notebook code parity、
+  committed-output guard 和 sidebar target 均由 course validation/合同测试覆盖并通过；
+- `git diff --check` 与 `git diff --cached --check` 通过。
+
+以上门禁只验证仓库和公开状态的一致性，不构成 M5 artifact 发布或全新用户环境验收。
+
+项目负责人于 2026-10-30 确认 `M4.5` 验收通过。当前公开状态继续为 8 个
+`cpu-verified`、6 个 `gpu-verified`、0 个 `planned`、0 个 `published`；本次验收不自动
+启动 `M4.6`，也不提前进入 M5 artifact 发布。

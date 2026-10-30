@@ -25,7 +25,10 @@ features:
 
 ## Course status
 
-> L01–L07 are `cpu-verified` after their clean-kernel CPU verification; their
+> The 14 lessons currently comprise 8 `cpu-verified` and 6 `gpu-verified` lessons,
+> with 0 `planned` and 0 `published`. Every lesson has reached its declared verification
+> status; none is marked `published` before the versioned artifacts and release acceptance
+> in M5. L01–L07 are `cpu-verified` after their clean-kernel CPU verification; their
 > additional AMD paths also passed their respective contracts on the reference R9700.
 > L08 is `gpu-verified` after its bilingual CPU numerical paths, CPU+EGL path, and
 > scripted-expert path on a reference R9700 all passed. L09 is also `gpu-verified`:

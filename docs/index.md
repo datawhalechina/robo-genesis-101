@@ -20,5 +20,5 @@ features:
   - title: Bilingual by design
     details: Lectures and notebooks use paired English and Chinese structures.
   - title: 当前状态 · Current status
-    details: The 13 core lessons are verified; the optional L14 required path is also gpu-verified on four W7900D GPUs, with its higher-cost extensions still unverified.
+    details: 14 讲均已验证：8 个 cpu-verified、6 个 gpu-verified；M5 发布门禁完成前仍为 0 个 published。All 14 lessons are verified; none is published before the M5 release gates.
 ---

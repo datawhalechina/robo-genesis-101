@@ -2,7 +2,11 @@
 
 [简体中文](README.md)
 
-> **Project status: Alpha / course development.** L01–L07 are `cpu-verified`
+> **Project status: Alpha / pre-release integration.** `course.json` currently contains
+> 8 `cpu-verified` and 6 `gpu-verified` lessons, with 0 `planned` and 0 `published`.
+> All 14 lessons have reached their declared verification status, but the versioned
+> artifacts and clean-environment release acceptance belong to M5, so none is marked
+> `published` yet. L01–L07 are `cpu-verified`
 > after their clean-kernel CPU verification; their additional AMD paths also passed
 > their respective contracts on the reference R9700. L08 is `gpu-verified` after its
 > bilingual CPU numerical paths, CPU+EGL path, and scripted-expert path on a reference
@@ -32,7 +36,10 @@ The course follows a concept–code–experiment–evidence loop: lectures expla
 - English course: <https://datawhalechina.github.io/robo-genesis-101/en/>
 - 中文课程：<https://datawhalechina.github.io/robo-genesis-101/zh/>
 
-The online site currently presents the course outline and material status. Complete lesson content will be published progressively once it is ready and has been verified.
+The online site now provides the bilingual lectures and notebooks for L01–L14. Every
+lesson has reached a verified status; the course remains Alpha because versioned
+datasets/checkpoints, download verification, and clean-environment release acceptance
+belong to M5, not because any lesson remains `planned`.
 
 ## Audience and prerequisites
 
@@ -134,9 +141,9 @@ This command uses the repository's portable dependency resolution; by itself it 
 uv run python -m robo_genesis.setup_assets
 ```
 
-Lessons with a verified status are ready to follow from the course table.
-Materials that remain `planned` may be scaffolds or works in progress; they are
-not finished tutorials.
+The current manifest has no `planned` lessons, and L01–L14 can be followed from the
+course table. If future material uses `planned`, that status still fixes only its
+position and metadata; it is not completion or publication evidence.
 
 ### Run the L01 environment self-check
 

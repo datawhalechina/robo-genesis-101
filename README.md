@@ -2,7 +2,10 @@
 
 [English](README_en.md)
 
-> **项目状态：Alpha / 课程开发阶段。** L01–L07 已通过各自的 CPU clean-kernel 验证，
+> **项目状态：Alpha / 发布前集成阶段。** `course.json` 当前包含 8 个 `cpu-verified` 和
+> 6 个 `gpu-verified` 讲次，0 个 `planned`、0 个 `published`。14 讲均已达到各自声明的验证
+> 状态，但 M5 的版本化 artifact 与发布验收尚未完成，因此不提前标记为 `published`。
+> L01–L07 已通过各自的 CPU clean-kernel 验证，
 > 状态为 `cpu-verified`；这些讲次的附加 AMD 路径也已在参考 R9700 环境按各自合同通过。
 > L08 已通过双语 CPU 数值路径、CPU+EGL 和参考 R9700 AMD+EGL 的脚本化专家验证；L09
 > 已通过双语 CPU 诊断、CPU+EGL 和参考 R9700 AMD+EGL 的双相机录制与回读验证，两讲均为
@@ -26,7 +29,9 @@ RoboGenesis 101 是一门 Datawhale 开源课程，面向具备 Python 基础、
 - 中文课程：<https://datawhalechina.github.io/robo-genesis-101/zh/>
 - English course: <https://datawhalechina.github.io/robo-genesis-101/en/>
 
-在线站点目前展示课程目录和材料发布状态。完整学习内容将在准备完成并通过实际验证后逐步发布。
+在线站点已经提供 L01–L14 的双语讲义和 notebook。当前所有讲次都已达到验证状态；课程仍处于
+Alpha，是因为版本化数据集/checkpoint、下载校验和全新环境发布验收属于后续 M5，而不是因为
+仍有 `planned` 讲次。
 
 ## 适合谁
 
@@ -129,8 +134,8 @@ uv sync --locked --all-extras
 uv run python -m robo_genesis.setup_assets
 ```
 
-已达到验证状态的讲次可以按课程表进入学习；仍为 `planned` 的材料可能是结构占位，也可能
-仍在开发或验证中，不应当作完整教程使用。
+当前 manifest 中没有 `planned` 讲次，L01–L14 均可按课程表进入学习。如果后续新增材料使用
+`planned`，它仍只表示结构位置已确定，不应当作完成或发布证据。
 
 ### 运行 L01 环境自检
 

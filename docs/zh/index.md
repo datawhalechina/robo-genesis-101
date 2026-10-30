@@ -25,7 +25,10 @@ features:
 
 ## 课程状态
 
-> L01–L07 已通过各自的 CPU clean-kernel 验证，状态均为 `cpu-verified`；这些讲次的
+> 当前 14 讲包含 8 个 `cpu-verified` 和 6 个 `gpu-verified`，0 个 `planned`、0 个
+> `published`。全部讲次均已达到各自验证状态；M5 的版本化 artifact 与发布验收完成前，
+> 不提前标记为 `published`。L01–L07 已通过各自的 CPU clean-kernel 验证，状态均为
+> `cpu-verified`；这些讲次的
 > 附加 AMD 路径也已在参考 R9700 环境按各自合同通过。L08 已通过双语 CPU 数值路径、
 > CPU+EGL 和参考 R9700 AMD+EGL 的脚本化专家验证；L09 已通过双语 CPU 诊断、CPU+EGL
 > 和参考 R9700 AMD+EGL 的双相机录制与回读验证，两讲均为 `gpu-verified`。重编号后的
