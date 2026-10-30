@@ -28,6 +28,8 @@ Lectures and hands-on work form one learning path, not independent tracks. Reade
 - `course.json` — canonical bilingual lesson order, titles, slugs, duration, hardware requirements, paths, and publication status.
 - `docs/` — VitePress documentation source and course materials.
 - `docs/{zh,en}/lessons/` — paired bilingual lecture pages; M1 skeletons remain `planned` until their lesson-development gates pass.
+- `docs/{zh,en}/appendix/` — paired setup/fallback, glossary, API, and instructor support pages without lesson status metadata.
+- `docs/{zh,en}/references/` — paired source, citation, and third-party license audit pages.
 - `docs/.vitepress/config.mts` — site title, navigation, sidebar, links, and deployment base.
 - `docs/public/` — static assets published as-is by VitePress.
 - `notebooks/{zh,en}/` — paired lesson notebooks whose code cells must remain identical across locales.

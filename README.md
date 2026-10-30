@@ -150,10 +150,22 @@ notebook 会打印核心版本，自动优先选择可用的 AMD ROCm 后端，�
 [L01 讲义](docs/zh/lessons/l01-introduction-and-environment-diagnostics.md)与
 [兼容性矩阵](COMPATIBILITY.md)。
 
+## 辅助材料
+
+- [环境配置与 fallback 路径](docs/zh/appendix/setup-and-fallbacks.md)：区分文档、轻量验证、
+  完整课程环境，以及各讲诊断/完成路径；
+- [课程术语表](docs/zh/appendix/glossary.md)：统一技术词、中文解释与证据用语；
+- [API 与命令速查表](docs/zh/appendix/api-cheatsheet.md)：索引当前公共 helper、CLI 与源码；
+- [教师指南](docs/zh/appendix/instructor-guide.md)：提供 12 周组织建议、硬件安排与评分边界；
+- [引用与第三方许可审计](docs/zh/references/index.md)：集中列出上游来源、固定 revision 与
+  再分发边界。
+
 ## 仓库结构
 
 ```text
 docs/                       VitePress 站点与双语讲义
+docs/{zh,en}/appendix/      双语 setup、术语、API 与教师附录
+docs/{zh,en}/references/    双语引用与第三方许可审计
 notebooks/{zh,en}/          双语课程 notebook
 src/robo_genesis/           可复用场景、数据、训练和评估实现
 scripts/                    仓库级开发与校验入口

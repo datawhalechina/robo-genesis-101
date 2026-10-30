@@ -21,4 +21,6 @@ features:
     details: Lectures and notebooks use paired English and Chinese structures.
   - title: 当前状态 · Current status
     details: 14 讲均已验证：8 个 cpu-verified、6 个 gpu-verified；M5 发布门禁完成前仍为 0 个 published。All 14 lessons are verified; none is published before the M5 release gates.
+  - title: 辅助材料 · Supporting resources
+    details: 双语 setup/fallback、术语表、API 速查、教师指南，以及引用与第三方许可审计均已纳入站点。
 ---

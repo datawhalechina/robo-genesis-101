@@ -59,3 +59,11 @@ features:
 | L12 | [ACT 与 SmolVLA 策略训练](/zh/lessons/l12-act-and-smolvla-policy-training) | 150 分钟 | `gpu-required` | `gpu-verified` |
 | L13 | [闭环评估与 Capstone](/zh/lessons/l13-closed-loop-evaluation-and-capstone) | 120 分钟 | `gpu-required` | `gpu-verified` |
 | L14 | [可选进阶实践：使用 RoboTwin 数据微调 LingBot-VLA-v2](/zh/lessons/l14-robotwin-lingbot-vla-fine-tuning) | 180 分钟 | `gpu-required` | `gpu-verified` |
+
+## 辅助材料
+
+- [环境配置与 fallback 路径](/zh/appendix/setup-and-fallbacks)
+- [课程术语表](/zh/appendix/glossary)
+- [API 与命令速查表](/zh/appendix/api-cheatsheet)
+- [教师指南](/zh/appendix/instructor-guide)
+- [引用与第三方许可审计](/zh/references/)

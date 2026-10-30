@@ -160,10 +160,21 @@ not block L01–L07. See the [L01 lecture](docs/en/lessons/l01-introduction-and-
 and [compatibility matrix](COMPATIBILITY.md) for training requirements and the
 reference platform.
 
+## Supporting materials
+
+- [setup and fallback paths](docs/en/appendix/setup-and-fallbacks.md), separating
+  documentation, lightweight validation, full-course environments, and lesson diagnostic/completion paths;
+- the [course glossary](docs/en/appendix/glossary.md), standardizing technical terms and evidence language;
+- the [API and command cheatsheet](docs/en/appendix/api-cheatsheet.md), indexing current public helpers, CLIs, and source;
+- the [instructor guide](docs/en/appendix/instructor-guide.md), with a suggested 12-week sequence, hardware planning, and grading boundaries;
+- the [references and third-party license audit](docs/en/references/index.md), centralizing upstream sources, pinned revisions, and redistribution boundaries.
+
 ## Repository layout
 
 ```text
 docs/                       VitePress site and bilingual lectures
+docs/{zh,en}/appendix/      bilingual setup, glossary, API, and instructor appendices
+docs/{zh,en}/references/    bilingual references and third-party license audit
 notebooks/{zh,en}/          paired lesson notebooks
 src/robo_genesis/           reusable scene, data, training, and evaluation code
 scripts/                    repository-level development and validation entry points

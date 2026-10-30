@@ -2186,3 +2186,67 @@ M5 release gates”。这既不降低已经验收的状态，也不把 verified 
 项目负责人于 2026-10-30 确认 `M4.5` 验收通过。当前公开状态继续为 8 个
 `cpu-verified`、6 个 `gpu-verified`、0 个 `planned`、0 个 `published`；本次验收不自动
 启动 `M4.6`，也不提前进入 M5 artifact 发布。
+
+## 27. M4.6 setup、fallback 与发布前许可边界
+
+> 审计日期：2026-10-30（Asia/Shanghai）
+>
+> 范围：双语 setup/fallback、API 与教师辅助材料，以及引用、第三方许可和进入 M5 前的
+> 静态总审计。本节不新增运行平台证据，也不改变任何 lesson status。
+
+### 27.1 安装层级
+
+课程现在公开区分三个核心安装层级：
+
+1. Node.js 24 文档环境，只用于 VitePress 阅读与构建；
+2. `uv sync --only-group dev --locked` 的 dependency-light validation 环境，不包含 Genesis、
+   PyTorch、LeRobot 或训练栈；
+3. `uv sync --locked --all-extras` 的完整可移植课程依赖，它本身仍不等于参考 AMD ROCm wheel
+   集合已经安装或验证。
+
+L14 继续使用固定外部 companion，不进入上述核心安装。`robo_genesis.setup_assets` 只校验
+仓库内置的四个 YCB 对象、许可/provenance 文件和 checksum，不下载未审计资产。
+
+### 27.2 Fallback 完成边界
+
+- L01–L07 和 L10 保持已验收 CPU 完成路径；关闭渲染时只有讲义明确声明完整的数值路径才可
+  作为完成证据；
+- L08 scripted rollout 数值路径可在 CPU 执行，视觉证据需真实 camera；
+- L09/L11 的 `ROBO_GENESIS_RENDER=0` 只属于诊断，不能冒充 dataset/preview/provenance
+  生成完成；CPU+EGL 与参考 AMD+EGL 的真实渲染路径已在前述章节记录；
+- L12 CPU dry-run 不替代 GPU smoke，L13 CPU/no-checkpoint 诊断不替代 GPU 闭环评估；
+- L14 没有 CPU、单卡、核心环境或无 companion 的完成 fallback。
+
+L13 内置 workflow 的 commit-pinned、opt-in Hugging Face 来源声明只服务其自身输入审计，不是
+M5 通用 artifact downloader。M4.6 没有发布版本化 dataset/checkpoint、checksum manifest 或
+下载工具。
+
+### 27.3 引用与许可结论
+
+双语讲义 References、`NOTICE.md`、`LICENSE_POLICY.md`、YCB 目录记录以及 L13/L14 固定来源
+已完成静态总审计：
+
+- 本轮没有新增第三方 binary、dataset、checkpoint、model、论文插图或媒体；
+- 四个 YCB 对象继续采用 CC BY-NC 4.0，不属于仓库 MIT License；
+- Franka 使用固定 Genesis 自带模型，不 vendor 缺失 model-level license 的旧 bundle；
+- Genesis、LeRobot、论文、L13 外部输入与 L14 sources 继续作为引用、链接或安装依赖；
+- LingBot-VLA-v2 base、RoboTwin dataset 与 L14 companion image 不 rehost；
+- 生成数据、checkpoint、日志、帧和视频没有默认再分发授权；
+- Datawhale logo、模板动画、名称与商标仍在 MIT 边界之外，本地未记录的品牌授权须在 release
+  前确认，或替换相应媒体。
+
+### 27.4 M5 仍需完成
+
+M4.6 的文档与静态审计不构成发布验收。进入 `published` 前仍必须完成 artifact-specific
+schema/license/version/size/SHA-256/hosting 记录、下载器与失败路径、使用正式 artifact 的
+fallback 教程、全新环境下载与 CPU/AMD release acceptance，以及项目负责人对外部发布的
+明确授权。canonical 状态因此继续为 8 个 `cpu-verified`、6 个 `gpu-verified`、0 个
+`planned`、0 个 `published`。
+
+### 27.5 仓库门禁
+
+M4.6 交付源码通过 course validation（14 lessons、44 localized Markdown files、28 notebooks、
+45 Python files）、114 项 pytest、compileall、238-package `uv lock --check`、`npm ci` 以及普通
+和 `EDGEONE=1` VitePress build。构建只保留既有 large-chunk warning；npm 继续报告 15 项
+既有 advisory（4 low、1 moderate、10 high），没有执行自动依赖升级。`git diff --check` 与
+`git diff --cached --check` 均通过。

@@ -64,3 +64,11 @@ features:
 | L12 | [Training ACT and SmolVLA Policies](/en/lessons/l12-act-and-smolvla-policy-training) | 150 min | `gpu-required` | `gpu-verified` |
 | L13 | [Closed-Loop Evaluation and Capstone](/en/lessons/l13-closed-loop-evaluation-and-capstone) | 120 min | `gpu-required` | `gpu-verified` |
 | L14 | [Optional Advanced Practicum: Fine-Tuning LingBot-VLA-v2 with RoboTwin Data](/en/lessons/l14-robotwin-lingbot-vla-fine-tuning) | 180 min | `gpu-required` | `gpu-verified` |
+
+## Supporting materials
+
+- [Setup and Fallback Paths](/en/appendix/setup-and-fallbacks)
+- [Course Glossary](/en/appendix/glossary)
+- [API and Command Cheatsheet](/en/appendix/api-cheatsheet)
+- [Instructor Guide](/en/appendix/instructor-guide)
+- [References and Third-Party License Audit](/en/references/)

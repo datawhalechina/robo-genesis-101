@@ -76,6 +76,43 @@ function lessonSidebar(locale: Locale) {
   ]
 }
 
+function localizedSidebar(locale: Locale) {
+  const localeRoot = `/${locale}`
+  return [
+    ...lessonSidebar(locale),
+    {
+      text: locale === 'zh' ? '引用' : 'References',
+      items: [
+        {
+          text: locale === 'zh' ? '引用与第三方许可审计' : 'References and License Audit',
+          link: `${localeRoot}/references/`
+        }
+      ]
+    },
+    {
+      text: locale === 'zh' ? '附录' : 'Appendices',
+      items: [
+        {
+          text: locale === 'zh' ? '环境配置与 fallback 路径' : 'Setup and Fallback Paths',
+          link: `${localeRoot}/appendix/setup-and-fallbacks`
+        },
+        {
+          text: locale === 'zh' ? '课程术语表' : 'Course Glossary',
+          link: `${localeRoot}/appendix/glossary`
+        },
+        {
+          text: locale === 'zh' ? 'API 与命令速查表' : 'API and Command Cheatsheet',
+          link: `${localeRoot}/appendix/api-cheatsheet`
+        },
+        {
+          text: locale === 'zh' ? '教师指南' : 'Instructor Guide',
+          link: `${localeRoot}/appendix/instructor-guide`
+        }
+      ]
+    }
+  ]
+}
+
 const firstLessonLink = {
   zh: pageLink(course.lessons[0].lecture.zh),
   en: pageLink(course.lessons[0].lecture.en)
@@ -101,10 +138,22 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: '首页', link: '/zh/' },
-          { text: '课程', link: firstLessonLink.zh }
+          { text: '课程', link: firstLessonLink.zh },
+          {
+            text: '资料',
+            items: [
+              { text: '环境配置与 fallback 路径', link: '/zh/appendix/setup-and-fallbacks' },
+              { text: '课程术语表', link: '/zh/appendix/glossary' },
+              { text: 'API 与命令速查表', link: '/zh/appendix/api-cheatsheet' },
+              { text: '教师指南', link: '/zh/appendix/instructor-guide' },
+              { text: '引用与许可审计', link: '/zh/references/' }
+            ]
+          }
         ],
         sidebar: {
-          '/zh/lessons/': lessonSidebar('zh')
+          '/zh/lessons/': localizedSidebar('zh'),
+          '/zh/appendix/': localizedSidebar('zh'),
+          '/zh/references/': localizedSidebar('zh')
         },
         editLink: {
           pattern: editLinkPattern,
@@ -139,10 +188,22 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: 'Home', link: '/en/' },
-          { text: 'Lessons', link: firstLessonLink.en }
+          { text: 'Lessons', link: firstLessonLink.en },
+          {
+            text: 'Resources',
+            items: [
+              { text: 'Setup and Fallback Paths', link: '/en/appendix/setup-and-fallbacks' },
+              { text: 'Course Glossary', link: '/en/appendix/glossary' },
+              { text: 'API and Command Cheatsheet', link: '/en/appendix/api-cheatsheet' },
+              { text: 'Instructor Guide', link: '/en/appendix/instructor-guide' },
+              { text: 'References and License Audit', link: '/en/references/' }
+            ]
+          }
         ],
         sidebar: {
-          '/en/lessons/': lessonSidebar('en')
+          '/en/lessons/': localizedSidebar('en'),
+          '/en/appendix/': localizedSidebar('en'),
+          '/en/references/': localizedSidebar('en')
         },
         editLink: {
           pattern: editLinkPattern,

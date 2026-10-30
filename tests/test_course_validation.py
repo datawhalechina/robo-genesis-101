@@ -89,9 +89,62 @@ def test_repository_passes_all_course_gates() -> None:
     summary = validate_repository(PROJECT_ROOT)
 
     assert summary.lessons == 14
-    assert summary.markdown_files == 34
+    assert summary.markdown_files == 44
     assert summary.notebooks == 28
     assert summary.python_files == 45
+
+
+def test_supporting_materials_are_bilingual_and_exposed_in_navigation() -> None:
+    relative_paths = (
+        Path("appendix/setup-and-fallbacks.md"),
+        Path("appendix/glossary.md"),
+        Path("appendix/api-cheatsheet.md"),
+        Path("appendix/instructor-guide.md"),
+        Path("references/index.md"),
+    )
+    config = (PROJECT_ROOT / "docs" / ".vitepress" / "config.mts").read_text(
+        encoding="utf-8"
+    )
+
+    navigation_tokens = {
+        Path("appendix/setup-and-fallbacks.md"): "setup-and-fallbacks",
+        Path("appendix/glossary.md"): "appendix/glossary",
+        Path("appendix/api-cheatsheet.md"): "api-cheatsheet",
+        Path("appendix/instructor-guide.md"): "instructor-guide",
+        Path("references/index.md"): "references/",
+    }
+
+    for relative_path in relative_paths:
+        for locale in ("en", "zh"):
+            path = PROJECT_ROOT / "docs" / locale / relative_path
+            assert path.is_file(), path
+            assert not path.read_text(encoding="utf-8").startswith("---\n")
+        assert navigation_tokens[relative_path] in config
+
+    for locale in ("en", "zh"):
+        homepage = (PROJECT_ROOT / "docs" / locale / "index.md").read_text(
+            encoding="utf-8"
+        )
+        for target in (
+            f"/{locale}/appendix/setup-and-fallbacks",
+            f"/{locale}/appendix/glossary",
+            f"/{locale}/appendix/api-cheatsheet",
+            f"/{locale}/appendix/instructor-guide",
+            f"/{locale}/references/",
+        ):
+            assert target in homepage
+
+
+def test_reference_audit_preserves_third_party_boundaries() -> None:
+    for locale in ("en", "zh"):
+        text = (
+            PROJECT_ROOT / "docs" / locale / "references" / "index.md"
+        ).read_text(encoding="utf-8")
+        assert "CC BY-NC 4.0" in text
+        assert "Datawhale" in text
+        assert "LingBot-VLA-v2" in text
+        assert "RoboTwin" in text
+        assert "NOTICE.md" in text
 
 
 def test_bilingual_project_documents_have_matching_heading_structure() -> None:
@@ -246,15 +299,16 @@ def test_bilingual_shell_commands_remain_identical() -> None:
     shell_languages = {"bash", "console", "sh", "shell"}
     lecture_root = PROJECT_ROOT / "docs"
 
-    for en_path in sorted((lecture_root / "en" / "lessons").glob("*.md")):
-        zh_path = lecture_root / "zh" / "lessons" / en_path.name
+    for en_path in sorted((lecture_root / "en").rglob("*.md")):
+        relative_path = en_path.relative_to(lecture_root / "en")
+        zh_path = lecture_root / "zh" / relative_path
         en_blocks = _fenced_blocks(
             en_path.read_text(encoding="utf-8"), languages=shell_languages
         )
         zh_blocks = _fenced_blocks(
             zh_path.read_text(encoding="utf-8"), languages=shell_languages
         )
-        assert zh_blocks == en_blocks, en_path.name
+        assert zh_blocks == en_blocks, relative_path
 
     notebook_root = PROJECT_ROOT / "notebooks"
     for en_path in sorted((notebook_root / "en").glob("*.ipynb")):
