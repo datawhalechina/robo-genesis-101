@@ -113,9 +113,68 @@ L14 不属于这个环境。它使用 [L14 讲义](../lessons/l14-robotwin-lingb
   或 L11 教学数据。
 - L13 在评估前要求 dataset/checkpoint identity 匹配。
 
-L13 为自己的 workflow 提供了 commit 固定、显式 opt-in 的 Hugging Face 来源声明，但 M4
-没有提供全课程通用 artifact 下载器。版本化示例数据、课程 checkpoint、校验和以及干净环境下载
-验收仍属于 M5。在那之前，不要把本地准备的 artifact 描述成课程官方发布件。
+L13 仍支持显式填写 commit 固定的 Hugging Face 来源，但课程默认交接改为下文由 manifest
+管理的本地路径。显式 Hugging Face mapping 是进阶覆盖项，不是第二套课程默认值。
+
+## 版本化 artifact fallback 教程
+
+仓库 manifest 当前列出两个可下载的 **candidate** baseline，以及一个不可用条目。candidate
+表示经过审计、身份不可变的 payload baseline，并不是课程正式发布件。下载前先查看状态与精确
+默认目标：
+
+```sh
+python scripts/fetch_artifacts.py list
+
+python scripts/fetch_artifacts.py fetch \
+  rg101-fruit-pick 1.0.0 \
+  --allow-candidate
+
+python scripts/fetch_artifacts.py verify \
+  rg101-fruit-pick 1.0.0
+
+python scripts/fetch_artifacts.py fetch \
+  rg101-fruit-pick-smolvla 1.0.0 \
+  --allow-candidate
+
+python scripts/fetch_artifacts.py verify \
+  rg101-fruit-pick-smolvla 1.0.0
+```
+
+`--allow-candidate` 是对已审计 M5 baseline 的主动 opt-in，不是 release 标记。两个默认精确
+根目录分别是 `datasets/fruit_pick` 与
+`checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model`。自定义 `--target` 同样表示
+artifact 的精确根目录，CLI 不会再追加 artifact ID。重复执行 `fetch` 会复用有效文件；已有文件
+checksum 不匹配时默认停止且不修改，只有显式添加 `--repair` 才会替换。ACT 条目状态为
+`unavailable`，不能下载。
+
+### 跳过 L09 采数后继续
+
+下载的数据集可以交给 L10 只读审计和 L12 数据门禁。请在启动 notebook kernel 前设置变量：
+
+```sh
+export RG101_L10_DATASET_ROOT=datasets/fruit_pick
+export RG101_L10_REPO_ID=genesis/fruit_pick
+
+export RG101_DATASET_ROOT=datasets/fruit_pick
+export RG101_REPO_ID=genesis/fruit_pick
+export RG101_RUN_SMOKE=0
+```
+
+这条路径让无法渲染和录制 L09 的学习者继续后续课程，但**不算完成 L09**：你没有执行 scripted
+采集、双相机 recorder、事务边界或吞吐量测量。L12 中的 `RG101_RUN_SMOKE=0` 会保持两项 GPU
+训练关闭；数据门禁与命令 dry-run 通过，不表示已经训练 ACT 或 SmolVLA。
+
+### 跳过 L12 训练后继续
+
+两条 `verify` 都通过后，L13 notebook 默认使用上述本地 dataset 与 SmolVLA target，不会隐式
+下载 candidate。任何一个根目录缺失或消费者审计失败时，第 1 步都会停止，并指回这套 fetch 与
+verify 流程。下载 SmolVLA candidate 后，可以审计 checkpoint/dataset 匹配关系并继续 L13
+声明的 GPU 协议，但不能声称模型由自己训练。
+
+下载成功、checksum 通过、数据集可读、checkpoint 可加载、training loss 或 open-loop action
+都没有达到闭环证据门槛。只有规定的实时 rollout、结构化报告与真实视频通过各自协议后，才算
+完成 L13。全新 cache 的完整下载验收仍是 M5.6 release check；在该门禁通过前必须保留当前
+candidate 标签。
 
 ## 在不隐藏错误的前提下诊断
 

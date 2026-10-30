@@ -681,10 +681,16 @@ uv run python -m robo_genesis.train_policy smolvla \
 或隐藏默认值误当成在所有情形下都充分的配置。若长时间任务没有运行，就写明
 **未运行**；不要编造曲线、耗时、显存用量或 checkpoint 质量。
 
-没有训练硬件的学员仍可完成概念检查、数据门禁和 dry-run。L13 当前为闭环实验声明了
-固定 revision 的 SmolVLA checkpoint 和匹配的数据集 metadata fallback。使用该 fallback
-时必须报告为“使用 L13 提供的 artifact”，不能声称自己完成了 L12 GPU 训练实验；它也
-不能替代未来带 checksum、许可和 artifact metadata 的版本化数据集与 checkpoint 发布。
+没有训练硬件的学员仍可完成概念检查、数据门禁和 dry-run。
+[版本化 artifact fallback 教程](../appendix/setup-and-fallbacks.md#版本化-artifact-fallback-教程)
+说明了如何获取并校验 `rg101-fruit-pick@1.0.0` dataset candidate，再保持
+`RG101_RUN_SMOKE=0` 完成这些检查。这条路径使用课程提供的数据，不算完成 L09 采数或 L12
+GPU 训练实验。
+
+同一教程也可以把 `rg101-fruit-pick-smolvla@1.0.0` checkpoint candidate 准备到 L13 的
+默认本地路径。使用它可以审计 checkpoint 并继续闭环协议，但不能声称模型由自己训练。两个
+candidate 都必须显式使用 `--allow-candidate`，并不是正式发布件；ACT 仍不可用。checksum
+通过、数据门禁、dry-run、重新加载或 open-loop action 仍不能证明策略质量或闭环任务成功。
 
 ## 分层诊断故障
 

@@ -303,6 +303,14 @@ The shapes are aggregation shapes, not sample shapes:
 | RGB image | `(3,H,W)` after decode | `(3,1,1)` | per-channel value that can broadcast spatially |
 | `count` | not a feature value | aggregate sample count | how much data entered the aggregate |
 
+`count` is feature-specific. LeRobot 0.6.0 can aggregate state/action over every
+row while sampling image frames to bound statistics cost; an aggregated dataset
+can then sum those image sample counts across its sources. The course check
+therefore requires state/action counts to equal `total_frames`, while both
+camera counts must be positive, equal to each other, and no larger than
+`total_frames`. A smaller image count describes the image-statistics sample; it
+does not mean that the dataset is missing that many video frames.
+
 The first seven state/action channels are revolute arm joints measured in
 radians. The last two are prismatic finger joints measured in metres. Plotting
 all nine on one unlabeled axis can make a physically important finger change
@@ -318,8 +326,8 @@ Statistics can reveal questions worth investigating:
 - near-zero standard deviation can reveal a stationary channel or inadequate
   task coverage;
 - a large gap between an extreme value and `q01`/`q99` suggests an outlier; and
-- counts that disagree with the intended dataset scope indicate that the
-  aggregate may describe different data than expected.
+- counts that disagree with the feature-specific aggregation scope indicate
+  that the aggregate may describe different data than expected.
 
 They do not prove diversity, lack of bias, task relevance, or generalization.
 A perfectly finite dataset can contain two nearly identical trajectories.

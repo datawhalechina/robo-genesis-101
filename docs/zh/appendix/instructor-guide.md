@@ -68,10 +68,13 @@ auditor 和 evidence reviewer 等角色，让每个人参与完整合同，而�
 L14 的必做路径需要独立固定 companion 和 4× W7900D。不要把它的 stack 安装进核心环境，也
 不要宣传 CPU/单卡 fallback。
 
-## M5 前的 artifact 准备
+## 使用 manifest candidate artifact 教学
 
-M4 不发布版本化示例 dataset、ACT/SmolVLA 课程 checkpoint 或通用 artifact 下载器。M5 前，
-如果教师提供本地输入，应记录：
+课程 manifest 与 checksum downloader 当前提供两个需要显式 opt-in 的 candidate baseline：
+`rg101-fruit-pick@1.0.0` 与 `rg101-fruit-pick-smolvla@1.0.0`。它们是经过审计的输入，
+不是正式发布件；ACT 条目仍不可用。课前先运行 `python scripts/fetch_artifacts.py list`，再按照
+[fallback 教程](setup-and-fallbacks.md#版本化-artifact-fallback-教程)显式执行
+`fetch ... --allow-candidate` 与 `verify`。同时记录：
 
 - 创建者与来源；
 - 不可变 revision 或生成命令；
@@ -81,8 +84,11 @@ M4 不发布版本化示例 dataset、ACT/SmolVLA 课程 checkpoint 或通用 ar
 - 分发 artifact 时的文件大小与 SHA-256；
 - artifact 实际支持的讲次与检查。
 
-这些应称为教师准备的输入，而不是 RoboGenesis 官方发布件。不要为了方便而 rehost
-LingBot-VLA-v2 base model、RoboTwin dataset 或 L14 image。
+预先准备 dataset 可以让无法采集 L09 的学习者继续 L10/L12，但评分时应记为“使用提供数据做
+分析”，不能算 L09 完成。预先准备 SmolVLA checkpoint 可以支持 L13 artifact 审计与闭环协议，
+却不能证明学习者完成了 L12 训练。下载、校验、training loss 与 open-loop reload 都不能替代
+闭环报告和视频。必须保留 candidate 标签，也不要为了方便而 rehost LingBot-VLA-v2 base
+model、RoboTwin dataset 或 L14 image。
 
 ## 实验运行模式
 

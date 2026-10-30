@@ -91,7 +91,7 @@ def test_repository_passes_all_course_gates() -> None:
     assert summary.lessons == 14
     assert summary.markdown_files == 44
     assert summary.notebooks == 28
-    assert summary.python_files == 48
+    assert summary.python_files == 49
 
 
 def test_supporting_materials_are_bilingual_and_exposed_in_navigation() -> None:
@@ -251,8 +251,11 @@ def test_cross_lesson_dataset_and_checkpoint_handoffs_remain_explicit() -> None:
     assert 'str(DATASETS_DIR / "fruit_pick")' in l12
     assert "'dataset_repo_id': 'genesis/fruit_pick'" in l13
     assert "'dataset_root': 'datasets/fruit_pick'" in l13
-    assert "COURSE_DEFAULT_DATASET = {" in l13
-    assert "COURSE_DEFAULT_CHECKPOINT = {" in l13
+    assert "COURSE_DEFAULT_DATASET = None" in l13
+    assert "COURSE_DEFAULT_CHECKPOINT = (" in l13
+    assert (
+        "'checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model'" in l13
+    )
 
 
 def test_core_lessons_do_not_require_the_l14_companion_runtime() -> None:

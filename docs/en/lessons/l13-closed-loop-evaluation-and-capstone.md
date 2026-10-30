@@ -482,18 +482,18 @@ one checkpoint + one dataset contract + one frozen condition
 
 The companion notebook mirrors this evidence order as seven numbered steps.
 Steps 1–3 audit the environment, dataset, and checkpoint source, freeze the
-protocol, and predeclare the comparison without starting Genesis. Step 1 prefers
-the configured local dataset; when it is absent, the notebook downloads only the
-pinned dataset's `meta/**` files because evaluation reads no training episodes or
-videos. A remote checkpoint is marked `DEFERRED`; Step 4 downloads and audits it
-before performing the five-episode Reference action. Step 5 audits the rows and
-videos. Learners who continue the Capstone then run Step 6 for the matched
-held-out comparison and Step 7 for the scoped report. Every experiment choice is
-visible in the configuration cell, and running an evaluation cell starts it.
-Step 7 is a local two-pass interaction: run it once to generate an evidence card
-and result-specific sentence stems, fill the three `CAPSTONE_CONCLUSION` fields
-next to that evidence, then rerun only Step 7 to write the report. It does not
-repeat either rollout condition.
+protocol, and predeclare the comparison without starting Genesis. Step 1 audits
+the manifest default targets already present on local storage. It does not
+download either candidate; when a root is absent, it stops and directs the
+learner to the repository fetch-and-verify flow. Step 4 rechecks those local
+inputs before performing the five-episode Reference action. Step 5 audits the
+rows and videos. Learners who continue the Capstone then run Step 6 for the
+matched held-out comparison and Step 7 for the scoped report. Every experiment
+choice is visible in the configuration cell, and running an evaluation cell
+starts it. Step 7 is a local two-pass interaction: run it once to generate an
+evidence card and result-specific sentence stems, fill the three
+`CAPSTONE_CONCLUSION` fields next to that evidence, then rerun only Step 7 to
+write the report. It does not repeat either rollout condition.
 
 This run asks whether one specific checkpoint can execute the declared task under
 one declared condition. It is not yet a checkpoint sweep or a Reference/Shifted
@@ -651,21 +651,23 @@ example, a changed condition cannot be justified as OOD. Without a fixed
 checkpoint identity, another learner cannot reproduce the result. Without live
 rollouts, checkpoint loading cannot become a task-performance claim.
 
-::: tip Pinned default dataset and checkpoint
-When the configured local `datasets/fruit_pick` directory is absent, Step 1 uses
-[`wangxun1010/fruit_pick`](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd)
-at commit `475e8c6ec7079c4c52b20a0221bf959acb541abd`. It downloads only
-`meta/**`: the feature/FPS contract, statistics, tasks, and episode index needed
-by `LeRobotDatasetMetadata`. Training parquet files and videos are not downloaded.
+::: tip Manifest default dataset and checkpoint
+The course manifest binds `rg101-fruit-pick@1.0.0` to the exact local root
+`datasets/fruit_pick` and `rg101-fruit-pick-smolvla@1.0.0` to
+`checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model`. Both entries are
+currently candidates, not official releases, and require explicit
+`--allow-candidate` when fetched. Follow the
+[fallback tutorial](../appendix/setup-and-fallbacks.md#versioned-artifact-fallback-tutorial)
+before starting the notebook, then run the manifest `verify` commands.
 
-When `CONFIG['checkpoint']` is `None`, the companion notebook uses
-[`wangxun1010/smolvla-fruit-pick-0821`](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221)
-at commit `cdf720f162e6ee86dbc856cdf15c5dcd4a673221`. Its training configuration
-identifies the logical dataset as `genesis/fruit_pick`, matching both the local
-candidate and pinned metadata fallback. The checkpoint download is deferred until
-the learner runs Step 4. Setting `CONFIG['checkpoint']` explicitly replaces the
-model source, and the dataset fields and fallback must be updated when that
-checkpoint used another dataset.
+The notebook never downloads these candidates implicitly. Leaving
+`CONFIG['checkpoint']` as `None` selects the local SmolVLA target above; a
+missing dataset or checkpoint is a preflight failure. Setting
+`CONFIG['checkpoint']` explicitly can select a
+different local path or an intentionally pinned Hugging Face source, but the
+dataset identity and local root must then be updated to match that checkpoint.
+Using the candidate proves neither that you trained it nor that it succeeds in
+closed loop.
 :::
 
 ### Write the report from the evidence chain
@@ -841,10 +843,12 @@ four-W7900 profile and is not a dependency of the core course.
 - [Genesis World documentation](https://genesis-world.readthedocs.io/en/latest/)
   and [Genesis World 1.3.3 on PyPI](https://pypi.org/project/genesis-world/1.3.3/)
   — simulator documentation and the exact course version.
-- [Pinned SmolVLA fruit-pick checkpoint](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221)
-  — the default L13 artifact when the learner does not provide a checkpoint.
-- [Pinned fruit-pick dataset](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd)
-  — the metadata fallback when the matching local dataset is absent.
+- [RoboGenesis 101 artifact manifest](https://github.com/datawhalechina/robo-genesis-101/blob/main/artifacts/manifest.json)
+  — candidate dataset/checkpoint identities, immutable source revisions, exact
+  local targets, licenses, sizes, and checksums used by the L13 fallback path.
+- [RoboGenesis 101 artifact downloader](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/artifact_fetch.py)
+  — explicit candidate opt-in, local verification, atomic download, and repair
+  behavior; the notebook itself does not fetch course candidates.
 - [RoboGenesis 101 task predicate](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/grasp_demo.py),
   [single-checkpoint evaluator](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_policy.py),
   [checkpoint sweep](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_sweep.py),

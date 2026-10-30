@@ -767,11 +767,19 @@ universally sufficient configuration. If the long job was not run, write **not
 run**; do not invent its curve, duration, memory use, or checkpoint quality.
 
 Learners without training hardware can still complete the conceptual checks,
-dataset gate, and dry-run. L13 currently declares a pinned SmolVLA checkpoint
-and matching dataset metadata fallback for its closed-loop lab. Using that
-fallback must be reported as using the provided L13 artifact, not as completing
-the L12 GPU training lab. It is also not a substitute for a future versioned
-dataset and checkpoint release with checksums, licenses, and artifact metadata.
+dataset gate, and dry-run. The
+[versioned artifact fallback tutorial](../appendix/setup-and-fallbacks.md#versioned-artifact-fallback-tutorial)
+shows how to fetch and verify the `rg101-fruit-pick@1.0.0` dataset candidate,
+then keep `RG101_RUN_SMOKE=0` while running those checks. That route uses
+provided data and does not complete L09 collection or the L12 GPU training lab.
+
+The same tutorial can stage the `rg101-fruit-pick-smolvla@1.0.0` checkpoint
+candidate at L13's default local path. Using it lets you audit the checkpoint
+and continue to the closed-loop protocol without claiming that you trained the
+model yourself. Both candidates require explicit `--allow-candidate`; they are
+not official releases. ACT remains unavailable. Checksum success, a dataset
+gate, dry-run, reload, or open-loop action still does not establish policy
+quality or closed-loop task success.
 
 ## Diagnose failures in layers
 

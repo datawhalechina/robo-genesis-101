@@ -64,19 +64,21 @@ L08 的采集方法综述与其他讲次专用论文继续放在它们支持的�
 
 ## 外部 dataset、checkpoint 与 model
 
-下列引用是讲义指定的输入，不是由课程再分发的 artifact：
+下列内容仍托管在外部，不会 vendor 到 Git。前两项是课程 manifest 管理的 M5 candidate
+所绑定的不可变来源 revision；使用课程 CLI 仍需显式允许 candidate，也不会因此成为正式发布件。
 
 | 材料 | 固定引用 | 再分发决定 |
 |---|---|---|
-| L13 fruit-pick dataset | [Hugging Face dataset revision `475e8c6...`](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd) | 仅链接与 opt-in workflow；不内置 |
-| L13 SmolVLA checkpoint | [Hugging Face model revision `cdf720f...`](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221) | 仅链接与 opt-in workflow；不内置 |
+| L13 fruit-pick dataset candidate | [Hugging Face dataset revision `475e8c6...`](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd) | `rg101-fruit-pick@1.0.0`；manifest CLI + `--allow-candidate`；不内置，也不是正式发布件 |
+| L13 SmolVLA checkpoint candidate | [Hugging Face model revision `cdf720f...`](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221) | `rg101-fruit-pick-smolvla@1.0.0`；manifest CLI + `--allow-candidate`；不内置，也不是正式发布件 |
 | SmolVLA base | [revision `c83c316...`](https://huggingface.co/lerobot/smolvla_base/tree/c83c3163b8ca9b7e67c509fffd9121e66cb96205) | 已验证训练使用本地固定 snapshot；不 rehost |
 | SmolVLM2 base | [revision `7b375e1...`](https://huggingface.co/HuggingFaceTB/SmolVLM2-500M-Video-Instruct/tree/7b375e1b73b11138ff12fe22c8f2822d8fe03467) | 已验证训练使用本地固定 snapshot；不 rehost |
 | RoboTwin dataset | [revision `a967b85...`](https://huggingface.co/datasets/TianxingChen/RoboTwin2.0/tree/a967b852afa21a9cbf19a198f7e653109042e87c) | L14 外部输入；不 rehost |
 | LingBot-VLA-v2 6B base | [revision `11c703b...`](https://huggingface.co/robbyant/lingbot-vla-v2-6b/tree/11c703bf6a5c1f45b3b69168482da11fdbba53d7) | L14 外部输入；不 rehost |
 
-M5 必须对任何拟公开的课程 dataset 或 checkpoint 分别审查，包括创建者、源数据、base model、
-许可、不可变版本、大小、SHA-256、托管 URL、生成配置与引用。
+`artifacts/manifest.json` 已为两个 candidate 记录创建者、源数据/base model provenance、许可、
+不可变版本、大小、SHA-256、托管 revision、生成配置与依赖 identity。全新环境下载验收和外部
+发布授权仍属于后续 M5 门禁。
 
 ## L14 companion 来源
 

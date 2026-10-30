@@ -123,9 +123,73 @@ The default local handoffs are explicit:
 - L13 requires a dataset/checkpoint identity match before evaluation.
 
 L13 contains commit-pinned, opt-in Hugging Face source declarations for its own workflow,
-but M4 does not provide a general course artifact downloader. Versioned example datasets,
-course checkpoints, checksums, and clean-environment download acceptance remain M5 work.
-Until then, do not describe a locally prepared artifact as an official course release.
+but the course default is the manifest-owned local handoff described below. An explicit
+Hugging Face mapping remains an advanced override, not a second course default.
+
+## Versioned artifact fallback tutorial
+
+The repository manifest currently lists two downloadable **candidate** baselines and one
+unavailable entry. A candidate is an audited, immutable payload baseline; it is not an
+official course release. Inspect the status and exact default targets before downloading:
+
+```sh
+python scripts/fetch_artifacts.py list
+
+python scripts/fetch_artifacts.py fetch \
+  rg101-fruit-pick 1.0.0 \
+  --allow-candidate
+
+python scripts/fetch_artifacts.py verify \
+  rg101-fruit-pick 1.0.0
+
+python scripts/fetch_artifacts.py fetch \
+  rg101-fruit-pick-smolvla 1.0.0 \
+  --allow-candidate
+
+python scripts/fetch_artifacts.py verify \
+  rg101-fruit-pick-smolvla 1.0.0
+```
+
+`--allow-candidate` is a deliberate opt-in to the audited M5 baseline, not a release
+marker. The defaults are the exact roots `datasets/fruit_pick` and
+`checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model`. A custom `--target` also
+names the exact artifact root; the CLI does not append the artifact ID. Repeating `fetch`
+reuses valid files. Existing checksum mismatches stop without modification unless you
+explicitly add `--repair`. The ACT entry is `unavailable` and cannot be downloaded.
+
+### Continue after skipping L09 collection
+
+The downloaded dataset can feed the L10 read-only audit and the L12 data gate. Set the
+variables before starting the notebook kernel:
+
+```sh
+export RG101_L10_DATASET_ROOT=datasets/fruit_pick
+export RG101_L10_REPO_ID=genesis/fruit_pick
+
+export RG101_DATASET_ROOT=datasets/fruit_pick
+export RG101_REPO_ID=genesis/fruit_pick
+export RG101_RUN_SMOKE=0
+```
+
+This route lets you continue when you cannot render and record L09. It does **not** count
+as completing L09: you did not run the scripted collection, dual-camera recorder,
+transaction boundary, or throughput measurement. In L12, `RG101_RUN_SMOKE=0` keeps both
+GPU training runs disabled. Passing the dataset gate and command dry-runs does not mean
+that ACT or SmolVLA was trained.
+
+### Continue after skipping L12 training
+
+After both `verify` commands pass, the L13 notebook defaults to the local dataset and
+SmolVLA target above. It never downloads a candidate implicitly. If either root is absent
+or fails its consumer audit, Step 1 stops and points back to this fetch-and-verify flow.
+Downloading the SmolVLA candidate lets you audit the checkpoint/dataset match and proceed
+to L13's declared GPU protocol without claiming that you trained the model yourself.
+
+A successful download, checksum verification, dataset read, checkpoint load, training
+loss, or open-loop action remains below the closed-loop evidence bar. L13 is complete only
+after the required live rollouts, structured reports, and real videos pass their own
+protocol. Full fresh-cache download acceptance remains an M5.6 release check; the current
+candidate label must stay visible until that later gate passes.
 
 ## Diagnose failures without hiding them
 

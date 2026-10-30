@@ -410,14 +410,14 @@ H.264 文件通常更容易播放，同时要求帧的宽高为偶数。文件�
 ```
 
 配套 notebook 按照这条证据顺序提供 7 个编号步骤。第 1–3 步审计运行环境、数据集和 checkpoint
-来源，冻结协议并预先声明比较条件，全程不会启动 Genesis。第 1 步优先使用配置的本地数据集；
-本地目录不存在时，只下载固定 dataset 的 `meta/**`，因为评估不读取训练 episodes 或视频。远端
-checkpoint 会标记为 `DEFERRED`；第 4 步先下载并审计它，再执行 5 回合参考条件评估。第 5 步
-审计逐回合记录与视频；希望继续 Capstone 的学习者再运行第 6 步完成 matched held-out 比较，并
-运行第 7 步生成结论范围明确的报告。每项实验选择都直接出现在配置单元中，运行评估 cell 本身
-就是启动它的动作。第 7 步采用局部的两次运行流程：先运行一次，根据实际结果生成 evidence
-card 和对应的句式提示；在这些证据旁填写三个 `CAPSTONE_CONCLUSION` 字段；然后只重跑第 7
-步来写出报告，不会重复两个条件的 rollout。
+来源，冻结协议并预先声明比较条件，全程不会启动 Genesis。第 1 步审计本地存储中已经存在的
+manifest 默认目标，不会下载任何 candidate；根目录缺失时，它会停止并提示学习者执行仓库的
+fetch 与 verify 流程。第 4 步会再次检查这些本地输入，再执行 5 回合参考条件评估。第 5 步审计
+逐回合记录与视频；希望继续 Capstone 的学习者再运行第 6 步完成 matched held-out 比较，并运行
+第 7 步生成结论范围明确的报告。每项实验选择都直接出现在配置单元中，运行评估 cell 本身就是
+启动它的动作。第 7 步采用局部的两次运行流程：先运行一次，根据实际结果生成 evidence card
+和对应的句式提示；在这些证据旁填写三个 `CAPSTONE_CONCLUSION` 字段；然后只重跑第 7 步来
+写出报告，不会重复两个条件的 rollout。
 
 这次运行要回答的是：某一个明确的 checkpoint 能否在一个明确条件下执行指定任务。它还不是
 checkpoint sweep，也不是参考/偏移条件比较。每组命令行参数都会冻结协议的一部分：
@@ -557,19 +557,19 @@ Capstone 从一个策略问题开始，而不是从一份命令检查清单开�
 论证为 OOD；checkpoint 身份不固定，其他学习者便无法复现结果；没有实时 rollout，checkpoint
 能够加载也不能升级成任务性能结论。
 
-::: tip 固定 revision 的默认数据集与 checkpoint
-如果配置的本地 `datasets/fruit_pick` 目录不存在，第 1 步会使用 commit
-`475e8c6ec7079c4c52b20a0221bf959acb541abd` 上的
-[`wangxun1010/fruit_pick`](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd)。
-它只下载 `meta/**`，包括 `LeRobotDatasetMetadata` 所需的 feature/FPS 合同、统计量、任务表和
-episode 索引；不会下载训练 parquet 或视频。
+::: tip Manifest 默认数据集与 checkpoint
+课程 manifest 把 `rg101-fruit-pick@1.0.0` 绑定到精确本地根目录
+`datasets/fruit_pick`，并把 `rg101-fruit-pick-smolvla@1.0.0` 绑定到
+`checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model`。两个条目当前都是 candidate，
+不是正式发布件，下载时必须显式使用 `--allow-candidate`。启动 notebook 前先按照
+[fallback 教程](../appendix/setup-and-fallbacks.md#版本化-artifact-fallback-教程)准备文件，
+再运行 manifest 的 `verify` 命令。
 
-当 `CONFIG['checkpoint']` 为 `None` 时，配套 notebook 使用 commit
-`cdf720f162e6ee86dbc856cdf15c5dcd4a673221` 上的
-[`wangxun1010/smolvla-fruit-pick-0821`](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221)。
-它的训练配置声明逻辑数据集身份为 `genesis/fruit_pick`，与本地候选路径和固定 metadata fallback
-一致。只有学习者运行第 4 步后才会下载 checkpoint。显式填写 `CONFIG['checkpoint']` 会替换模型
-来源；如果该 checkpoint 使用了另一份数据集，也必须同步更新数据集字段和 fallback。
+notebook 不会隐式下载这些 candidate。`CONFIG['checkpoint'] = None` 会选择上述本地 SmolVLA
+target；dataset 或 checkpoint 缺失都会导致 preflight 失败。显式填写
+`CONFIG['checkpoint']` 可以改用另一个本地路径或有意固定的 Hugging Face 来源，但必须同步更新
+与该 checkpoint 匹配的数据集 identity 和本地 root。使用 candidate 既不能证明由自己训练，也
+不能证明闭环成功。
 :::
 
 ### 沿证据链撰写报告
@@ -719,10 +719,12 @@ preflight、audit、rollout 和 report cells 中收集完整版本字段、特�
 - [Genesis World 文档](https://genesis-world.readthedocs.io/en/latest/)与
   [Genesis World 1.3.3 on PyPI](https://pypi.org/project/genesis-world/1.3.3/)——仿真器文档和课程使用的
   确切版本。
-- [固定 revision 的 SmolVLA fruit-pick checkpoint](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221)——
-  学习者未指定 checkpoint 时，L13 使用的默认 artifact。
-- [固定 revision 的 fruit-pick 数据集](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd)——
-  匹配的本地数据集不存在时使用的 metadata fallback。
+- [RoboGenesis 101 artifact manifest](https://github.com/datawhalechina/robo-genesis-101/blob/main/artifacts/manifest.json)——
+  L13 fallback 使用的 candidate dataset/checkpoint identity、不可变来源 revision、精确本地
+  target、许可、大小与 checksum。
+- [RoboGenesis 101 artifact downloader](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/artifact_fetch.py)——
+  显式 candidate opt-in、本地校验、原子下载与 repair 行为；notebook 本身不会下载课程
+  candidate。
 - [RoboGenesis 101 任务判据](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/grasp_demo.py)、
   [单 checkpoint 评估器](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_policy.py)、
   [checkpoint sweep](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_sweep.py) 和

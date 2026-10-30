@@ -2255,3 +2255,102 @@ M4.6 交付源码通过 course validation（14 lessons、44 localized Markdown f
 仓库门禁。M4 至此全部完成；当前 canonical 状态继续为 8 个 `cpu-verified`、6 个
 `gpu-verified`、0 个 `planned`、0 个 `published`。本次验收不自动启动 M5，也不构成 artifact
 发布授权。
+
+## 28. M5.4 candidate artifact fallback 消费验证
+
+> 验证日期：2026-10-30（Asia/Shanghai）
+>
+> 范围：使用 M5.1/M5.2 已审计本地 payload 验证 manifest checksum 与 L10/L12/L13 消费接口，
+> 并把 M5.3 downloader 接入双语 learner fallback。未执行 fresh-cache 全量下载、GPU 训练或
+> 闭环 rollout，不改变 lesson/artifact status。
+
+### 28.1 验证环境与输入
+
+消费验证使用课程 `.venv` 中的 Python 3.12.3、Genesis 1.3.3、LeRobot 0.6.0、PyAV 15.1.0
+与 NumPy 2.2.6。输入为 M5.1/M5.2 已完成 identity 审计的本地 bytes：
+
+| Artifact | 本地审计路径 | Manifest 验证 |
+|---|---|---|
+| `rg101-fruit-pick@1.0.0` | `/home/xunwang2/project/franka_fruit_pick_demo/datasets/fruit_pick` | 9/9 files 的 size/SHA-256 通过 |
+| `rg101-fruit-pick-smolvla@1.0.0` | `/home/xunwang2/project/franka_fruit_pick_demo/outputs/train/smolvla_fruit_pick_0821/checkpoints/020000/pretrained_model` | 7/7 files 的 size/SHA-256 通过 |
+
+这些绝对路径只记录本轮本机证据，不进入 learner 文档；公开教程继续使用 manifest 的可移植
+默认 target。两个 artifact 仍为 `candidate`，显式 `--allow-candidate` 不构成 release 标记。
+ACT 仍为 `unavailable`。
+
+### 28.2 跳过采数后的 L10/L12 消费
+
+English L10 notebook 在 fresh kernel 中通过环境变量直接读取上述 dataset：
+
+```sh
+RG101_L10_DATASET_ROOT=/home/xunwang2/project/franka_fruit_pick_demo/datasets/fruit_pick
+RG101_L10_REPO_ID=genesis/fruit_pick
+```
+
+完整执行验证 300 episodes、71,976 frames、30 FPS、9-D state/action、world/wrist 640×360
+视频、PyAV 解码、statistics、episode split 与 action chunk，最终输出 `L10 CHECK: PASSED`。
+这证明 candidate dataset 可作为 L10 只读输入，不表示本轮完成了 L09 采集实验。
+
+第一次运行同时发现 L10 的旧断言把所有 feature 的 `stats.count` 都等同于 `total_frames`。
+LeRobot 0.6.0 对本 candidate 的 state/action 使用全部 71,976 rows，而两路图像统计各使用
+30,000 个 aggregate samples。课程现要求 numeric count 等于总 frames，paired image count
+为正、相等且不超过总 frames；双语讲义明确图像统计抽样不等于视频帧缺失。修正后完整
+notebook 通过。
+
+English L12 notebook 使用同一 dataset 且保持 `RG101_RUN_SMOKE=0`，完成：
+
+- 一份真实 sample 与 metadata 数据门禁；
+- ACT 与 SmolVLA command dry-run；
+- ACT pipeline-only smoke command audit；
+- 明确的 `gpu_smoke: NOT RUN`、`checkpoint_reload: NOT RUN`、
+  `full_training: NOT RUN` 与 `closed_loop_evaluation: NOT RUN`。
+
+因此下载 dataset 后可继续 L12 的数据与命令教学，但本轮没有训练模型、创建 checkpoint 或形成
+策略质量结论。
+
+### 28.3 跳过训练后的 L13 preflight
+
+L13 dependency-light audit 使用上述 dataset 与 SmolVLA 路径，结果为：
+
+- dataset：`PASS`，FPS 为 30；
+- checkpoint：`PASS`，policy type 为 `smolvla`；
+- checkpoint 记录的训练 dataset identity：`genesis/fruit_pick`，与当前输入匹配；
+- aggregate readiness：`True`。
+
+审计未初始化 Genesis、未加载模型权重执行推理，也未运行 reference/held-out rollout。它只证明
+下载后的 checkpoint/dataset 可以通过 L13 输入门禁。训练 loss、load、open-loop action 和本轮
+preflight 均不能替代实时闭环报告与视频。
+
+### 28.4 默认路径与下载边界
+
+L13 notebook 默认 dataset 为 `datasets/fruit_pick`，默认 checkpoint 为
+`checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model`，均与 manifest exact target
+一致。notebook 不再隐式下载课程 candidate；缺失或无效 target 会在 Step 1 明确失败并指回
+双语 fetch/verify 教程。显式 commit-pinned Hugging Face mapping 仍可作为学习者主动配置的
+进阶覆盖项。
+
+本节没有验证：
+
+- 从空 cache 下载完整约 1.4 GiB payload、断点/重复下载与 consumer fresh-cache 重跑；
+- ACT 20,000-step 生成；
+- SmolVLA GPU training 或 learner-owned training provenance；
+- L13 GPU closed-loop release protocol、成功率或 OOD robustness；
+- 任何非当前已记录平台组合。
+
+完整下载留给 M5.6，AMD GPU release acceptance 留给 M5.7。
+
+### 28.5 仓库门禁
+
+M5.4 交付源码通过：
+
+- course validation：14 lessons、44 localized Markdown files、28 notebooks、49 Python files；
+- 全量 pytest：125 tests collected / 125 passed；
+- compileall 与 238-package `uv lock --check`；
+- `npm ci`：190 packages installed / 191 audited，保留 15 项既有 advisory；
+- 普通与 `EDGEONE=1` VitePress build，均只保留既有 large-chunk warning；
+- `git diff --check`。
+
+项目负责人于 2026-10-30 确认 `M5.4` 验收通过，接受本节记录的 manifest checksum、
+L10/L12/L13 candidate 消费证据、feature-specific statistics count 修正、默认本地 target 与
+无隐式课程 candidate 下载，以及未运行训练/闭环/fresh-cache 下载的边界。本次验收不自动启动
+M5.5，也不授权上传、外部发布或 status 提升。

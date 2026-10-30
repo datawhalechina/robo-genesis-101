@@ -33,6 +33,25 @@ package 根目录只导出 `__version__`，helper 应从定义它的 module impo
 每个进程只能按课程路径初始化一次 Genesis，调用 `build_scene()` 前先完成初始化。camera 必须在
 `scene.build()` 前加入；关闭渲染的分支不能伪造替代帧。
 
+## 版本化课程 artifact
+
+[`artifact_fetch.py`](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/artifact_fetch.py)
+加载 canonical `artifacts/manifest.json`，并保持下载行为 dependency-light。
+
+| 接口 | 用途 |
+|---|---|
+| `load_artifact_manifest()` | 严格加载并校验 artifact/version、不可变来源、许可、默认目标、payload size/SHA-256 与依赖身份。 |
+| `resolve_artifact_target()` | 解析 manifest 默认目标或精确自定义 artifact root；自定义 target 不是再追加 ID 的父目录。 |
+| `verify_artifact()` | 不下载、不修复、也不删除无关文件，只校验全部 manifest-owned 文件。 |
+| `fetch_artifact()` | 复用有效文件并原子下载缺失文件；candidate 与 repair 都需要显式 opt-in。 |
+| `python scripts/fetch_artifacts.py list` | 显示状态、大小、许可、来源 revision 与默认目标。 |
+| `... verify ARTIFACT_ID VERSION` | 校验所选本地目标；文件缺失或无效时返回非零退出码。 |
+| `... fetch ARTIFACT_ID VERSION --allow-candidate` | 下载 candidate baseline；unavailable 条目仍会在网络访问前失败。 |
+
+`--repair` 只替换无效的 manifest-owned path；不提供该参数时，mismatch 会在网络访问前停止。
+下载过程使用同目录临时文件、流式 size/SHA-256 校验和原子替换。允许 candidate 并不会把它
+变成正式 release。
+
 ## 脚本化任务执行
 
 | 接口 | 用途 |
@@ -92,8 +111,9 @@ notebook orchestration 依赖轻量。
 | `audit_l13_evidence()` / `compare_l13_runs()` | 检查报告/视频并比较结果，不夸大因果证据。 |
 | `write_l13_capstone_report()` | 根据已审计运行写入 JSON 与 Markdown Capstone evidence。 |
 
-Hugging Face fallback 解析要求精确 repository ID、40 位十六进制 commit 和 subfolder。下载必须
-显式 opt-in；无法解析的来源保持 unavailable，不能用无关本地 artifact 替代。
+课程 notebook 默认使用 manifest 的本地 dataset/checkpoint target，不会隐式下载 candidate
+payload。显式 Hugging Face 覆盖项仍要求精确 repository ID、40 位十六进制 commit 和
+subfolder；无法解析的来源保持 unavailable，不能用无关本地 artifact 替代。
 
 ## L14 隔离 helper
 
@@ -118,6 +138,7 @@ uv run python -m robo_genesis.record_dataset --help
 uv run python -m robo_genesis.train_policy --help
 uv run python -m robo_genesis.eval_policy --help
 uv run python -m robo_genesis.eval_sweep --help
+python scripts/fetch_artifacts.py --help
 .venv/bin/python -m robo_genesis.course_validation
 ```
 
@@ -129,6 +150,7 @@ uv run python -m robo_genesis.eval_sweep --help
 | `train_policy` | ACT 或 SmolVLA 训练命令 wrapper；`--` 后的参数原样传给 LeRobot |
 | `eval_policy` | 在一个声明的闭环 condition 下评估一个 checkpoint |
 | `eval_sweep` | 在匹配协议下评估多个带数字编号的 checkpoint |
+| `fetch_artifacts.py` | manifest 列表、本地 checksum 校验，以及显式 candidate 下载/repair |
 | `course_validation` | 双语结构、metadata、链接、notebook、源码安全与仓库合同 |
 
 ## 最小场景模式

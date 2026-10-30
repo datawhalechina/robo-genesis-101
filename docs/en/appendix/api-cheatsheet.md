@@ -36,6 +36,25 @@ are resolved at import time.
 Initialize Genesis exactly once per process before calling `build_scene()`. Cameras must be
 added before `scene.build()`; a render-disabled branch must not fabricate replacement frames.
 
+## Versioned course artifacts
+
+[`artifact_fetch.py`](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/artifact_fetch.py)
+loads the canonical `artifacts/manifest.json` and keeps download behavior dependency-light.
+
+| Surface | Purpose |
+|---|---|
+| `load_artifact_manifest()` | Load and strictly validate artifact/version, immutable source, license, default target, payload size/SHA-256, and dependency identities. |
+| `resolve_artifact_target()` | Resolve the manifest default or an exact custom artifact root; a custom target is not a parent to which the ID is appended. |
+| `verify_artifact()` | Check every manifest-owned file without downloading, repairing, or deleting unrelated files. |
+| `fetch_artifact()` | Reuse valid files and atomically fetch missing files; candidate and repair behavior require explicit opt-ins. |
+| `python scripts/fetch_artifacts.py list` | Display status, size, license, source revision, and default target. |
+| `... verify ARTIFACT_ID VERSION` | Verify the selected local target and return a nonzero exit when files are missing or invalid. |
+| `... fetch ARTIFACT_ID VERSION --allow-candidate` | Fetch a candidate baseline. Unavailable entries still fail before network access. |
+
+`--repair` replaces only invalid manifest-owned paths; without it, a mismatch stops before
+network access. Downloads use same-directory temporary files, streaming size/SHA-256 checks,
+and atomic replacement. Candidate opt-in does not change an artifact into a release.
+
 ## Scripted task execution
 
 | Surface | Purpose |
@@ -97,9 +116,10 @@ dependency-light until the evaluator process starts.
 | `audit_l13_evidence()` / `compare_l13_runs()` | Check reports/videos and compare results without overstating causal evidence. |
 | `write_l13_capstone_report()` | Write JSON and Markdown Capstone evidence from audited runs. |
 
-Hugging Face fallback resolution requires an exact repository ID, 40-hex commit, and
-subfolder. Downloads are opt-in; an unresolved source remains unavailable rather than being
-replaced by an unrelated local artifact.
+The course notebook defaults to the manifest's local dataset/checkpoint targets and never
+downloads their candidate payloads implicitly. An explicit Hugging Face override still
+requires an exact repository ID, 40-hex commit, and subfolder; an unresolved source remains
+unavailable rather than being replaced by an unrelated local artifact.
 
 ## L14 isolated helpers
 
@@ -127,6 +147,7 @@ uv run python -m robo_genesis.record_dataset --help
 uv run python -m robo_genesis.train_policy --help
 uv run python -m robo_genesis.eval_policy --help
 uv run python -m robo_genesis.eval_sweep --help
+python scripts/fetch_artifacts.py --help
 .venv/bin/python -m robo_genesis.course_validation
 ```
 
@@ -138,6 +159,7 @@ uv run python -m robo_genesis.eval_sweep --help
 | `train_policy` | ACT or SmolVLA training command wrapper; arguments after `--` pass through to LeRobot |
 | `eval_policy` | One checkpoint under one declared closed-loop condition |
 | `eval_sweep` | Multiple numbered checkpoints under a matched protocol |
+| `fetch_artifacts.py` | Manifest list, local checksum verification, and explicit candidate download/repair |
 | `course_validation` | Bilingual structure, metadata, links, notebooks, source safety, and repository contracts |
 
 ## Minimal scene pattern

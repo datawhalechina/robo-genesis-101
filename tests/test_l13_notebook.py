@@ -88,20 +88,16 @@ def test_l13_notebooks_follow_the_lecture_evidence_gates_linearly() -> None:
         "'checkpoint': None",
         "'dataset_repo_id': 'genesis/fruit_pick'",
         "'dataset_root': 'datasets/fruit_pick'",
-        "'run_name': 'fruit-pick-hf-fallback'",
+        "'run_name': 'fruit-pick-artifact-fallback'",
         "'protocol': {",
-        "COURSE_DEFAULT_DATASET = {",
-        "'repo_id': 'wangxun1010/fruit_pick'",
-        "'revision': '475e8c6ec7079c4c52b20a0221bf959acb541abd'",
-        "COURSE_DEFAULT_CHECKPOINT = {",
-        "'repo_id': 'wangxun1010/smolvla-fruit-pick-0821'",
-        "'revision': 'cdf720f162e6ee86dbc856cdf15c5dcd4a673221'",
-        "'subfolder': '.'",
+        "COURSE_DEFAULT_DATASET = None",
+        "COURSE_DEFAULT_CHECKPOINT = (",
+        "'checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model'",
         "lesson.status.value == 'gpu-verified'",
         "prepare_l13_workflow(",
         "course_default_dataset=COURSE_DEFAULT_DATASET",
         "audit_l13_inputs(",
-        "allow_dataset_download=True",
+        "allow_dataset_download=False",
         "allow_checkpoint_download=False",
         "preflight.ready_for_reference",
         "validate_evaluation_protocol(",
@@ -181,23 +177,19 @@ def test_l13_notebooks_follow_the_lecture_evidence_gates_linearly() -> None:
     assert "RG101_L13_" not in workflow_source
 
 
-def test_l13_notebook_preflight_downloads_metadata_but_defers_checkpoint(
+def test_l13_notebook_preflight_requires_local_manifest_targets_without_download(
     capsys, monkeypatch, tmp_path
 ) -> None:
     namespace: dict[str, object] = {}
     notebook = _load_notebook("en")
     fake_hub = ModuleType("huggingface_hub")
-    snapshot = tmp_path / "dataset-snapshot"
-    _write_dataset_info(snapshot)
     calls: list[dict[str, object]] = []
 
-    def fake_snapshot_download(**kwargs) -> str:
+    def unexpected_snapshot_download(**kwargs) -> str:
         calls.append(kwargs)
-        if kwargs.get("repo_type") != "dataset":
-            raise AssertionError("checkpoint download must remain deferred")
-        return str(snapshot)
+        raise AssertionError("the notebook default must not download course candidates")
 
-    fake_hub.snapshot_download = fake_snapshot_download  # type: ignore[attr-defined]
+    fake_hub.snapshot_download = unexpected_snapshot_download  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "huggingface_hub", fake_hub)
     with patch(
         "subprocess.run", side_effect=AssertionError("subprocess must remain idle")
@@ -206,30 +198,28 @@ def test_l13_notebook_preflight_downloads_metadata_but_defers_checkpoint(
             if cell["cell_type"] == "code":
                 source = "".join(cell["source"])
                 exec(compile(source, f"notebook:{cell['id']}", "exec"), namespace)
-                if cell["id"] == "l13-condition-plan":
+                if cell["id"] == "l13-configuration":
+                    namespace["CONFIG"]["dataset_root"] = str(
+                        tmp_path / "missing-dataset"
+                    )
+                    namespace["COURSE_DEFAULT_CHECKPOINT"] = str(
+                        tmp_path / "missing-checkpoint"
+                    )
+                if cell["id"] == "l13-preflight":
                     break
 
     output = capsys.readouterr().out
     assert '"checkpoint_origin": "course-default"' in output
-    assert '"repo_id": "wangxun1010/smolvla-fruit-pick-0821"' in output
-    assert '"revision": "cdf720f162e6ee86dbc856cdf15c5dcd4a673221"' in output
-    assert "download is deferred until you run the Reference cell (Step 4)" in output
-    assert "Ready to run Step 4: True" in output
-    assert "STOP before Step 4" not in output
-    assert calls == [
-        {
-            "repo_id": "wangxun1010/fruit_pick",
-            "repo_type": "dataset",
-            "revision": "475e8c6ec7079c4c52b20a0221bf959acb541abd",
-            "allow_patterns": ["meta/**"],
-        }
-    ]
-    assert namespace["preflight"].dataset_root == snapshot.resolve()
-    assert namespace["preflight"].dataset["fps"] == 30.0
-    assert any(
-        row["input"] == "checkpoint" and row["status"] == "DEFERRED"
-        for row in namespace["preflight"].rows
-    )
+    assert str(tmp_path / "missing-checkpoint") in output
+    assert "Ready to run Step 4: False" in output
+    assert "fetch/verify the manifest targets" in output
+    assert calls == []
+    assert {row["input"]: row["status"] for row in namespace["preflight"].rows} == {
+        "dataset": "FAIL",
+        "checkpoint": "FAIL",
+    }
+    assert namespace["preflight"].dataset_root is None
+    assert namespace["preflight"].dataset is None
     assert namespace["preflight"].checkpoint is None
     assert namespace["preflight"].checkpoint_root is None
     assert "reference_run" not in namespace
