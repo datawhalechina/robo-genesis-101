@@ -2250,3 +2250,8 @@ M4.6 交付源码通过 course validation（14 lessons、44 localized Markdown f
 和 `EDGEONE=1` VitePress build。构建只保留既有 large-chunk warning；npm 继续报告 15 项
 既有 advisory（4 low、1 moderate、10 high），没有执行自动依赖升级。`git diff --check` 与
 `git diff --cached --check` 均通过。
+
+项目负责人于 2026-10-30 确认 `M4.6` 验收通过，接受上述 setup/fallback、引用与许可边界及
+仓库门禁。M4 至此全部完成；当前 canonical 状态继续为 8 个 `cpu-verified`、6 个
+`gpu-verified`、0 个 `planned`、0 个 `published`。本次验收不自动启动 M5，也不构成 artifact
+发布授权。
