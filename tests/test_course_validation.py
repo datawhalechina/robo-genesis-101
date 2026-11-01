@@ -188,9 +188,6 @@ def test_public_release_status_and_sidebar_follow_the_m5_contract() -> None:
         "--allow-candidate",
         "`candidate`",
         "`unavailable`",
-        "M5.6",
-        "M5.7",
-        "M5.8",
     )
     stale_claims = (
         "M5 的版本化 artifact 与发布验收尚未完成",
@@ -210,6 +207,8 @@ def test_public_release_status_and_sidebar_follow_the_m5_contract() -> None:
                 assert marker in text, (path, marker)
             for stale_claim in stale_claims:
                 assert stale_claim not in normalized, (path, stale_claim)
+            for internal_milestone in tuple(f"M5.{index}" for index in range(1, 9)):
+                assert internal_milestone not in text, (path, internal_milestone)
 
             if locale == "zh":
                 for marker in (
@@ -218,6 +217,9 @@ def test_public_release_status_and_sidebar_follow_the_m5_contract() -> None:
                     "0 个 `planned`",
                     "0 个 `published`",
                     "正式 release",
+                    "全新环境下载",
+                    "参考 AMD GPU",
+                    "最终 V1",
                 ):
                     assert marker in normalized, (path, marker)
             else:
@@ -227,6 +229,9 @@ def test_public_release_status_and_sidebar_follow_the_m5_contract() -> None:
                     "0 `planned`",
                     "0 `published`",
                     "none is a formal release",
+                    "fresh environment",
+                    "Reference AMD GPU",
+                    "final V1",
                 ):
                     assert marker in normalized, (path, marker)
 

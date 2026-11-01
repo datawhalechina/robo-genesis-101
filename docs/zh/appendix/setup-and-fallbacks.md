@@ -173,8 +173,8 @@ verify 流程。下载 SmolVLA candidate 后，可以审计 checkpoint/dataset �
 
 下载成功、checksum 通过、数据集可读、checkpoint 可加载、training loss 或 open-loop action
 都没有达到闭环证据门槛。只有规定的实时 rollout、结构化报告与真实视频通过各自协议后，才算
-完成 L13。全新 cache 的完整下载验收仍是 M5.6 release check；在该门禁通过前必须保留当前
-candidate 标签。
+完成 L13。全新 cache 下载与 CPU 消费验收已经通过；当前仍保留 `candidate` 标签，是因为参考
+AMD GPU release acceptance 与最终发布清单/授权尚未完成。
 
 ## 在不隐藏错误的前提下诊断
 

@@ -4,15 +4,17 @@
 
 > **Project status: Alpha / pre-release integration.** `course.json` currently contains
 > 8 `cpu-verified` and 6 `gpu-verified` lessons, with 0 `planned` and 0 `published`.
-> All 14 lessons have reached their declared verification status. M5.1–M5.4 have
-> frozen the candidate identity, version, license, and per-file checksum manifest for
-> the `rg101-fruit-pick@1.0.0` dataset and the
+> All 14 lessons have reached their declared verification status. The candidate
+> identity, version, license, and per-file checksum manifest are frozen for the
+> `rg101-fruit-pick@1.0.0` dataset and the
 > `rg101-fruit-pick-smolvla@1.0.0` checkpoint, and now provide an explicit
 > `--allow-candidate` download/verification workflow plus bilingual local consumption
 > paths. Both remain `candidate`, while the ACT artifact remains `unavailable`; none
-> is a formal release. M5.6 fresh-cache download and clean-environment acceptance,
-> M5.7 reference AMD GPU release acceptance, and M5.8 final V1 checklist/authorization
-> remain incomplete, so no lesson is marked `published` yet. L01–L07 are `cpu-verified`
+> is a formal release. Installation, artifact download, documentation builds, CPU smoke,
+> and consumer verification in a fresh environment are complete. Reference AMD GPU
+> release acceptance and the final
+> V1 checklist/authorization remain incomplete, so no lesson is marked `published` yet.
+> L01–L07 are `cpu-verified`
 > after their clean-kernel CPU verification; their additional AMD paths also passed
 > their respective contracts on the reference R9700. L08 is `gpu-verified` after its
 > bilingual CPU numerical paths, CPU+EGL path, and scripted-expert path on a reference
@@ -46,8 +48,8 @@ The online site now provides the bilingual lectures and notebooks for L01–L14.
 lesson has reached a verified status. The course remains Alpha not because any lesson
 is `planned`, but because the datasets/checkpoints exposed through the manifest,
 checksum downloader, and [bilingual fallback paths](docs/en/appendix/setup-and-fallbacks.md)
-remain `candidate`, while the clean-environment, AMD GPU, and final release acceptance
-in M5.6–M5.8 are still incomplete.
+remain `candidate`. Verification in a fresh environment is complete, while reference AMD GPU
+and final release acceptance are still incomplete.
 
 ## Audience and prerequisites
 

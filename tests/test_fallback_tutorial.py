@@ -91,6 +91,9 @@ def test_fallback_tutorial_preserves_lesson_claim_boundaries() -> None:
     assert "does not mean closed-loop success" not in en
     assert "closed-loop evidence bar" in en
     assert "闭环证据门槛" in zh
+    for internal_milestone in tuple(f"M5.{index}" for index in range(1, 9)):
+        assert internal_milestone not in en
+        assert internal_milestone not in zh
 
 
 def test_l13_defaults_to_manifest_targets_without_implicit_candidate_downloads() -> None:

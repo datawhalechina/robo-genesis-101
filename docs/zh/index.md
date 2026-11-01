@@ -26,12 +26,12 @@ features:
 ## 课程状态
 
 > 当前 14 讲包含 8 个 `cpu-verified` 和 6 个 `gpu-verified`，0 个 `planned`、0 个
-> `published`。全部讲次均已达到各自验证状态。M5.1–M5.4 已冻结
-> `rg101-fruit-pick@1.0.0` 数据集和 `rg101-fruit-pick-smolvla@1.0.0` checkpoint 的
-> 候选身份、版本、许可与逐文件 checksum manifest，并提供显式 `--allow-candidate` 的下载/
-> 校验流程及双语本地消费路径。两者仍是 `candidate`，ACT artifact 仍为 `unavailable`，都不是
-> 正式 release；M5.6 fresh-cache 全量下载与 clean-environment acceptance、M5.7 参考 AMD GPU
-> release acceptance 和 M5.8 最终 V1 清单/授权尚未完成，因此不提前标记为 `published`。
+> `published`。全部讲次均已达到各自验证状态。`rg101-fruit-pick@1.0.0` 数据集和
+> `rg101-fruit-pick-smolvla@1.0.0` checkpoint 已冻结候选身份、版本、许可与逐文件 checksum
+> manifest，并提供显式 `--allow-candidate` 的下载/校验流程及双语本地消费路径。全新环境下载、
+> 文档构建、CPU smoke 与消费者验证已经完成。两者仍是 `candidate`，ACT artifact 仍为
+> `unavailable`，都不是正式 release；参考 AMD GPU release acceptance 和最终 V1 清单/授权
+> 尚未完成，因此不提前标记为 `published`。
 > L01–L07 已通过各自的 CPU clean-kernel 验证，状态均为
 > `cpu-verified`；这些讲次的
 > 附加 AMD 路径也已在参考 R9700 环境按各自合同通过。L08 已通过双语 CPU 数值路径、

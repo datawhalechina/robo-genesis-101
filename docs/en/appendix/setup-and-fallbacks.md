@@ -188,8 +188,9 @@ to L13's declared GPU protocol without claiming that you trained the model yours
 A successful download, checksum verification, dataset read, checkpoint load, training
 loss, or open-loop action remains below the closed-loop evidence bar. L13 is complete only
 after the required live rollouts, structured reports, and real videos pass their own
-protocol. Full fresh-cache download acceptance remains an M5.6 release check; the current
-candidate label must stay visible until that later gate passes.
+protocol. Downloading from an empty cache and CPU consumer verification have passed. The current
+`candidate` label remains because reference AMD GPU release acceptance and the final
+release checklist/authorization are still incomplete.
 
 ## Diagnose failures without hiding them
 

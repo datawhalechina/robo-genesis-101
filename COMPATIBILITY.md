@@ -2411,3 +2411,222 @@ M5.5 未执行 fresh-cache 下载、CPU notebook smoke、GPU rollout、长训练
 讲义/notebook metadata 与课程表核对、动态 sidebar 合同、四个公开入口的 M5 阶段叙述，以及
 candidate/ACT unavailable 均非正式 release 的边界。本次验收不提升 lesson/artifact status，
 不授权上传或外部发布，也不自动启动 `M5.6`。
+
+## 30. M5.6 clean-environment 与 fresh-cache 验证
+
+> 验证日期：2026-10-31（Asia/Shanghai）
+>
+> 范围：独立 checkout 的完整依赖与文档构建、L01 CPU smoke、两个 candidate 的空目标下载/
+> verify/幂等、fresh dataset 的 L10/L12 消费，以及 SmolVLA checkpoint 的正常联网首次加载与
+> 本地 cache 复用。本节不包含 M5.7 AMD GPU closed-loop release acceptance。
+
+### 30.1 隔离环境与仓库门禁
+
+验证从源 commit `947c9ee8a92e3b1c94f59b77d5f09006006b84a6` 的独立 checkout 和空 uv
+cache 开始。`uv sync --locked --all-extras --python /usr/bin/python3.12` 得到 Python 3.12.3、
+Genesis 1.3.3、LeRobot 0.6.0、NumPy 2.2.6、PyAV 15.1.0、Transformers 5.5.4 与 PyTorch
+`2.9.1+cu128`。当前主机 `torch.cuda.is_available()` 为 `False`，因此本节所有模型执行证据都
+明确限定为 CPU。
+
+隔离 checkout 使用已验收 M5.5 的原始源码；先前为未经要求的完全离线条件产生的实现改动已
+撤销。Node.js `v22.23.1` / npm `10.9.8` 与同一 Python 环境通过：
+
+- course validation：14 lessons、44 localized Markdown files、28 notebooks、49 Python files；
+- pytest：126 passed；
+- compileall 与 238-package `uv lock --check`；
+- `npm ci`：190 packages installed / 191 audited；
+- 普通与 `EDGEONE=1` VitePress build。
+
+npm 继续报告既有 15 项 advisory（4 low、1 moderate、10 high）；两次 build 继续只有既有
+large-chunk warning。本轮没有执行 `npm audit fix` 或更新依赖。
+
+English L01 在同一完整环境中使用 CPU backend，从 clean kernel 执行通过：
+`ENVIRONMENT CHECK: PASSED`，Genesis backend 为 `cpu`，球体高度从 `0.500000 m` 变为
+`0.298895 m`。首次受限 sandbox 尝试在 kernel 启动前因 Jupyter socket 权限失败；允许正常
+kernel socket 后同一命令通过，因此该次失败不归因于课程逻辑、Genesis 或 CPU backend。
+
+### 30.2 两个 candidate 的空目标下载与幂等
+
+使用 manifest 的 exact target 语义从空目标完整下载：
+
+| Artifact | 首次 fetch | verify | 第二次 fetch | Payload bytes |
+|---|---:|---:|---:|---:|
+| `rg101-fruit-pick@1.0.0` | downloaded 9 / repaired 0 / reused 0 | 9/9 | downloaded 0 / repaired 0 / reused 9 | 505,224,976 |
+| `rg101-fruit-pick-smolvla@1.0.0` | downloaded 7 / repaired 0 / reused 0 | 7/7 | downloaded 0 / repaired 0 / reused 7 | 906,740,620 |
+
+两个目标均无残留 `.part`。这验证 M5.3 downloader 对当前全部 payload 的真实网络下载、逐文件
+size/SHA-256、原子落盘与重复复用；它没有改变两个条目的 `candidate` 状态。
+
+### 30.3 Fresh dataset 消费
+
+English L10 从新下载的 dataset 完整 clean-kernel 执行通过：
+
+- 300 episodes、71,976 frames、30 FPS；
+- world/wrist 两路 PyAV 视频可读取；
+- numeric statistics count 为 71,976；
+- 两路 image aggregate statistics count 各为 30,000；
+- 输出 `L10 CHECK: PASSED`。
+
+English L12 对同一 fresh dataset 在 `RG101_RUN_SMOKE=0` 下通过真实数据门禁、ACT command
+dry-run 与 SmolVLA command dry-run。GPU smoke、checkpoint reload、full training 与
+closed-loop evaluation 均明确为 `NOT RUN`，因此本结果不形成训练或策略质量结论。
+
+### 30.4 SmolVLA 首次下载与本地 cache 复用
+
+本节采用课程的正常学习条件：新环境可以联网；本地已有 Hugging Face 模型 cache 时直接加载，
+本地缺失时由 LeRobot/Hugging Face 自动下载。课程没有要求模型缺失且无网络时仍可运行。
+
+candidate checkpoint 的静态审计通过：policy type 为 `smolvla`，action dim 为 9，
+`chunk_size=n_action_steps=50`，训练 dataset identity 为 `genesis/fruit_pick`，camera rename
+为 world/wrist → camera1/camera2，权重为 906,712,520 bytes。
+
+把 `HF_HOME` 指向新的空目录并保持网络可用后，仓库原有 `load_policy()` 正常完成：
+
+1. LeRobot 自动下载 `HuggingFaceTB/SmolVLM2-500M-Video-Instruct` 所需依赖；cache 约
+   2.0 GiB，`refs/main` 解析为 `7b375e1b73b11138ff12fe22c8f2822d8fe03467`；
+2. 随后从本地 candidate 目录加载 906 MiB 课程 checkpoint 和保存的 processor；
+3. 输入 fresh dataset 首个真实样本的 9-D state、world/wrist 两路图像和非空任务文本；
+4. CPU open-loop 输出为有限的 `(9,) float32` action。
+
+第二个独立 Python 进程复用同一 `HF_HOME`，并设置 `HF_HUB_OFFLINE=1` 与
+`TRANSFORMERS_OFFLINE=1`，再次完成 checkpoint 加载和同规格 action。这验证“本地有则加载、
+没有则下载”以及下载后的本地复用；不把“空 cache 且断网”作为验收条件。
+
+### 30.5 结论边界与后续门禁
+
+M5.6 证明当前两个 candidate 可以从空目标完整下载、校验、重复复用，并被锁定版本的 CPU
+课程环境真实消费；它没有修改 `src/`、notebook、讲义、fallback、README、manifest、依赖或
+lesson/artifact status。它也没有验证：
+
+- 参考 AMD R9700 上的 release GPU smoke 或 L13 closed-loop rollout；
+- ACT 20,000-step artifact 生成；
+- SmolVLA 的稳定成功率、robustness、OOD 或 sim-to-real；
+- 长训练、非当前记录平台或任何外部发布动作。
+
+因此两个下载项继续是 `candidate`，ACT 继续是 `unavailable`，lesson 状态继续为 8 个
+`cpu-verified`、6 个 `gpu-verified`、0 个 `planned`、0 个 `published`。上述未完成 GPU 与
+长实验边界进入 M5.7；最终发布清单与授权进入 M5.8。本节不自动启动 M5.7，也不授权上传或
+发布 external artifact。
+
+项目负责人于 2026-10-31 确认 `M5.6` 验收通过，接受独立 clean-environment 安装、普通与
+EdgeOne 文档构建、L01 CPU smoke、两个 candidate 的 fresh-cache 下载/verify/幂等、L10/L12
+消费，以及 SmolVLA“本地有则加载、没有则下载”的 CPU open-loop 证据。本次验收不提升
+lesson/artifact status，不授权上传或外部发布，也不自动启动 `M5.7`。
+
+## 31. M5.7 参考 AMD GPU 发布验证与 ACT 选择
+
+> 验证日期：2026-10-31 至 2026-11-01（Asia/Shanghai）
+>
+> 范围：在参考 R9700/GPU/EGL 环境运行当前 SmolVLA candidate 的冻结 5+5 release protocol，
+> 按既定合同生成并审计 ACT 20,000-step payload，再用相同协议决定是否把 ACT 纳入 V1 fallback。
+> 本节不包含外部上传、release、lesson `published` 或 M5.8 最终授权。
+
+### 31.1 环境、输入与源码身份
+
+实际运行使用源 commit `947c9ee8a92e3b1c94f59b77d5f09006006b84a6` 的独立 clean
+checkout，报告均记录 `dirty=false`。运行栈为 Python 3.12.3、Genesis 1.3.3、LeRobot 0.6.0、
+PyAV 15.1.0、PyTorch `2.9.1+rocm7.2.1.gitff65f5bc` / HIP
+`7.2.53211-e1a6bc5663`、TorchVision `0.24.0+rocm7.2.1.gitb919bd0c`、单张
+`AMD Radeon AI PRO R9700`、`gs.amdgpu` 与 EGL。policy requested/actual device 都是 `cuda`，
+没有 CPU fallback。
+
+输入为 M5.6 fresh-download 后已通过 manifest 全量校验的 `rg101-fruit-pick@1.0.0` 与
+`rg101-fruit-pick-smolvla@1.0.0`；SmolVLA weight SHA-256 为
+`205bf82449f19542f2206dfeca007bcdcf214c6633b94159778154c4aecede72`，SmolVLM2 cache
+revision 为 `7b375e1b73b11138ff12fe22c8f2822d8fe03467`。M5.2 dry-run commit 到本次 commit
+的训练/评估实现与锁定依赖没有变化，相关 diff 只有 artifact fetch console entry。
+
+### 31.2 SmolVLA 正式 5+5 结果
+
+reference seed 1000 的单 episode preflight 在 197 policy steps 后成功，只用于确认链路。正式
+reference 与 shifted 都使用 banana→bowl、seeds 1000–1004、15 s、30 policy FPS、100 control
+FPS、0.4 s / 12 policy-frame dwell、0.06 m tolerance、balanced schedule 和视频：
+
+| condition | success / termination | 95% Wilson | policy steps |
+|---|---|---|---|
+| reference | 5/5 success；0 timeout/divergence/invalid action | `[0.5655085052479191, 1.0]` | 199、206、195、196、189 |
+| shifted friction `0.9` | 5/5 success；0 timeout/divergence/invalid action | `[0.5655085052479191, 1.0]` | 218、189、205、196、197 |
+
+五个 paired outcome 均为 `unchanged-success`；shifted rows 的实际 friction draw 均为 `0.9`。
+报告 schema、summary、matched seeds、Wilson、condition 和 source/environment identity 均独立
+重算通过。reference / shifted report SHA-256 分别为
+`709c66911da1a449329b944f1b159d9b2995e58495c706d0bec365939d1fb5ed` 和
+`e5ff33316ec6c737e88ed9a0f1d734bd05ab04bf9b13ca4c205a2c77de39e0b5`。
+
+十个正式视频均为 H.264、yuv420p、30 FPS、`1920×360`，可完整解码。frame count 等于 policy
+steps 加 24-frame success hold；代表性起始/抓取/结尾画面显示 banana 最终位于 bowl 中，与
+JSON 一致。结果只支持当前 checkpoint 在这十条有限 rollout 下的 counts；两组相同且样本很小，
+不能声称 friction 改善、显著性、稳定成功率或一般 robustness。训练 domain support 缺失，
+shifted 不称 OOD。
+
+### 31.3 ACT 20,000-step 生成与 payload
+
+固定 ResNet18 initialization 的本地与临时下载文件均为 46,830,571 bytes，SHA-256 为
+`f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec`。20-step 同架构 preflight
+确认稳定 update 约 0.52–0.53 s、GPU memory 约 3.11 GB；随后原样执行 M5.2 冻结命令。
+
+完整训练 wall time `2:58:58`，生成 `002000`–`020000` 十个数字 checkpoint，`last` 指向
+`020000`。最终记录 160,000 samples / 2.22 epochs、loss `0.104`、gradient norm `12.273`、
+update `0.534 s`、GPU memory `3.11 GB`，进程 exit 0；100 条定期 loss/gradient 均有限。
+`training_state` 独立确认 step 20,000、单进程、batch 8。LeRobot 对千步以上 step 使用 `K`
+显示，现有纯整数 log parser 不覆盖该格式；本轮没有为验证修改 `src/`，使用独立 K-unit 审计与
+`training_step.json` 交叉确认。
+
+最终 checkpoint 为 ACT、9-D action、100/100 horizon、seed 1000、空 camera rename，绑定本轮
+fresh `genesis/fruit_pick` root，并含两份 processor state。234 个 tensor / 51,674,761 个元素
+全部有限。七文件 payload 共 206,749,741 bytes，weight SHA-256 为
+`ae9425428bd224c60848d3fd8a530e5b606eb1443fa0dd124651fb9fb8bf2c28`，
+`sha256sum-relative-path-v1` aggregate 为
+`604a47aa36adb63e052d0045ce9315b987504f1abe63caddc6fc78f2ac8847f7`。完整逐文件表见
+`course_development/m5.md`。训练 log SHA-256 为
+`931d4848dc327767d2392c1e855bf42d8bcd690e7727da62a4fca23e5a25f08b`。
+
+最终 checkpoint 在 R9700 上从真实 dataset sample 载入两路 `360×640×3` 图像、9-D state 与
+非空 task，输出有限 `(9,) float32` action；open-loop log SHA-256 为
+`58c005b1f9c5315a97fabc51e5cc72710695446194d002cc0c43e289ac3062ca`。
+临时 Torch cache 缺失 initialization 时由 TorchVision 正常下载并匹配固定 checksum，符合
+“本地有则加载、没有则下载”的课程预期，不要求空 cache 且断网运行。
+
+### 31.4 ACT 5+5 结果与选择结论
+
+ACT `020000` 使用与 SmolVLA 相同的冻结协议：
+
+| condition | success / termination | 95% Wilson | policy steps |
+|---|---|---|---|
+| reference | 0/5；5 timeout，0 divergence/invalid action | `[0.0, 0.43449149475208104]` | 五条均 450 |
+| shifted friction `0.9` | 0/5；5 timeout，0 divergence/invalid action | `[0.0, 0.43449149475208104]` | 五条均 450 |
+
+五个 paired outcome 均为 `unchanged-failure`。reference / shifted report SHA-256 分别为
+`0a5b25556befc255894fd46d75d81a0a96dcc502db61930d0fc5ad1aaf0a2a1b` 和
+`dd20b6dd7a135384a61cc9c8e103b40d5152075533b7d9b186f2be2748d59526`。十个视频均为
+H.264、yuv420p、30 FPS、`1920×360`、450 frames，并可完整解码；代表性画面显示机械臂有真实
+动作，但 banana 未完成抓取/放置，与 timeout JSON 一致。
+
+因此 ACT payload 已完成训练、格式、processor、checksum、GPU open-loop 与闭环协议技术审计，
+但 0/10 task outcome 不适合作为 learner fallback。它不提升为可下载 candidate；公开 manifest
+继续 `unavailable`，不臆造 hosting revision/URL。最终 bytes 与 evidence 只保存在 gitignored
+`outputs/release_candidates/` 和 `outputs/release_acceptance/2026-11-01/`，不进入 Git，也未上传。
+
+### 31.5 结论边界与未验证平台
+
+本轮没有验证其他 AMD/ROCm、NVIDIA、Apple Silicon、Windows、viewer 或 CPU closed-loop；
+没有覆盖 lemon/plum、更多 seeds、长期重复、学习曲线、SmolVLA 重训、ACT 调参重训、真实机器人、
+OOD、sim-to-real 或安全部署。loss、open-loop 与 pipeline completion 都没有替代闭环结果。
+
+dataset 与 SmolVLA 继续是 `candidate`，ACT 继续是 `unavailable`，课程状态仍为 8 个
+`cpu-verified`、6 个 `gpu-verified`、0 个 `planned`、0 个 `published`。本步没有修改 `src/`、
+notebook、讲义、README、首页、fallback、依赖、artifact manifest 或 lesson/artifact status，
+没有上传、release 或自动启动 M5.8。
+
+### 31.6 最终仓库门禁
+
+2026-11-01 的最终回归通过 course validation（14 lessons、44 份本地化 Markdown、28 notebooks、
+49 Python files）、126 项 pytest、`compileall` 和 `uv lock --check`。`npm ci` 成功安装 190
+packages，并报告现有 15 项 audit 提示（4 low、1 moderate、10 high）；本步没有改变依赖。
+普通与 `EDGEONE=1` 文档构建均成功，仅出现既有的 500 kB chunk size warning。
+`git diff --check` 通过，README 与双语 learner-facing docs 中没有 `M5.x` 内部编号。
+
+项目负责人于 2026-11-01 确认 M5.7 验收通过，接受 SmolVLA 的 5/5 + 5/5 有限样本结果，
+以及本轮新增 ACT 候选因 0/5 + 0/5 而继续 `unavailable` 的选择。原始课程正式 20,000-step
+任务 checkpoint 是 SmolVLA；原始 ACT 只有 200-step pipeline smoke。本轮 ACT 长训练因此是
+额外候选实验，不是对一个既有成功 ACT checkpoint 的复现。验收不授权外部发布，也未启动 M5.8。
