@@ -130,7 +130,7 @@ artifact，不应在新 thread 中当成可发布资源或依赖其 `/tmp` 路�
 - API cheatsheet 只列当前 `src/robo_genesis/` 真实课程接口；以下划线开头的实现细节和
   notebook-local helper 不应升级成公共 API。
 
-## 7. 引用、许可与发布前未决项
+## 7. 引用、许可与发布边界
 
 当前许可边界：
 
@@ -143,12 +143,10 @@ artifact，不应在新 thread 中当成可发布资源或依赖其 `/tmp` 路�
   例外是已固定托管 revision、许可和 checksum 的 `rg101-fruit-pick@1.0.0` 与
   `rg101-fruit-pick-smolvla@1.0.0` release。
 
-Datawhale 品牌和模板媒体仍是明确未决项：
-
-- `docs/public/datawhale-logo.png` 与 `docs/public/learning.GIF` 不属于项目 MIT 授权；
-- 本地没有记录 Datawhale 品牌/商标使用授权；
-- V1 release 前必须由项目负责人确认授权并补充记录，或替换/移除相应媒体；
-- 未确认前不要修改、重新设计或对外发布这些品牌素材。
+旧模板遗留的 `docs/public/datawhale-logo.png` 与 `docs/public/learning.GIF` 已确认没有被页面、
+配置或测试引用，并于 2026-11-01 删除；VitePress 导航继续使用课程自有的
+`docs/public/robogenesis-logo.svg`。这两个媒体文件不再构成许可或发布未决项。Datawhale 名称
+仍只用于真实的课程归属和事实性署名，不属于项目 MIT License。
 
 ## 8. 构建与验证时容易遗漏的操作细节
 

@@ -109,7 +109,7 @@ MIT-licensed materials.
 | Installed software dependencies | Their upstream licenses; not vendored by installation metadata alone |
 | Linked papers, datasets, checkpoints, and models | Citation/link only unless a separate audit approves redistribution |
 | Generated datasets, checkpoints, logs, frames, and videos | Excluded from Git and not approved for redistribution by default |
-| Datawhale logo, template animation, name, and trademarks | Outside the MIT grant; local brand-use authorization is not recorded and must be confirmed or the media replaced before release |
+| Datawhale name and trademarks | Outside the MIT grant; used only for factual project affiliation and attribution, with no inherited template logo or animation distributed by this repository |
 
 Do not paste a repository-wide MIT header onto third-party files or describe the project
 license as relicensing them.
@@ -126,7 +126,7 @@ identities. Its conclusions are:
   dependencies rather than copied source;
 - L14 base models, RoboTwin data, and the companion image must not be rehosted by the course;
 - generated outputs remain excluded unless M5 performs an artifact-specific audit;
-- Datawhale brand/template-media authorization remains an explicit pre-release item.
+- The unused Datawhale template logo and animation were removed; only factual Datawhale project affiliation and attribution remain.
 
 External-link availability can change after this static audit. A broken link should be
 updated to the same authoritative source or archived revision; it must not be replaced with

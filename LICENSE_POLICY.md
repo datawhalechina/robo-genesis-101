@@ -15,7 +15,7 @@ RoboGenesis 101 的原创材料统一采用 MIT License，并把第三方材料�
 | 原创课程代码 | MIT License | 包括独立源码、工具、测试和构建配置 |
 | 原创讲义与教学内容 | MIT License | 包括讲义、notebook、练习、原创图表和教学媒体 |
 | 第三方资产、代码、数据和模型 | 各自原始许可 | 不受项目 MIT License 覆盖，必须单独记录来源和约束 |
-| Datawhale 名称、标志及其他商标 | 不由上述许可证授予 | 仅在项目负责人确认品牌使用授权后保留 |
+| Datawhale 名称及其他商标 | 不由上述许可证授予 | 仅用于真实的项目归属与署名，不纳入 MIT License |
 
 仓库级声明应使用“除另有注明的第三方材料外，项目原创内容采用 MIT License”，避免把 MIT 错误地扩展到第三方资产或商标。
 
@@ -115,17 +115,12 @@ assets/third_party/ycb/
 
 该方案避免在本仓库重复保存模型和遗漏上游许可证，同时让运行时模型版本与 Genesis 版本保持一致。
 
-## 7. Datawhale 模板与品牌材料
+## 7. Datawhale 名称与品牌边界
 
-现有 `docs/public/datawhale-logo.png`、`docs/public/learning.GIF` 和项目中的 Datawhale 名称属于品牌或第三方材料问题，不由 MIT License 自动解决。README 曾引用但未存储的 Datawhale 公众号二维码已在 M1.10 按项目负责人决定移除。
-
-建议处理方式：
-
-- 项目负责人确认本课程作为 Datawhale 项目使用名称、标志和官方链接的权限；
-- 获确认后，在 `NOTICE.md` 记录用途和授权依据，不把商标描述成 CC 或 MIT 内容；
-- `docs/public/learning.GIF` 缺少独立来源记录，M1.8 默认用本课程原创视觉替换；
-- M1.10 不再保留 README 中来源和许可未确认的远程公众号二维码；
-- 未确认前不修改、重新设计或对外发布 Datawhale 品牌素材。
+项目使用 Datawhale 名称说明真实的课程归属，并链接 Datawhale 官方社区；名称与商标不属于
+项目 MIT License。仓库不分发旧模板中的 Datawhale logo、模板动画或公众号二维码，站点使用
+本课程自己的 RoboGenesis 101 logo。对 Datawhale 的提及应保持事实性署名，不应扩写为未经
+确认的版权归属、商标许可或官方背书。
 
 ## 8. 源课程媒体
 
@@ -201,7 +196,7 @@ assets/third_party/ycb/LICENSE-CC-BY-NC-4.0.txt
 3. 接受 notebook 中的原创代码与原创教学内容统一使用 MIT；
 4. 接受仅内置四个 YCB 对象并保留 CC BY-NC 4.0；
 5. 接受优先使用固定 Genesis 版本内置的 Franka 模型，而不复制当前不完整的源目录；
-6. 将确认 Datawhale 品牌使用权限，并在无法确认时替换或移除相关素材；
+6. Datawhale 名称只用于真实的项目归属与署名；未使用的模板 logo 和动画已于 2026-11-01 移除；
 7. 将在 M2-M4 迁移媒体时记录来源，并对其中新发现的外部素材单独审计；
 8. 同意任何第三方材料均不被项目 MIT License 重新许可。
 

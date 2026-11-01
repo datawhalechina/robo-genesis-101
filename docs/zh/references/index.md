@@ -101,7 +101,7 @@ Companion 继续是 runtime 真相源。课程不修改它，不把它的 contai
 | 安装的软件依赖 | 保留上游许可；仅有安装 metadata 不等于源码被 vendor |
 | 链接的论文、dataset、checkpoint 与 model | 除非单独审计批准再分发，否则只做引用/链接 |
 | 生成的 dataset、checkpoint、日志、frame 与视频 | 默认不进入 Git，也没有默认再分发批准 |
-| Datawhale logo、模板动画、名称与商标 | 不属于 MIT 授权；本地没有记录品牌使用授权，release 前必须确认或替换媒体 |
+| Datawhale 名称与商标 | 不属于 MIT 授权；仅用于真实的项目归属与署名，仓库不分发旧模板 logo 或动画 |
 
 不要给第三方文件统一粘贴仓库 MIT header，也不要把项目许可证描述成对它们重新许可。
 
@@ -115,7 +115,7 @@ M4 审计覆盖双语讲义 References 章节、公开辅助页面、`NOTICE.md`
 - Genesis/Franka、LeRobot、论文与 model/data 来源仍属于链接或安装依赖，不是复制源码；
 - L14 base model、RoboTwin 数据与 companion image 不得由课程 rehost；
 - 除非 M5 完成 artifact-specific 审计，否则生成 output 继续排除在外；
-- Datawhale 品牌/模板媒体授权仍是显式 release 前事项。
+- 未使用的 Datawhale 模板 logo 与动画已移除；课程只保留事实性的 Datawhale 项目归属与署名。
 
 外部链接在本次静态审计后仍可能变化。损坏链接应更新到同一权威来源或归档 revision，不能替换
 为未经审查的 mirror。

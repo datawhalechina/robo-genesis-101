@@ -2232,8 +2232,8 @@ M5 通用 artifact downloader。M4.6 没有发布版本化 dataset/checkpoint、
 - Genesis、LeRobot、论文、L13 外部输入与 L14 sources 继续作为引用、链接或安装依赖；
 - LingBot-VLA-v2 base、RoboTwin dataset 与 L14 companion image 不 rehost；
 - 生成数据、checkpoint、日志、帧和视频没有默认再分发授权；
-- Datawhale logo、模板动画、名称与商标仍在 MIT 边界之外，本地未记录的品牌授权须在 release
-  前确认，或替换相应媒体。
+- M4.6 当时记录的 Datawhale 模板 logo 与动画后来确认未被页面或配置引用，并于
+  2026-11-01 移除；站点继续使用课程自有的 RoboGenesis 101 logo。
 
 ### 27.4 M5 仍需完成
 

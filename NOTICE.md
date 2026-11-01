@@ -8,9 +8,8 @@ license boundary and dispositions reflected below.
 Initial audit date: 2026-08-28. Dataset/checkpoint candidate review: 2026-10-30.
 Final V1 release-readiness review: 2026-11-01.
 
-The four YCB objects identified below were vendored during M1.4. The two
-Datawhale template files also predate this audit. No other reviewed third-party
-assets have been copied into this repository.
+The four YCB objects identified below were vendored during M1.4. No other
+reviewed third-party assets have been copied into this repository.
 
 ## Audit summary
 
@@ -19,7 +18,6 @@ assets have been copied into this repository.
 | ManiSkill-distributed YCB meshes and textures | `franka_fruit_pick_demo/assets/ycb/` at the recorded `course` baseline | ManiSkill identifies its assets as CC BY-NC 4.0 | M1.4 vendors only banana, lemon, plum, and bowl with the original license, provenance, and checksums |
 | Franka Emika Panda MJCF model | `franka_fruit_pick_demo/assets/robots/franka/` at the recorded `course` baseline | Model README and MuJoCo Menagerie upstream identify the model as Apache-2.0 | Do not copy the incomplete source bundle; use the model bundled with the pinned Genesis version |
 | Source-course renders and slide exports | Both source courses at their recorded baselines | Project lead confirmed on 2026-08-28 that the course code, lectures, and teaching content are original | Original portions use MIT after migration; preserve notices for depicted or embedded third-party material |
-| Datawhale template media already in this repository | `docs/public/datawhale-logo.png`, `docs/public/learning.GIF` | Inherited template README declares CC BY-NC-SA 4.0 for the work; separate trademark permission was not found | Keep outside the project MIT boundary until Datawhale brand use is confirmed or the media is replaced |
 | Datasets, checkpoints, and training/evaluation outputs | Local source worktrees and fixed external releases | The non-DR fruit-pick dataset and matching SmolVLA checkpoint passed checksum, clean-environment, consumer, and reference AMD release acceptance; both pinned revisions have reviewed cards, license declarations, attribution, and usage limits; the additional ACT candidate failed closed-loop selection | Keep outside the repository MIT License; `rg101-fruit-pick@1.0.0` and `rg101-fruit-pick-smolvla@1.0.0` are approved releases, while ACT remains unavailable |
 
 The course MIT License must not be presented as relicensing any item in this
@@ -193,24 +191,7 @@ media file must receive one of these dispositions before import:
 Generated PPTX/PDF files must be regenerated from their reviewed source rather
 than treated as the source of truth.
 
-## 4. Existing Datawhale template media
-
-Two files predate this audit and already exist in RoboGenesis 101:
-
-| File | SHA-256 | Evidence and open question |
-|---|---|---|
-| `docs/public/datawhale-logo.png` | `137d2d2aac7109f8630b5afb8ec3d4e117d2bb53373eaf1e77a3754441498857` | Inherited from the Datawhale repository template; brand-use approval is not recorded locally |
-| `docs/public/learning.GIF` | `95985ee9642522feb498b6b6cad99655d03b32dcf04ab4cd9a9747833cfa7802` | Inherited from the same template; original creator and asset-specific license are not recorded locally |
-
-The inherited template README points to
-[`datawhalechina/repo-template`](https://github.com/datawhalechina/repo-template)
-and declares the template work under CC BY-NC-SA 4.0. That statement is recorded
-as evidence, but it does not by itself establish trademark permission for the
-Datawhale logo. M0.5 therefore kept both files outside the project MIT boundary;
-brand-use confirmation or replacement remains required before publication. No
-brand asset was changed in M0.4 or M1.1.
-
-## 5. Datasets, checkpoints, models, and dependencies
+## 4. Datasets, checkpoints, models, and dependencies
 
 M0.2 excluded all local datasets, checkpoints, evaluation outputs, videos,
 frames, logs, and caches from migration. They receive no redistribution
@@ -346,7 +327,7 @@ robustness, OOD behavior, or sim-to-real transfer. No M5 review performed a
 new Hub upload; the project lead authorized the existing pinned artifacts to be
 marked as course releases.
 
-## 6. Approved decisions and remaining review
+## 5. Approved decisions and remaining review
 
 The project lead approved the following M0.5 decisions on 2026-08-28:
 
@@ -374,9 +355,6 @@ as another Hub manifest. The project lead subsequently authorized both artifact
 status promotions to `release` while explicitly leaving lesson `published`
 status unchanged. No new Hub upload, Git push, GitHub Release, or deployment was
 authorized.
-
-Datawhale trademark and template-media authorization remains to be confirmed.
-Until then, those materials are not covered by the project MIT License.
 
 M1.1 copied no third-party assets. M1.4 added only the four approved YCB objects
 and their license/provenance files; the Franka model continues to come from the
