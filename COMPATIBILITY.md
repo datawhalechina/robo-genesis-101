@@ -2630,3 +2630,76 @@ packages，并报告现有 15 项 audit 提示（4 low、1 moderate、10 high）
 以及本轮新增 ACT 候选因 0/5 + 0/5 而继续 `unavailable` 的选择。原始课程正式 20,000-step
 任务 checkpoint 是 SmolVLA；原始 ACT 只有 200-step pipeline smoke。本轮 ACT 长训练因此是
 额外候选实验，不是对一个既有成功 ACT checkpoint 的复现。验收不授权外部发布，也未启动 M5.8。
+
+## 32. V1 最终发布就绪审计
+
+> 审计日期：2026-11-01（Asia/Shanghai）
+>
+> 范围：汇总已验收的 payload、clean-environment、CPU consumer 和参考 AMD 证据，复核当前
+> 外部托管 revisions 的 card/license/checksum 完整性，并给出是否可以正式发布的 go/no-go。
+> 本节的原始审计不授权上传、push、deploy 或 lesson `published` 状态提升。
+> 项目负责人随后明确授权两项 artifact 从 `candidate` 提升为 `release`，但不修改 lesson 状态。
+
+### 32.1 仓库与 artifact 基线
+
+审计从分支 `M5`、HEAD `c87d4f101c1101c47167cef00eda1738dcdef956` 开始，tracked 工作树
+干净。最终选择仍为：
+
+| artifact | payload/runtime gate | 当前状态 |
+|---|---|---|
+| `rg101-fruit-pick@1.0.0` | 9-file checksum、fresh fetch/verify、L10/L12 consumer 通过 | `release` |
+| `rg101-fruit-pick-smolvla@1.0.0` | 7-file checksum、fresh fetch/verify、CPU reload、R9700 reference 5/5 + shifted 5/5 | `release` |
+| `rg101-fruit-pick-act@1.0.0` | 20,000-step/static/checksum/GPU reload 通过；closed-loop 0/5 + 0/5 | `unavailable` |
+
+ACT manifest 已从过时的“以后需要生成”修正为实际结论：本地候选完成生成，但 0/10 timeout，
+不选择、不托管。原始课程正式 20,000-step 任务模型是 SmolVLA；原始 ACT 只有 200-step smoke。
+
+### 32.2 Hugging Face read-only revision 复核
+
+2026-11-01 通过 Hub API 读取固定 revision 与默认分支：
+
+| repo/revision | API siblings/card 结果 | release 判断 |
+|---|---|---|
+| dataset `475e8c6...` | `.gitattributes` + 9 payload files；无 README/LICENSE/tag | 早期 payload upload commit |
+| dataset `eab6739...` | 有 README/dataset card、CC BY-NC 4.0 tag 与链接、ManiSkill/YCB 署名；9 个 payload 文件仍来自 `475e8c6...` 且与课程 checksum 一致 | dataset hosting gate PASS，课程 manifest 固定此 commit |
+| SmolVLA `cdf720f...` | `.gitattributes` + 7 payload files；无 README/LICENSE/NOTICE/tag | 早期 payload upload commit |
+| SmolVLA `6649cc3...` | 有 README/model card、Apache-2.0 tag 与许可链接、SmolVLA/SmolVLM2 署名、训练身份、加载方法和限制；7 个 payload 文件仍来自 `cdf720f...` 且与课程 checksum 一致 | checkpoint hosting gate PASS，课程 manifest 固定此 commit |
+
+Hub tree API 确认 dataset `eab6739...` 只在早期 payload commit 之上新增 card，没有替换
+9 个数据文件。Hugging Face 的标准 license metadata + README 许可/署名段已足够表达数据集
+许可边界；逐文件 size/SHA-256 由课程 `artifacts/manifest.json` 记录，不要求 Hub 再存一份
+重复的 hosting manifest。Hub tree API 同样确认 SmolVLA `6649cc3...` 只在早期 payload commit
+之上新增/修订 model card，没有替换 7 个 checkpoint files。该 card 已声明 Apache-2.0、
+上游模型、训练数据边界、训练身份、加载方法与限制；精确 artifact dependency 和当前 5+5
+评估证据由课程 manifest 与本文档记录，不要求在 Hub README 再完整复制。
+
+### 32.3 最终决定
+
+从材料、payload 和运行验证看，最终结论是 **RELEASED**：dataset 与 SmolVLA 的
+托管、checksum、clean-environment、consumer 和参考 AMD gates 均通过，项目负责人已明确授权
+将两项课程 artifact 从 `candidate` 提升为 `release`。标准下载不再需要
+`--allow-candidate`；ACT 继续 `unavailable`。
+
+公开 README、首页与双语 fallback 已修正过时状态：参考 AMD release acceptance 和最终
+release-readiness audit 已完成；两个托管包的 card/license/attribution/checksum gates 都已通过，
+并已正式标记为 `release`。lesson 状态保持
+8 个 `cpu-verified`、6 个
+`gpu-verified`、0 个 `planned`、0 个 `published`。
+
+### 32.4 获得授权后的必要顺序
+
+课程 manifest 已分别固定 dataset `eab6739...` 和 SmolVLA `6649cc3...`，并已将两项
+artifact status 更新为 `release`。后续若 review lesson `published` 状态，必须作为独立决定；
+artifact `release` 不自动推导 lesson `published`。
+
+独立验收材料见 `course_development/m5_release_checklist.md`。本轮没有修改训练/评估源码、
+notebook、依赖或 lesson metadata，没有执行任何外部写操作。
+
+### 32.5 最终仓库门禁
+
+最终回归通过 course validation（14 lessons、44 份本地化 Markdown、28 notebooks、49 Python
+files）、126 项 pytest、`compileall` 与 238-package `uv lock --check`。`npm ci` 安装 190
+packages，报告现有 15 项 audit 提示（4 low、1 moderate、10 high），没有自动升级依赖。普通
+与 `EDGEONE=1` VitePress build 均成功，只出现既有 500 kB chunk warning。manifest CLI 仍为
+dataset/SmolVLA `release`、ACT `unavailable`；`git diff --check`、旧状态扫描和 learner-facing
+内部编号扫描通过。

@@ -5,7 +5,8 @@ an audit ledger, not a replacement for the original license texts and not a
 grant of rights by this project. M0.4 approved the audit, and M0.5 approved the
 license boundary and dispositions reflected below.
 
-Initial audit date: 2026-08-28. M5.1 dataset candidate review: 2026-10-30.
+Initial audit date: 2026-08-28. Dataset/checkpoint candidate review: 2026-10-30.
+Final V1 release-readiness review: 2026-11-01.
 
 The four YCB objects identified below were vendored during M1.4. The two
 Datawhale template files also predate this audit. No other reviewed third-party
@@ -19,7 +20,7 @@ assets have been copied into this repository.
 | Franka Emika Panda MJCF model | `franka_fruit_pick_demo/assets/robots/franka/` at the recorded `course` baseline | Model README and MuJoCo Menagerie upstream identify the model as Apache-2.0 | Do not copy the incomplete source bundle; use the model bundled with the pinned Genesis version |
 | Source-course renders and slide exports | Both source courses at their recorded baselines | Project lead confirmed on 2026-08-28 that the course code, lectures, and teaching content are original | Original portions use MIT after migration; preserve notices for depicted or embedded third-party material |
 | Datawhale template media already in this repository | `docs/public/datawhale-logo.png`, `docs/public/learning.GIF` | Inherited template README declares CC BY-NC-SA 4.0 for the work; separate trademark permission was not found | Keep outside the project MIT boundary until Datawhale brand use is confirmed or the media is replaced |
-| Datasets, checkpoints, and training/evaluation outputs | Local source worktrees and fixed external candidates | M5.1 reviewed the non-DR fruit-pick dataset; M5.2 reviewed the matching SmolVLA payload and defined the ACT generation contract | Keep outside the repository MIT License; none is a completed RoboGenesis release until its card, license files, immutable version, manifest, and later M5 gates are complete |
+| Datasets, checkpoints, and training/evaluation outputs | Local source worktrees and fixed external releases | The non-DR fruit-pick dataset and matching SmolVLA checkpoint passed checksum, clean-environment, consumer, and reference AMD release acceptance; both pinned revisions have reviewed cards, license declarations, attribution, and usage limits; the additional ACT candidate failed closed-loop selection | Keep outside the repository MIT License; `rg101-fruit-pick@1.0.0` and `rg101-fruit-pick-smolvla@1.0.0` are approved releases, while ACT remains unavailable |
 
 The course MIT License must not be presented as relicensing any item in this
 table. Third-party terms continue to apply to third-party material.
@@ -225,7 +226,7 @@ are dependencies rather than vendored source in the current plan. Their exact
 versions and installation sources belong to M0.6-M0.7; any code later copied
 from them must first receive a file-level license review and a new entry here.
 
-### M5.1 fruit-pick dataset release candidate
+### M5.1 fruit-pick dataset release
 
 M5.1 selected the non-domain-randomized `fruit_pick` aggregation as the V1
 example-dataset candidate. It is not the similarly named `fruit_pick_dr`
@@ -241,48 +242,51 @@ relative-path-sorted `sha256sum` stream is:
 26cb09b621aa43f3abbe39ce2e55a3c161c2f89c9fe174fbd5e317bec4426f23
 ```
 
-Those files match the fixed payload at
-[`wangxun1010/fruit_pick@475e8c6ec7079c4c52b20a0221bf959acb541abd`](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd).
-That revision currently has no dataset card, license file, or license tag, so
-its public availability is not treated as a completed RoboGenesis release. A
-later immutable revision must add the reviewed card and license without
-silently replacing the selected payload, and the final manifest must record
-every file, size, and SHA-256.
+The course manifest now pins
+[`wangxun1010/fruit_pick@eab67399248de625506d43fdeb994788874a8492`](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/eab67399248de625506d43fdeb994788874a8492).
+That immutable revision contains the dataset README/card, the
+`license: cc-by-nc-4.0` metadata and license link, and ManiSkill/YCB attribution.
+The Hub tree records all nine payload files as unchanged from the earlier
+`475e8c6ec7079c4c52b20a0221bf959acb541abd` upload commit. Their sizes and
+SHA-256 values still match `artifacts/manifest.json`. A separate standalone
+LICENSE, NOTICE, or second hosting manifest is therefore not required for this
+dataset gate.
 
 The source recording was produced from
 `wangxunx/franka_fruit_pick_demo@0de3ae0df2a91acbda7f4fb537c65d9e54190527`
 with Python 3.12.3, Genesis 1.3.1, LeRobot 0.6.0, PyAV 15.1.0, and an AMD
 Radeon AI PRO R9700. The three archived recording logs confirm 100/100
 successful episodes per object and seed sequences beginning at zero. The logs
-do not contain the original shell invocation, so the future dataset card must
-label its command as reconstructed from the fixed source, defaults, metadata,
-and runtime logs rather than as an original command transcript.
+do not contain the original shell invocation, so the course provenance record
+describes any reconstructed command as reconstructed from the fixed source,
+defaults, metadata, and runtime logs rather than as an original transcript.
 
-The proposed artifact identity is `rg101-fruit-pick` version `1.0.0`, with
+The artifact identity is `rg101-fruit-pick` version `1.0.0`, with
 logical LeRobot ID `genesis/fruit_pick` and RoboGenesis dataset-schema version
 `1.0.0`. Artifact versions are immutable and independent of schema versions;
 any payload-byte change requires a new version and checksum set. Checkpoints
 must record this precise version, hosting commit, and payload-manifest SHA-256,
 not only the logical repo ID.
 
-The proposed dataset license is
+The project lead confirmed the creator identity and the following dataset license on
+2026-10-30. The dataset license is
 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/legalcode), not
 the repository MIT License. The generated trajectories, task strings, and
 course arrangement are credited to Xun Wang for RoboGenesis 101. The rendered
 video depicts ManiSkill-distributed YCB banana, lemon, plum, and bowl assets,
 whose CC BY-NC 4.0 terms require attribution and preserve the noncommercial
 restriction. The Franka model is supplied through Genesis from the MuJoCo
-Menagerie lineage and retains its separate attribution. M5.1 project-lead
-acceptance must confirm the creator and licensing authority before this
-candidate can proceed to external release.
+Menagerie lineage and retains its separate attribution. The dataset hosting
+materials are complete at the pinned `eab6739...` revision. The project lead
+authorized the course artifact status promotion to `release` on 2026-11-01.
 
-The candidate does not include people, personal data, real-robot user data,
+The release does not include people, personal data, real-robot user data,
 depth, segmentation, force/torque, tactile signals, failed episodes,
 checkpoints, logs, or evaluation output. It also has no per-episode domain
 provenance and must not support claims about known training domains, held-out
 domains, or OOD membership.
 
-### M5.2 fruit-pick checkpoint candidates
+### M5.2 fruit-pick checkpoint artifacts
 
 M5.2 defines separate V1 identities for `rg101-fruit-pick-act` and
 `rg101-fruit-pick-smolvla`, each initially versioned `1.0.0` under checkpoint
@@ -290,15 +294,17 @@ schema `1.0.0`. Both must name the M5.1 `rg101-fruit-pick` dataset version,
 immutable hosting commit, and payload-manifest SHA-256. A saved
 `dataset.repo_id=genesis/fruit_pick` string alone is not sufficient provenance.
 
-No ACT release payload currently exists. The only reviewed local ACT output is
-a 200-step smoke trained on `genesis/m3_demo_banana`; it is excluded from the
-V1 candidate. M5.2 instead freezes a 20,000-step ACT generation contract on the
-M5.1 dataset. Its exact bytes, size, checksums, hosting revision, task-level
-behavior, and final release status remain unverified until the later training
-and release gates run.
+No ACT release payload exists. The original course ACT output is a 200-step
+pipeline smoke trained on `genesis/m3_demo_banana`; it is excluded from the V1
+candidate. A separate 20,000-step ACT candidate was generated on the reviewed
+dataset and passed static, checksum, GPU reload, and open-loop audits, but it
+timed out in all five reference and all five shifted-friction closed-loop
+episodes. It was therefore not selected or hosted as a learner fallback. The
+original course model that completed the task after 20,000 steps was SmolVLA,
+not ACT.
 
-The SmolVLA payload candidate is the non-DR 20,000-step checkpoint at
-[`wangxun1010/smolvla-fruit-pick-0821@cdf720f162e6ee86dbc856cdf15c5dcd4a673221`](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221).
+The SmolVLA release is the non-DR 20,000-step checkpoint at
+[`wangxun1010/smolvla-fruit-pick-0821@6649cc34576b1bf6a7ed1310251ece8c969dfafe`](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/6649cc34576b1bf6a7ed1310251ece8c969dfafe).
 Its seven policy/configuration files contain 906,740,620 bytes. The SHA-256 of
 the relative-path-sorted `sha256sum` stream is:
 
@@ -312,10 +318,13 @@ It matches the local `smolvla_fruit_pick_0821/checkpoints/020000` output trained
 on `datasets/fruit_pick`; it does not match the historical
 `fruit_pick_dr` weight SHA-256
 `2b0483f9aaa7bd4b56a304aa6e6c1362abeaabab8e29b307047ddcb11d5b1d72`.
-The fixed payload commit has no card or license file. A later default-branch
-card declares Apache-2.0 but still lacks the complete RoboGenesis version,
-dataset-manifest identity, explicit license/notice files, and release manifest,
-so neither revision is yet treated as the final V1 release commit.
+The pinned `6649cc3...` revision contains the README/model card,
+`license: apache-2.0` metadata and license link, SmolVLA/SmolVLM2 attribution,
+training identity, load instructions, and limitations. Hub tree data confirms
+that all seven policy/configuration files are unchanged from the earlier
+`cdf720f...` payload commit, and a fresh fetch verifies the course checksums.
+A separate standalone LICENSE, NOTICE, or second hosting manifest is not
+required for this checkpoint gate.
 
 The project lead approved Apache License 2.0 on 2026-10-30 for the
 course-created checkpoint weights and packaging. LeRobot 0.6.0, the SmolVLA
@@ -324,15 +333,18 @@ checkpoint using TorchVision ResNet18
 ImageNet-1K initialization must also retain the TorchVision BSD-3-Clause
 notice. The M5.1 dataset and rendered YCB assets remain CC BY-NC 4.0 and are
 not redistributed or relicensed by an Apache-2.0 checkpoint. The model card
-must state this boundary rather than implying that the checkpoint license
-changes the data or asset terms.
+states the upstream-model and training-asset boundary and links to this NOTICE
+for the detailed course record.
 
-Neither candidate is intended for real-robot safety, human interaction,
+Neither downloadable release is intended for real-robot safety, human interaction,
 high-stakes automation, or claims of sim-to-real transfer, OOD robustness, or
-stable success rate. Historical source-course logs may be described only as
-historical evidence with their exact protocol; release claims require the
-later current-course validation gates. M5.2 performs no upload and does not
-authorize external publication.
+stable success rate. The current-course reference AMD protocol observed 5/5
+reference and 5/5 shifted-friction successes for the SmolVLA release, with
+the small-sample and provenance limits recorded in `COMPATIBILITY.md`. These
+counts do not establish a stable success rate, friction improvement, general
+robustness, OOD behavior, or sim-to-real transfer. No M5 review performed a
+new Hub upload; the project lead authorized the existing pinned artifacts to be
+marked as course releases.
 
 ## 6. Approved decisions and remaining review
 
@@ -351,9 +363,17 @@ including Xun Wang as creator and CC BY-NC 4.0 for the complete dataset
 artifact. On the same date, the project lead approved the M5.2 checkpoint
 identities, Apache-2.0 license for the course-created checkpoint portions,
 required upstream attributions, independent CC BY-NC 4.0 dataset/YCB boundary,
-model-card contract, and immutable versioning rules. These approvals do not
-make the reviewed candidates release-ready and do not authorize upload or
-external publication.
+model-card contract, and immutable versioning rules. On 2026-11-01 the project
+lead accepted the reference AMD validation and the decision to keep ACT
+unavailable. The corrected final release-readiness review confirmed that the
+dataset revision `eab6739...` and SmolVLA revision `6649cc3...` satisfy their
+card, license, attribution, and checksum gates without changing their payload
+files. Exact artifact dependency and evaluation evidence remain recorded in
+the course manifest and `COMPATIBILITY.md`; they do not need to be duplicated
+as another Hub manifest. The project lead subsequently authorized both artifact
+status promotions to `release` while explicitly leaving lesson `published`
+status unchanged. No new Hub upload, Git push, GitHub Release, or deployment was
+authorized.
 
 Datawhale trademark and template-media authorization remains to be confirmed.
 Until then, those materials are not covered by the project MIT License.

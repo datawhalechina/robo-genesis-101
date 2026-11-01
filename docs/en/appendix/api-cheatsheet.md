@@ -49,7 +49,8 @@ loads the canonical `artifacts/manifest.json` and keeps download behavior depend
 | `fetch_artifact()` | Reuse valid files and atomically fetch missing files; candidate and repair behavior require explicit opt-ins. |
 | `python scripts/fetch_artifacts.py list` | Display status, size, license, source revision, and default target. |
 | `... verify ARTIFACT_ID VERSION` | Verify the selected local target and return a nonzero exit when files are missing or invalid. |
-| `... fetch ARTIFACT_ID VERSION --allow-candidate` | Fetch a candidate baseline. Unavailable entries still fail before network access. |
+| `... fetch ARTIFACT_ID VERSION` | Fetch a release artifact. Unavailable entries fail before network access. |
+| `... fetch ARTIFACT_ID VERSION --allow-candidate` | Explicitly opt in when another manifest entry is still a candidate. |
 
 `--repair` replaces only invalid manifest-owned paths; without it, a mismatch stops before
 network access. Downloads use same-directory temporary files, streaming size/SHA-256 checks,
@@ -117,7 +118,7 @@ dependency-light until the evaluator process starts.
 | `write_l13_capstone_report()` | Write JSON and Markdown Capstone evidence from audited runs. |
 
 The course notebook defaults to the manifest's local dataset/checkpoint targets and never
-downloads their candidate payloads implicitly. An explicit Hugging Face override still
+downloads those release artifacts implicitly. An explicit Hugging Face override still
 requires an exact repository ID, 40-hex commit, and subfolder; an unresolved source remains
 unavailable rather than being replaced by an unrelated local artifact.
 
@@ -159,7 +160,7 @@ python scripts/fetch_artifacts.py --help
 | `train_policy` | ACT or SmolVLA training command wrapper; arguments after `--` pass through to LeRobot |
 | `eval_policy` | One checkpoint under one declared closed-loop condition |
 | `eval_sweep` | Multiple numbered checkpoints under a matched protocol |
-| `fetch_artifacts.py` | Manifest list, local checksum verification, and explicit candidate download/repair |
+| `fetch_artifacts.py` | Manifest list, status-aware download, local checksum verification, and explicit repair |
 | `course_validation` | Bilingual structure, metadata, links, notebooks, source safety, and repository contracts |
 
 ## Minimal scene pattern

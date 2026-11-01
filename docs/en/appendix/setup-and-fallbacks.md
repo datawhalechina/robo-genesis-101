@@ -128,30 +128,26 @@ Hugging Face mapping remains an advanced override, not a second course default.
 
 ## Versioned artifact fallback tutorial
 
-The repository manifest currently lists two downloadable **candidate** baselines and one
-unavailable entry. A candidate is an audited, immutable payload baseline; it is not an
-official course release. Inspect the status and exact default targets before downloading:
+The repository manifest currently lists two downloadable **release** artifacts and one
+unavailable ACT entry. Inspect the status and exact default targets before downloading:
 
 ```sh
 python scripts/fetch_artifacts.py list
 
 python scripts/fetch_artifacts.py fetch \
-  rg101-fruit-pick 1.0.0 \
-  --allow-candidate
+  rg101-fruit-pick 1.0.0
 
 python scripts/fetch_artifacts.py verify \
   rg101-fruit-pick 1.0.0
 
 python scripts/fetch_artifacts.py fetch \
-  rg101-fruit-pick-smolvla 1.0.0 \
-  --allow-candidate
+  rg101-fruit-pick-smolvla 1.0.0
 
 python scripts/fetch_artifacts.py verify \
   rg101-fruit-pick-smolvla 1.0.0
 ```
 
-`--allow-candidate` is a deliberate opt-in to the audited M5 baseline, not a release
-marker. The defaults are the exact roots `datasets/fruit_pick` and
+Both releases use the normal `fetch` command. The defaults are the exact roots `datasets/fruit_pick` and
 `checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model`. A custom `--target` also
 names the exact artifact root; the CLI does not append the artifact ID. Repeating `fetch`
 reuses valid files. Existing checksum mismatches stop without modification unless you
@@ -180,17 +176,19 @@ that ACT or SmolVLA was trained.
 ### Continue after skipping L12 training
 
 After both `verify` commands pass, the L13 notebook defaults to the local dataset and
-SmolVLA target above. It never downloads a candidate implicitly. If either root is absent
+SmolVLA target above. It never downloads these artifacts implicitly. If either root is absent
 or fails its consumer audit, Step 1 stops and points back to this fetch-and-verify flow.
-Downloading the SmolVLA candidate lets you audit the checkpoint/dataset match and proceed
+Downloading the SmolVLA release lets you audit the checkpoint/dataset match and proceed
 to L13's declared GPU protocol without claiming that you trained the model yourself.
 
 A successful download, checksum verification, dataset read, checkpoint load, training
 loss, or open-loop action remains below the closed-loop evidence bar. L13 is complete only
 after the required live rollouts, structured reports, and real videos pass their own
-protocol. Downloading from an empty cache and CPU consumer verification have passed. The current
-`candidate` label remains because reference AMD GPU release acceptance and the final
-release checklist/authorization are still incomplete.
+protocol. Downloading from an empty cache and CPU consumer verification have passed. The
+pinned dataset and SmolVLA revisions both include their README/card, license declaration,
+attribution, and usage limits, while the course manifest records size/SHA-256 for all nine
+dataset files and seven checkpoint files. Both hosting and release-readiness gates pass,
+and both artifacts are now formally marked `release`.
 
 ## Diagnose failures without hiding them
 

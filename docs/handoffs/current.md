@@ -1,43 +1,42 @@
 # RoboGenesis 101 当前工作交接
 
-最后核对日期：2026-10-30（Asia/Shanghai）。
+最后核对日期：2026-11-01（Asia/Shanghai）。
 
 本文件只记录新 thread 最容易丢失的当前状态、项目负责人偏好、操作陷阱、未决项与恢复顺序。
 通用规则以根目录 `AGENTS.md` 为准；课程总计划与门禁以本地
-`robo_genesis_101_course_development.plan.md` 为准；M4 逐步验收记录位于
-`course_development/m4.md`；公开运行与平台证据以 `COMPATIBILITY.md` 为准。
+`robo_genesis_101_course_development.plan.md` 为准；M4/M5 逐步验收记录位于
+`course_development/m4.md` 与 `course_development/m5.md`；公开运行与平台证据以
+`COMPATIBILITY.md` 为准。
 
 ## 1. 一句话恢复状态
 
 - M0–M4 已全部完成并通过项目负责人验收。
-- M4.6 于 2026-10-30 验收通过；M4 六个小步骤至此全部完成。
-- M5 尚未启动。只有项目负责人另行明确说“开始 `M5.1`”后，才能进入 artifact 与 V1
-  发布工作。
+- M5.1–M5.7 已完成并通过项目负责人验收；M5.8 正在收尾。
+- 项目负责人已明确授权把 `rg101-fruit-pick@1.0.0` 与
+  `rg101-fruit-pick-smolvla@1.0.0` 从 `candidate` 提升为 `release`，仓库 manifest、双语
+  教学材料和测试已同步；ACT 仍为 `unavailable`。
 - 当前 canonical 状态为 8 个 `cpu-verified`、6 个 `gpu-verified`、0 个 `planned`、
-  0 个 `published`。`verified` 不等于 `published`。
-- `docs/handoffs/current.md` 只在项目负责人准备切换 thread 时更新，不要在每个小步骤例行修改。
+  0 个 `published`。本次授权不修改 lesson 状态；`verified` 不等于 `published`。
+- `docs/handoffs/current.md` 在重大阶段边界或准备切换 thread 时更新，不要在每个小步骤例行修改。
 
 ## 2. Git 快照与工作树保护
 
-更新本文件前的快照：
+当前快照：
 
-- 当前分支：`main`；
-- 本地 HEAD：`ac4da71`，标题 `typo fixes`；
-- `origin/main` / `origin/HEAD`：同为 `ac4da71`；
-- M4 相关 tracked 提交依次包括：
-  - `15ecab7`：M4.1 先修、跨讲链接与 artifact 交接审计；
-  - `0aa73b4`：M4.2 双语讲义/notebook Markdown 与术语一致性；
-  - `4965f62`：M4.5 课程状态与公开入口同步；
-  - `1505b37`：M4.6 双语 appendix / references；
-  - `b1b36ac`：M4 兼容性记录；
-  - `ac4da71`：后续 typo 修正。
+- 当前分支：`M5`；
+- 本地 HEAD：`c87d4f1`，标题 `verification of cpu gpu smoke`；
+- `origin/main` / `origin/HEAD`：`29cdd70`，标题 `update current doc after M4`；
+- M5 tracked 提交依次包括：
+  - `0464bc3`：dataset schema、许可与版本规则；
+  - `74c8902`：ACT/SmolVLA checkpoint 记录；
+  - `d236131`：artifact manifest 与 downloader；
+  - `b383adc`：双语 fallback；
+  - `947c9ee`：README、首页、sidebar、讲义与 notebook 状态核对；
+  - `c87d4f1`：CPU/GPU smoke 与 release acceptance 记录。
 
-M4.3/M4.4 主要是运行验证和本地开发档案更新，因此不应根据 tracked commit 数量误判这两步
-没有执行。详细运行记录在 `course_development/m4.md` 与 `COMPATIBILITY.md` 第 26 节。
-
-更新本 handoff 前 tracked 工作树干净；更新后预期只有 `docs/handoffs/current.md` 是 tracked
-修改。下列 untracked 内容是已有本地配置、补丁或开发档案，必须保留，不得清理、覆盖或
-误当作新 thread 产生的垃圾：
+当前 tracked 工作树包含 M5.8 release promotion 的 manifest、双语文档、L13 notebook、测试、
+兼容性与 NOTICE 修改；这些是当前任务结果，不要清理。下列 untracked 内容是已有本地配置、
+补丁或开发档案，必须保留，不得清理、覆盖或误当作新 thread 产生的垃圾：
 
 - `.vscode/`；
 - `0001-4-cards-failure.patch`；
@@ -51,9 +50,9 @@ M4.3/M4.4 主要是运行验证和本地开发档案更新，因此不应根据 
 其中 `MIGRATION.md`、`course_development/` 和根开发计划虽然未跟踪，仍是重要开发真相源。
 普通 `git diff` 不会显示它们的修改，不要因此忽略或删除。
 
-本次 handoff 尝试读取最新 GitHub Actions 状态时，`api.github.com` 连接失败；只能确认本地
-HEAD 与 `origin/main` 一致。新 thread 如需引用最新 CI/Pages 结论，应先重新查询，不能根据
-本 handoff 猜测。
+本次没有重新查询 GitHub Actions 或 Pages 状态。本地 `M5` 分支领先 `origin/main`，且当前
+release promotion 仍是未提交工作树修改。新 thread 如需引用最新 CI/Pages 结论，应先重新
+查询，不能根据本 handoff 猜测。
 
 ## 3. M4 最终交付与公开课程状态
 
@@ -140,7 +139,9 @@ artifact，不应在新 thread 中当成可发布资源或依赖其 `/tmp` 路�
 - Franka：使用固定 Genesis 自带模型，不 vendor 旧 source-course bundle；
 - Genesis、LeRobot、论文、外部 dataset/model：继续作为引用、链接或安装依赖；
 - LingBot-VLA-v2 base、RoboTwin dataset 与 L14 companion image：不 rehost；
-- 生成 dataset/checkpoint/log/frame/video：默认不进入 Git，也没有默认再分发授权。
+- 生成 dataset/checkpoint/log/frame/video：默认不进入 Git，也没有默认再分发授权；本次明确
+  例外是已固定托管 revision、许可和 checksum 的 `rg101-fruit-pick@1.0.0` 与
+  `rg101-fruit-pick-smolvla@1.0.0` release。
 
 Datawhale 品牌和模板媒体仍是明确未决项：
 
@@ -176,31 +177,33 @@ canonical GitHub URL，不要恢复成 `../../../...`。
   `npm audit fix` 或自动升级依赖。
 - VitePress build 保留既有 large-chunk warning，但构建成功。
 
-M4.6 最终门禁：14 lessons、44 localized Markdown files、28 notebooks、45 Python files；
-114 项 pytest；compileall、238-package `uv lock --check`、`npm ci`、普通与 EdgeOne build、
-`git diff --check` 和 `git diff --cached --check` 全部通过。
+当前 M5.8 门禁：14 lessons、44 localized Markdown files、28 notebooks、49 Python files；
+126 项 pytest；compileall、238-package `uv lock --check`、`npm ci`、普通与 EdgeOne build、
+`git diff --check` 全部通过。
 
-## 9. M5 范围与启动边界
+## 9. M5 当前状态与 release 边界
 
-M5 必须逐步完成，不能把 M4 已有 evidence 当成资源发布已经完成：
+M5.1–M5.7 已逐步完成并验收，M5.8 当前已完成 artifact release promotion 的实现与本地回归，
+等待项目负责人对本步整体结果作最终验收：
 
-1. `M5.1`：示例 dataset schema、内容、许可与版本规则；
-2. `M5.2`：ACT/SmolVLA checkpoint 生成配置、许可、模型卡与版本规则；
-3. `M5.3`：artifact manifest 与 `fetch_artifacts.py` 的幂等、checksum、错误提示和目标目录；
-4. `M5.4`：使用正式发布 artifact 的双语 fallback 教程；
-5. `M5.5`：README、首页、sidebar、manifest、讲义与 notebook 状态总核对；
-6. `M5.6`：全新环境文档构建、CPU smoke 与 artifact 下载验证；
-7. `M5.7`：AMD GPU 发布验证和未运行长实验记录；
-8. `M5.8`：V1 发布清单与最终验收材料。
+- dataset：`rg101-fruit-pick@1.0.0`，状态 `release`，固定 revision
+  `eab67399248de625506d43fdeb994788874a8492`，9 个文件；
+- SmolVLA：`rg101-fruit-pick-smolvla@1.0.0`，状态 `release`，固定 revision
+  `6649cc34576b1bf6a7ed1310251ece8c969dfafe`，7 个文件；
+- ACT：`rg101-fruit-pick-act@1.0.0`，状态 `unavailable`；20,000-step payload 在冻结的
+  reference 与 shifted-friction 协议中均为 0/5 timeout，因此没有被选为 learner fallback；
+- 两项 release 使用普通 `fetch` 命令，不需要 `--allow-candidate`；下载器仍保留对其他
+  candidate 条目的通用显式 opt-in 保护；
+- L13 notebook 不隐式下载课程 artifact，只审计本地默认目标或学习者显式填写的固定来源；
+- lesson 状态继续为 8/6/0/0，不因 artifact release 自动提升为 `published`。
 
-每个拟发布 artifact 至少记录 creator/source、immutable version、size、SHA-256、license、schema、
-生成配置、hosting URL 和适用课程版本。未经项目负责人明确授权，不创建 GitHub release、
-不 push 新发布内容、不上传外部 artifact，也不把任何 lesson 改为 `published`。
+本次授权只覆盖仓库内两项 artifact 的 `candidate → release` 状态提升。它不授权创建 GitHub
+Release、push、部署 Pages、重新上传 Hugging Face 内容或修改 lesson `published` 状态。
 
 ## 10. 新 thread 恢复顺序
 
-1. 读取根 `AGENTS.md`、本文件、根开发计划的 M4/M5 部分、`course_development/m4.md` 尾部，
-   以及 `COMPATIBILITY.md` 第 26–27 节。
+1. 读取根 `AGENTS.md`、本文件、根开发计划的 M5 部分、`course_development/m5.md` 尾部、
+   `course_development/m5_release_checklist.md`，以及 `COMPATIBILITY.md` 第 32 节。
 2. 运行：
 
    ```sh
@@ -209,8 +212,9 @@ M5 必须逐步完成，不能把 M4 已有 evidence 当成资源发布已经完
    ```
 
 3. 保留第 2 节列出的所有 untracked 文件和目录。
-4. 确认 M4 已完成、M5 未启动、canonical 状态仍为 8/6/0/0。
+4. 确认 M5.1–M5.7 已验收、M5.8 正在收尾；artifact 状态为 release/unavailable/release，
+   lesson canonical 状态仍为 8/6/0/0。
 5. 如需引用 CI 状态，重新查询 GitHub Actions；不要沿用本文件未能联网确认的结果。
-6. 不要自动开始 M5；等待项目负责人明确启动 `M5.1`。
+6. 不要重做已完成的 M5 步骤；先完成 M5.8 最终验收，再等待项目负责人明确启动后续阶段。
 7. 除非项目负责人明确恢复延期项，不修改 `Robotwin-radeon-cloud` 或应用旧 companion JSONL
    patch。

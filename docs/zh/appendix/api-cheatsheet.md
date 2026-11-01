@@ -46,7 +46,8 @@ package 根目录只导出 `__version__`，helper 应从定义它的 module impo
 | `fetch_artifact()` | 复用有效文件并原子下载缺失文件；candidate 与 repair 都需要显式 opt-in。 |
 | `python scripts/fetch_artifacts.py list` | 显示状态、大小、许可、来源 revision 与默认目标。 |
 | `... verify ARTIFACT_ID VERSION` | 校验所选本地目标；文件缺失或无效时返回非零退出码。 |
-| `... fetch ARTIFACT_ID VERSION --allow-candidate` | 下载 candidate baseline；unavailable 条目仍会在网络访问前失败。 |
+| `... fetch ARTIFACT_ID VERSION` | 下载 release artifact；unavailable 条目会在网络访问前失败。 |
+| `... fetch ARTIFACT_ID VERSION --allow-candidate` | 当其他 manifest 条目仍为 candidate 时显式 opt-in。 |
 
 `--repair` 只替换无效的 manifest-owned path；不提供该参数时，mismatch 会在网络访问前停止。
 下载过程使用同目录临时文件、流式 size/SHA-256 校验和原子替换。允许 candidate 并不会把它
@@ -111,8 +112,8 @@ notebook orchestration 依赖轻量。
 | `audit_l13_evidence()` / `compare_l13_runs()` | 检查报告/视频并比较结果，不夸大因果证据。 |
 | `write_l13_capstone_report()` | 根据已审计运行写入 JSON 与 Markdown Capstone evidence。 |
 
-课程 notebook 默认使用 manifest 的本地 dataset/checkpoint target，不会隐式下载 candidate
-payload。显式 Hugging Face 覆盖项仍要求精确 repository ID、40 位十六进制 commit 和
+课程 notebook 默认使用 manifest 的本地 dataset/checkpoint target，不会隐式下载这些 release
+artifact。显式 Hugging Face 覆盖项仍要求精确 repository ID、40 位十六进制 commit 和
 subfolder；无法解析的来源保持 unavailable，不能用无关本地 artifact 替代。
 
 ## L14 隔离 helper
@@ -150,7 +151,7 @@ python scripts/fetch_artifacts.py --help
 | `train_policy` | ACT 或 SmolVLA 训练命令 wrapper；`--` 后的参数原样传给 LeRobot |
 | `eval_policy` | 在一个声明的闭环 condition 下评估一个 checkpoint |
 | `eval_sweep` | 在匹配协议下评估多个带数字编号的 checkpoint |
-| `fetch_artifacts.py` | manifest 列表、本地 checksum 校验，以及显式 candidate 下载/repair |
+| `fetch_artifacts.py` | manifest 列表、按状态下载、本地 checksum 校验与显式 repair |
 | `course_validation` | 双语结构、metadata、链接、notebook、源码安全与仓库合同 |
 
 ## 最小场景模式

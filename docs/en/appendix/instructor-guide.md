@@ -77,13 +77,12 @@ works with the full contract rather than only watching a progress bar.
 L14 needs the separate pinned companion and four W7900D GPUs for its required path. Do not
 install its stack into the core environment or advertise a CPU/single-GPU fallback.
 
-## Teaching with manifest candidate artifacts
+## Teaching with manifest release artifacts
 
-The course manifest and checksum-verifying downloader now provide two opt-in candidate
-baselines: `rg101-fruit-pick@1.0.0` and
-`rg101-fruit-pick-smolvla@1.0.0`. They are audited inputs, not official releases; the ACT
-entry remains unavailable. Before class, use `python scripts/fetch_artifacts.py list`, then
-the explicit `fetch ... --allow-candidate` and `verify` commands in the
+The course manifest and checksum-verifying downloader provide two release artifacts:
+`rg101-fruit-pick@1.0.0` and `rg101-fruit-pick-smolvla@1.0.0`. The ACT entry remains
+unavailable. Before class, use `python scripts/fetch_artifacts.py list`, then the normal
+`fetch` and `verify` commands in the
 [fallback tutorial](setup-and-fallbacks.md#versioned-artifact-fallback-tutorial). Record:
 
 - creator and source;
@@ -99,8 +98,8 @@ but grade that route as provided-data analysis rather than L09 completion. Pre-s
 SmolVLA checkpoint can support L13 artifact audit and the closed-loop protocol, but it is
 not evidence that learners completed L12 training. Download, verification, training loss,
 and open-loop reload are never substitutes for closed-loop reports and videos. Keep the
-candidate label visible, and never rehost the LingBot-VLA-v2 base model, RoboTwin dataset,
-or L14 image as a convenience copy.
+release identity and immutable revision visible, and never rehost the LingBot-VLA-v2 base
+model, RoboTwin dataset, or L14 image as a convenience copy.
 
 ## Lab operating pattern
 

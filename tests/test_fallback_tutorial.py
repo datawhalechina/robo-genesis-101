@@ -57,16 +57,16 @@ def test_bilingual_fallback_tutorial_matches_the_artifact_manifest() -> None:
     assert _shell_blocks(en) == _shell_blocks(zh)
     assert len(_shell_blocks(en)) == 2
     for artifact in (dataset, checkpoint):
-        assert artifact["status"] == "candidate"
+        assert artifact["status"] == "release"
         assert artifact["id"] in en and artifact["id"] in zh
         assert artifact["version"] in en and artifact["version"] in zh
         assert artifact["default_target"] in en and artifact["default_target"] in zh
     assert act["status"] == "unavailable"
     assert "ACT entry is `unavailable`" in en
     assert "ACT 条目状态为\n`unavailable`" in zh
-    assert "--allow-candidate" in en and "--allow-candidate" in zh
-    assert "not an official course release" in _normalized(en)
-    assert "不是课程正式发布件" in _normalized(zh)
+    assert "--allow-candidate" not in en and "--allow-candidate" not in zh
+    assert "formally marked `release`" in _normalized(en)
+    assert "正式标记为 `release`" in _normalized(zh)
 
 
 def test_fallback_tutorial_preserves_lesson_claim_boundaries() -> None:
@@ -96,7 +96,7 @@ def test_fallback_tutorial_preserves_lesson_claim_boundaries() -> None:
         assert internal_milestone not in zh
 
 
-def test_l13_defaults_to_manifest_targets_without_implicit_candidate_downloads() -> None:
+def test_l13_defaults_to_manifest_targets_without_implicit_artifact_downloads() -> None:
     manifest = json.loads(_read("artifacts/manifest.json"))
     artifacts = {item["id"]: item for item in manifest["artifacts"]}
     dataset = artifacts["rg101-fruit-pick"]
@@ -119,5 +119,5 @@ def test_l13_defaults_to_manifest_targets_without_implicit_candidate_downloads()
     zh_l13 = _read("docs/zh/lessons/l13-closed-loop-evaluation-and-capstone.md")
     assert "future versioned dataset and checkpoint release" not in en_l12
     assert "未来带 checksum" not in zh_l12
-    assert "never downloads these candidates implicitly" in en_l13
-    assert "不会隐式下载这些 candidate" in zh_l13
+    assert "never downloads these release artifacts implicitly" in en_l13
+    assert "不会隐式下载这些 release artifact" in zh_l13

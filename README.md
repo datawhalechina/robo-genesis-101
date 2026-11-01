@@ -5,11 +5,15 @@
 > **项目状态：Alpha / 发布前集成阶段。** `course.json` 当前包含 8 个 `cpu-verified` 和
 > 6 个 `gpu-verified` 讲次，0 个 `planned`、0 个 `published`。14 讲均已达到各自声明的验证
 > 状态。`rg101-fruit-pick@1.0.0` 数据集和 `rg101-fruit-pick-smolvla@1.0.0`
-> checkpoint 已冻结候选身份、版本、许可与逐文件 checksum manifest，并提供显式
-> `--allow-candidate` 的下载/校验流程及双语本地消费路径。全新环境下载、文档构建、CPU smoke
-> 与消费者验证已经完成。两者仍是 `candidate`，ACT artifact 仍为 `unavailable`，都不是正式
-> release；参考 AMD GPU release acceptance 和最终 V1 清单/授权尚未完成，因此不提前标记为
-> `published`。
+> checkpoint 已冻结正式 release 身份、版本、许可与逐文件 checksum manifest，并提供
+> 标准下载/校验流程及双语本地消费路径。全新环境下载、文档构建、CPU smoke 与消费者
+> 验证已经完成。两者现为 `release`，ACT artifact 仍为 `unavailable`。参考 AMD GPU release
+> acceptance 和最终 V1 发布就绪审计已经完成。数据集
+> `eab6739...` 和 SmolVLA `6649cc3...` 两个固定 revisions 均已包含 README/card、
+> 许可声明（dataset 为 CC BY-NC 4.0，checkpoint 为 Apache-2.0）、上游/第三方署名和使用边界；
+> 9 个 dataset 文件和 7 个 checkpoint
+> 文件与课程逐文件 checksum 一致。项目负责人已授权两项 artifact 状态提升为
+> `release`；lesson `published` 状态仍保持不变，因为这是需要单独 review 的另一层状态。
 > L01–L07 已通过各自的 CPU clean-kernel 验证，
 > 状态为 `cpu-verified`；这些讲次的附加 AMD 路径也已在参考 R9700 环境按各自合同通过。
 > L08 已通过双语 CPU 数值路径、CPU+EGL 和参考 R9700 AMD+EGL 的脚本化专家验证；L09
@@ -35,9 +39,10 @@ RoboGenesis 101 是一门 Datawhale 开源课程，面向具备 Python 基础、
 - English course: <https://datawhalechina.github.io/robo-genesis-101/en/>
 
 在线站点已经提供 L01–L14 的双语讲义和 notebook。当前所有讲次都已达到验证状态；课程仍处于
-Alpha，不是因为仍有 `planned` 讲次，而是因为已提供 manifest、checksum downloader 和
-[双语 fallback 路径](docs/zh/appendix/setup-and-fallbacks.md)的数据集/checkpoint 仍为
-`candidate`。全新环境验收已经完成；参考 AMD GPU 与最终发布验收尚未完成。
+Alpha，不是因为仍有 `planned` 讲次或 artifact 未发布，而是因为 lesson
+`published` 状态尚未单独 review。数据集与 checkpoint 已通过 manifest、checksum downloader、
+[双语 fallback 路径](docs/zh/appendix/setup-and-fallbacks.md)、全新环境和参考 AMD GPU 验收，现已正式
+标记为 `release`。
 
 ## 适合谁
 

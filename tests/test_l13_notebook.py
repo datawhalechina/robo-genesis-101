@@ -187,7 +187,7 @@ def test_l13_notebook_preflight_requires_local_manifest_targets_without_download
 
     def unexpected_snapshot_download(**kwargs) -> str:
         calls.append(kwargs)
-        raise AssertionError("the notebook default must not download course candidates")
+        raise AssertionError("the notebook default must not download course artifacts")
 
     fake_hub.snapshot_download = unexpected_snapshot_download  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "huggingface_hub", fake_hub)

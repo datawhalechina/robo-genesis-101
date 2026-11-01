@@ -411,7 +411,7 @@ H.264 文件通常更容易播放，同时要求帧的宽高为偶数。文件�
 
 配套 notebook 按照这条证据顺序提供 7 个编号步骤。第 1–3 步审计运行环境、数据集和 checkpoint
 来源，冻结协议并预先声明比较条件，全程不会启动 Genesis。第 1 步审计本地存储中已经存在的
-manifest 默认目标，不会下载任何 candidate；根目录缺失时，它会停止并提示学习者执行仓库的
+manifest 默认目标，不会下载任何 release artifact；根目录缺失时，它会停止并提示学习者执行仓库的
 fetch 与 verify 流程。第 4 步会再次检查这些本地输入，再执行 5 回合参考条件评估。第 5 步审计
 逐回合记录与视频；希望继续 Capstone 的学习者再运行第 6 步完成 matched held-out 比较，并运行
 第 7 步生成结论范围明确的报告。每项实验选择都直接出现在配置单元中，运行评估 cell 本身就是
@@ -560,15 +560,15 @@ Capstone 从一个策略问题开始，而不是从一份命令检查清单开�
 ::: tip Manifest 默认数据集与 checkpoint
 课程 manifest 把 `rg101-fruit-pick@1.0.0` 绑定到精确本地根目录
 `datasets/fruit_pick`，并把 `rg101-fruit-pick-smolvla@1.0.0` 绑定到
-`checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model`。两个条目当前都是 candidate，
-不是正式发布件，下载时必须显式使用 `--allow-candidate`。启动 notebook 前先按照
+`checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model`。两个条目都是正式 release，
+直接使用普通 manifest `fetch` 命令即可。启动 notebook 前先按照
 [fallback 教程](../appendix/setup-and-fallbacks.md#版本化-artifact-fallback-教程)准备文件，
 再运行 manifest 的 `verify` 命令。
 
-notebook 不会隐式下载这些 candidate。`CONFIG['checkpoint'] = None` 会选择上述本地 SmolVLA
+notebook 不会隐式下载这些 release artifact。`CONFIG['checkpoint'] = None` 会选择上述本地 SmolVLA
 target；dataset 或 checkpoint 缺失都会导致 preflight 失败。显式填写
 `CONFIG['checkpoint']` 可以改用另一个本地路径或有意固定的 Hugging Face 来源，但必须同步更新
-与该 checkpoint 匹配的数据集 identity 和本地 root。使用 candidate 既不能证明由自己训练，也
+与该 checkpoint 匹配的数据集 identity 和本地 root。使用 release 既不能证明由自己训练，也
 不能证明闭环成功。
 :::
 
@@ -720,11 +720,10 @@ preflight、audit、rollout 和 report cells 中收集完整版本字段、特�
   [Genesis World 1.3.3 on PyPI](https://pypi.org/project/genesis-world/1.3.3/)——仿真器文档和课程使用的
   确切版本。
 - [RoboGenesis 101 artifact manifest](https://github.com/datawhalechina/robo-genesis-101/blob/main/artifacts/manifest.json)——
-  L13 fallback 使用的 candidate dataset/checkpoint identity、不可变来源 revision、精确本地
+  L13 fallback 使用的 release dataset/checkpoint identity、不可变来源 revision、精确本地
   target、许可、大小与 checksum。
 - [RoboGenesis 101 artifact downloader](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/artifact_fetch.py)——
-  显式 candidate opt-in、本地校验、原子下载与 repair 行为；notebook 本身不会下载课程
-  candidate。
+  按状态下载、本地校验、原子下载与 repair 行为；notebook 本身不会下载课程 artifact。
 - [RoboGenesis 101 任务判据](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/grasp_demo.py)、
   [单 checkpoint 评估器](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_policy.py)、
   [checkpoint sweep](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_sweep.py) 和

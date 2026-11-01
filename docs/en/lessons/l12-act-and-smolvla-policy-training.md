@@ -769,15 +769,15 @@ run**; do not invent its curve, duration, memory use, or checkpoint quality.
 Learners without training hardware can still complete the conceptual checks,
 dataset gate, and dry-run. The
 [versioned artifact fallback tutorial](../appendix/setup-and-fallbacks.md#versioned-artifact-fallback-tutorial)
-shows how to fetch and verify the `rg101-fruit-pick@1.0.0` dataset candidate,
+shows how to fetch and verify the `rg101-fruit-pick@1.0.0` dataset release,
 then keep `RG101_RUN_SMOKE=0` while running those checks. That route uses
 provided data and does not complete L09 collection or the L12 GPU training lab.
 
 The same tutorial can stage the `rg101-fruit-pick-smolvla@1.0.0` checkpoint
-candidate at L13's default local path. Using it lets you audit the checkpoint
+release at L13's default local path. Using it lets you audit the checkpoint
 and continue to the closed-loop protocol without claiming that you trained the
-model yourself. Both candidates require explicit `--allow-candidate`; they are
-not official releases. ACT remains unavailable. Checksum success, a dataset
+model yourself. Both artifacts use the normal manifest `fetch` command and are
+official course releases. ACT remains unavailable. Checksum success, a dataset
 gate, dry-run, reload, or open-loop action still does not establish policy
 quality or closed-loop task success.
 

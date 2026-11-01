@@ -118,30 +118,26 @@ L13 仍支持显式填写 commit 固定的 Hugging Face 来源，但课程默认
 
 ## 版本化 artifact fallback 教程
 
-仓库 manifest 当前列出两个可下载的 **candidate** baseline，以及一个不可用条目。candidate
-表示经过审计、身份不可变的 payload baseline，并不是课程正式发布件。下载前先查看状态与精确
-默认目标：
+仓库 manifest 当前列出两个可下载的正式 **release**，以及一个不可用的 ACT 条目。
+下载前可先查看状态与精确默认目标：
 
 ```sh
 python scripts/fetch_artifacts.py list
 
 python scripts/fetch_artifacts.py fetch \
-  rg101-fruit-pick 1.0.0 \
-  --allow-candidate
+  rg101-fruit-pick 1.0.0
 
 python scripts/fetch_artifacts.py verify \
   rg101-fruit-pick 1.0.0
 
 python scripts/fetch_artifacts.py fetch \
-  rg101-fruit-pick-smolvla 1.0.0 \
-  --allow-candidate
+  rg101-fruit-pick-smolvla 1.0.0
 
 python scripts/fetch_artifacts.py verify \
   rg101-fruit-pick-smolvla 1.0.0
 ```
 
-`--allow-candidate` 是对已审计 M5 baseline 的主动 opt-in，不是 release 标记。两个默认精确
-根目录分别是 `datasets/fruit_pick` 与
+两个 release 都直接使用普通 `fetch` 命令。默认精确根目录分别是 `datasets/fruit_pick` 与
 `checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model`。自定义 `--target` 同样表示
 artifact 的精确根目录，CLI 不会再追加 artifact ID。重复执行 `fetch` 会复用有效文件；已有文件
 checksum 不匹配时默认停止且不修改，只有显式添加 `--repair` 才会替换。ACT 条目状态为
@@ -167,14 +163,16 @@ export RG101_RUN_SMOKE=0
 ### 跳过 L12 训练后继续
 
 两条 `verify` 都通过后，L13 notebook 默认使用上述本地 dataset 与 SmolVLA target，不会隐式
-下载 candidate。任何一个根目录缺失或消费者审计失败时，第 1 步都会停止，并指回这套 fetch 与
-verify 流程。下载 SmolVLA candidate 后，可以审计 checkpoint/dataset 匹配关系并继续 L13
+下载这些 artifact。任何一个根目录缺失或消费者审计失败时，第 1 步都会停止，并指回这套 fetch 与
+verify 流程。下载 SmolVLA release 后，可以审计 checkpoint/dataset 匹配关系并继续 L13
 声明的 GPU 协议，但不能声称模型由自己训练。
 
 下载成功、checksum 通过、数据集可读、checkpoint 可加载、training loss 或 open-loop action
 都没有达到闭环证据门槛。只有规定的实时 rollout、结构化报告与真实视频通过各自协议后，才算
-完成 L13。全新 cache 下载与 CPU 消费验收已经通过；当前仍保留 `candidate` 标签，是因为参考
-AMD GPU release acceptance 与最终发布清单/授权尚未完成。
+完成 L13。全新 cache 下载与 CPU 消费验收已经通过。数据集和 SmolVLA 固定 revisions
+都已包含 README/card、许可声明、署名和使用边界，课程 manifest 也已分别记录
+9 个 dataset 文件和 7 个 checkpoint 文件的 size/SHA-256。两项托管与发布就绪门禁
+均已通过，现已正式标记为 `release`。
 
 ## 在不隐藏错误的前提下诊断
 

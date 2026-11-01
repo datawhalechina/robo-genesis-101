@@ -185,9 +185,11 @@ def test_public_release_status_and_sidebar_follow_the_m5_contract() -> None:
         "rg101-fruit-pick@1.0.0",
         "rg101-fruit-pick-smolvla@1.0.0",
         "checksum",
-        "--allow-candidate",
-        "`candidate`",
+        "`release`",
         "`unavailable`",
+        "eab6739",
+        "6649cc3",
+        "CC BY-NC 4.0",
     )
     stale_claims = (
         "M5 的版本化 artifact 与发布验收尚未完成",
@@ -195,6 +197,25 @@ def test_public_release_status_and_sidebar_follow_the_m5_contract() -> None:
         "the versioned artifacts and clean-environment release acceptance belong to M5",
         "versioned datasets/checkpoints, download verification, and clean-environment "
         "release acceptance",
+        "参考 AMD GPU release acceptance 和最终 V1 清单/授权尚未完成",
+        "参考 AMD GPU 与最终发布验收尚未完成",
+        "Reference AMD GPU release acceptance and the final V1 checklist/authorization "
+        "remain incomplete",
+        "reference AMD GPU and final release acceptance are still incomplete",
+        "当前固定托管 revisions 仍缺少完整 card",
+        "the pinned hosting revisions still lack the complete card",
+        "剩余发布阻断是 SmolVLA model card",
+        "The remaining release blockers are the SmolVLA model card",
+        "the incomplete SmolVLA provenance/evaluation card",
+        "两者仍是 `candidate`",
+        "两个条目当前都是 candidate",
+        "必须显式使用 `--allow-candidate`",
+        "状态提升尚未获得授权",
+        "Both remain `candidate`",
+        "Both entries are currently candidates",
+        "require explicit `--allow-candidate`",
+        "none is a formal release",
+        "status promotion has not been authorized",
     )
 
     for locale, paths in public_entries.items():
@@ -220,6 +241,7 @@ def test_public_release_status_and_sidebar_follow_the_m5_contract() -> None:
                     "全新环境下载",
                     "参考 AMD GPU",
                     "最终 V1",
+                    "项目负责人已授权两项 artifact",
                 ):
                     assert marker in normalized, (path, marker)
             else:
@@ -228,10 +250,10 @@ def test_public_release_status_and_sidebar_follow_the_m5_contract() -> None:
                     "6 `gpu-verified`",
                     "0 `planned`",
                     "0 `published`",
-                    "none is a formal release",
                     "fresh environment",
                     "Reference AMD GPU",
                     "final V1",
+                    "authorized both artifact status promotions",
                 ):
                     assert marker in normalized, (path, marker)
 

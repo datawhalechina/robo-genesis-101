@@ -71,13 +71,12 @@ trademark grant.
 ## External datasets, checkpoints, and models
 
 The following references remain externally hosted and are not vendored in Git. The first
-two are immutable source revisions for manifest-owned M5 candidates; using the course CLI
-still requires explicit candidate opt-in and does not make them official releases.
+two are manifest-owned releases pinned to immutable source revisions.
 
 | Material | Pinned reference | Redistribution decision |
 |---|---|---|
-| L13 fruit-pick dataset candidate | [Hugging Face dataset revision `475e8c6...`](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/475e8c6ec7079c4c52b20a0221bf959acb541abd) | `rg101-fruit-pick@1.0.0`; manifest CLI with `--allow-candidate`; not vendored or an official release |
-| L13 SmolVLA checkpoint candidate | [Hugging Face model revision `cdf720f...`](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/cdf720f162e6ee86dbc856cdf15c5dcd4a673221) | `rg101-fruit-pick-smolvla@1.0.0`; manifest CLI with `--allow-candidate`; not vendored or an official release |
+| L13 fruit-pick dataset release | [Hugging Face dataset revision `eab6739...`](https://huggingface.co/datasets/wangxun1010/fruit_pick/tree/eab67399248de625506d43fdeb994788874a8492) | `rg101-fruit-pick@1.0.0`; includes the README/dataset card and CC BY-NC 4.0 declaration; directly downloadable through the manifest CLI; not vendored |
+| L13 SmolVLA checkpoint release | [Hugging Face model revision `6649cc3...`](https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/tree/6649cc34576b1bf6a7ed1310251ece8c969dfafe) | `rg101-fruit-pick-smolvla@1.0.0`; includes the README/model card and Apache-2.0 declaration; directly downloadable through the manifest CLI; not vendored |
 | SmolVLA base | [revision `c83c316...`](https://huggingface.co/lerobot/smolvla_base/tree/c83c3163b8ca9b7e67c509fffd9121e66cb96205) | Local pinned snapshot for verified training; not rehosted |
 | SmolVLM2 base | [revision `7b375e1...`](https://huggingface.co/HuggingFaceTB/SmolVLM2-500M-Video-Instruct/tree/7b375e1b73b11138ff12fe22c8f2822d8fe03467) | Local pinned snapshot for verified training; not rehosted |
 | RoboTwin dataset | [revision `a967b85...`](https://huggingface.co/datasets/TianxingChen/RoboTwin2.0/tree/a967b852afa21a9cbf19a198f7e653109042e87c) | L14 external input; not rehosted |
@@ -85,8 +84,8 @@ still requires explicit candidate opt-in and does not make them official release
 
 `artifacts/manifest.json` records creator, source data/base model provenance, license,
 immutable version, size, SHA-256, hosting revision, generation configuration, and dependency
-identity for the two candidates. Clean-environment download acceptance and external release
-authorization remain later M5 gates.
+identity for the two releases. Clean-environment and reference AMD release acceptance have
+passed.
 
 ## L14 companion sources
 

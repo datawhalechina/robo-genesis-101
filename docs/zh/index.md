@@ -27,11 +27,15 @@ features:
 
 > 当前 14 讲包含 8 个 `cpu-verified` 和 6 个 `gpu-verified`，0 个 `planned`、0 个
 > `published`。全部讲次均已达到各自验证状态。`rg101-fruit-pick@1.0.0` 数据集和
-> `rg101-fruit-pick-smolvla@1.0.0` checkpoint 已冻结候选身份、版本、许可与逐文件 checksum
-> manifest，并提供显式 `--allow-candidate` 的下载/校验流程及双语本地消费路径。全新环境下载、
-> 文档构建、CPU smoke 与消费者验证已经完成。两者仍是 `candidate`，ACT artifact 仍为
-> `unavailable`，都不是正式 release；参考 AMD GPU release acceptance 和最终 V1 清单/授权
-> 尚未完成，因此不提前标记为 `published`。
+> `rg101-fruit-pick-smolvla@1.0.0` checkpoint 已冻结正式 release 身份、版本、许可与逐文件 checksum
+> manifest，并提供标准下载/校验流程及双语本地消费路径。全新环境下载、文档构建、CPU smoke
+> 与消费者验证已经完成。两者现为 `release`，ACT artifact 仍为 `unavailable`。参考 AMD GPU
+> release acceptance 和最终 V1 发布就绪
+> 审计已经完成。数据集 `eab6739...` 和 SmolVLA `6649cc3...` 两个固定 revisions
+> 均已包含 README/card、许可声明（dataset 为 CC BY-NC 4.0，checkpoint 为 Apache-2.0）、
+> 上游/第三方署名和使用边界；9 个 dataset 文件和
+> 7 个 checkpoint 文件与课程逐文件 checksum 一致。项目负责人已授权两项 artifact 状态
+> 提升为 `release`；lesson `published` 状态仍保持不变，因为它需要单独 review。
 > L01–L07 已通过各自的 CPU clean-kernel 验证，状态均为
 > `cpu-verified`；这些讲次的
 > 附加 AMD 路径也已在参考 R9700 环境按各自合同通过。L08 已通过双语 CPU 数值路径、

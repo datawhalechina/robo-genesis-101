@@ -4,16 +4,20 @@
 
 > **Project status: Alpha / pre-release integration.** `course.json` currently contains
 > 8 `cpu-verified` and 6 `gpu-verified` lessons, with 0 `planned` and 0 `published`.
-> All 14 lessons have reached their declared verification status. The candidate
+> All 14 lessons have reached their declared verification status. The release
 > identity, version, license, and per-file checksum manifest are frozen for the
 > `rg101-fruit-pick@1.0.0` dataset and the
-> `rg101-fruit-pick-smolvla@1.0.0` checkpoint, and now provide an explicit
-> `--allow-candidate` download/verification workflow plus bilingual local consumption
-> paths. Both remain `candidate`, while the ACT artifact remains `unavailable`; none
-> is a formal release. Installation, artifact download, documentation builds, CPU smoke,
+> `rg101-fruit-pick-smolvla@1.0.0` checkpoint, with a standard download/verification
+> workflow plus bilingual local consumption paths. Both are now `release`, while the ACT
+> artifact remains `unavailable`. Installation, artifact download, documentation builds, CPU smoke,
 > and consumer verification in a fresh environment are complete. Reference AMD GPU
-> release acceptance and the final
-> V1 checklist/authorization remain incomplete, so no lesson is marked `published` yet.
+> release acceptance and the final V1 release-readiness audit are also complete. The pinned
+> dataset revision `eab6739...` and SmolVLA revision `6649cc3...` both include their
+> README/card, license declaration (CC BY-NC 4.0 for the dataset and Apache-2.0 for the
+> checkpoint), upstream or third-party attribution, and usage limits.
+> All nine dataset files and seven checkpoint files still match the course's per-file
+> checksums. The project lead authorized both artifact status promotions to `release`.
+> Lesson `published` status remains unchanged because it requires a separate review.
 > L01–L07 are `cpu-verified`
 > after their clean-kernel CPU verification; their additional AMD paths also passed
 > their respective contracts on the reference R9700. L08 is `gpu-verified` after its
@@ -45,11 +49,12 @@ The course follows a concept–code–experiment–evidence loop: lectures expla
 - 中文课程：<https://datawhalechina.github.io/robo-genesis-101/zh/>
 
 The online site now provides the bilingual lectures and notebooks for L01–L14. Every
-lesson has reached a verified status. The course remains Alpha not because any lesson
-is `planned`, but because the datasets/checkpoints exposed through the manifest,
+lesson has reached a verified status. The course remains Alpha not because any lesson is
+`planned` or an artifact is unreleased, but because lesson `published` status has not yet
+received its separate review. The dataset and checkpoint exposed through the manifest,
 checksum downloader, and [bilingual fallback paths](docs/en/appendix/setup-and-fallbacks.md)
-remain `candidate`. Verification in a fresh environment is complete, while reference AMD GPU
-and final release acceptance are still incomplete.
+have passed fresh-environment, reference AMD GPU, card, license, attribution, and checksum
+gates and are now formally marked `release`.
 
 ## Audience and prerequisites
 

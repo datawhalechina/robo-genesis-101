@@ -7,7 +7,7 @@
       "id": "rg101-fruit-pick",
       "version": "1.0.0",
       "kind": "dataset",
-      "status": "candidate",
+      "status": "release",
       "schema_version": "1.0.0",
       "creator": "Xun Wang for the RoboGenesis 101 course",
       "license": {
@@ -19,8 +19,8 @@
         "provider": "huggingface",
         "repo_type": "dataset",
         "repo_id": "wangxun1010/fruit_pick",
-        "revision": "475e8c6ec7079c4c52b20a0221bf959acb541abd",
-        "base_url": "https://huggingface.co/datasets/wangxun1010/fruit_pick/resolve/475e8c6ec7079c4c52b20a0221bf959acb541abd"
+        "revision": "eab67399248de625506d43fdeb994788874a8492",
+        "base_url": "https://huggingface.co/datasets/wangxun1010/fruit_pick/resolve/eab67399248de625506d43fdeb994788874a8492"
       },
       "payload": {
         "size": 505224976,
@@ -127,8 +127,8 @@
       ],
       "generation": {
         "source_repository": "wangxunx/robo-genesis-101",
-        "source_revision": "0464bc308fe0a9bdd5406091e65eb493405e1f2d",
-        "summary": "Generation contract dry-run only; no V1 ACT payload, hosting revision, checksum, or task-performance result exists yet.",
+        "source_revision": "947c9ee8a92e3b1c94f59b77d5f09006006b84a6",
+        "summary": "The frozen 20,000-step ACT candidate was generated and audited locally, but reference and shifted-friction closed-loop validation both finished 0/5; the payload was not selected or hosted as a V1 fallback.",
         "configuration": {
           "lerobot": "0.6.0",
           "steps": 20000,
@@ -143,16 +143,25 @@
           "backbone": "ResNet18_Weights.IMAGENET1K_V1",
           "backbone_url": "https://download.pytorch.org/models/resnet18-f37072fd.pth",
           "backbone_size": 46830571,
-          "backbone_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec"
+          "backbone_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+          "local_payload_manifest_sha256": "604a47aa36adb63e052d0045ce9315b987504f1abe63caddc6fc78f2ac8847f7",
+          "release_validation": {
+            "reference_successes": 0,
+            "reference_episodes": 5,
+            "shifted_friction_ratio": 0.9,
+            "shifted_successes": 0,
+            "shifted_episodes": 5,
+            "termination": "timeout"
+          }
         }
       },
-      "unavailable_reason": "The only audited ACT output is a 200-step smoke trained on a different dataset; V1 requires later 20,000-step generation and release validation."
+      "unavailable_reason": "The original course ACT output was only a 200-step smoke used as a pipeline check. A separate 20,000-step ACT candidate was generated for V1 review, but it timed out in all 5 reference and all 5 shifted-friction episodes, so it was not selected or hosted as a learner fallback."
     },
     {
       "id": "rg101-fruit-pick-smolvla",
       "version": "1.0.0",
       "kind": "checkpoint",
-      "status": "candidate",
+      "status": "release",
       "schema_version": "1.0.0",
       "creator": "Xun Wang for the RoboGenesis 101 course",
       "license": {
@@ -164,8 +173,8 @@
         "provider": "huggingface",
         "repo_type": "model",
         "repo_id": "wangxun1010/smolvla-fruit-pick-0821",
-        "revision": "cdf720f162e6ee86dbc856cdf15c5dcd4a673221",
-        "base_url": "https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/resolve/cdf720f162e6ee86dbc856cdf15c5dcd4a673221"
+        "revision": "6649cc34576b1bf6a7ed1310251ece8c969dfafe",
+        "base_url": "https://huggingface.co/wangxun1010/smolvla-fruit-pick-0821/resolve/6649cc34576b1bf6a7ed1310251ece8c969dfafe"
       },
       "payload": {
         "size": 906740620,

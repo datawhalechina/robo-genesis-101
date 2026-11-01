@@ -484,7 +484,7 @@ The companion notebook mirrors this evidence order as seven numbered steps.
 Steps 1–3 audit the environment, dataset, and checkpoint source, freeze the
 protocol, and predeclare the comparison without starting Genesis. Step 1 audits
 the manifest default targets already present on local storage. It does not
-download either candidate; when a root is absent, it stops and directs the
+download either release artifact; when a root is absent, it stops and directs the
 learner to the repository fetch-and-verify flow. Step 4 rechecks those local
 inputs before performing the five-episode Reference action. Step 5 audits the
 rows and videos. Learners who continue the Capstone then run Step 6 for the
@@ -655,18 +655,17 @@ rollouts, checkpoint loading cannot become a task-performance claim.
 The course manifest binds `rg101-fruit-pick@1.0.0` to the exact local root
 `datasets/fruit_pick` and `rg101-fruit-pick-smolvla@1.0.0` to
 `checkpoints/rg101-fruit-pick-smolvla/1.0.0/pretrained_model`. Both entries are
-currently candidates, not official releases, and require explicit
-`--allow-candidate` when fetched. Follow the
+official releases and use the normal manifest `fetch` command. Follow the
 [fallback tutorial](../appendix/setup-and-fallbacks.md#versioned-artifact-fallback-tutorial)
 before starting the notebook, then run the manifest `verify` commands.
 
-The notebook never downloads these candidates implicitly. Leaving
+The notebook never downloads these release artifacts implicitly. Leaving
 `CONFIG['checkpoint']` as `None` selects the local SmolVLA target above; a
 missing dataset or checkpoint is a preflight failure. Setting
 `CONFIG['checkpoint']` explicitly can select a
 different local path or an intentionally pinned Hugging Face source, but the
 dataset identity and local root must then be updated to match that checkpoint.
-Using the candidate proves neither that you trained it nor that it succeeds in
+Using the release proves neither that you trained it nor that it succeeds in
 closed loop.
 :::
 
@@ -844,11 +843,11 @@ four-W7900 profile and is not a dependency of the core course.
   and [Genesis World 1.3.3 on PyPI](https://pypi.org/project/genesis-world/1.3.3/)
   — simulator documentation and the exact course version.
 - [RoboGenesis 101 artifact manifest](https://github.com/datawhalechina/robo-genesis-101/blob/main/artifacts/manifest.json)
-  — candidate dataset/checkpoint identities, immutable source revisions, exact
+  — release dataset/checkpoint identities, immutable source revisions, exact
   local targets, licenses, sizes, and checksums used by the L13 fallback path.
 - [RoboGenesis 101 artifact downloader](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/artifact_fetch.py)
-  — explicit candidate opt-in, local verification, atomic download, and repair
-  behavior; the notebook itself does not fetch course candidates.
+  — status-aware fetching, local verification, atomic download, and repair
+  behavior; the notebook itself does not fetch course artifacts.
 - [RoboGenesis 101 task predicate](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/grasp_demo.py),
   [single-checkpoint evaluator](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_policy.py),
   [checkpoint sweep](https://github.com/datawhalechina/robo-genesis-101/blob/main/src/robo_genesis/eval_sweep.py),

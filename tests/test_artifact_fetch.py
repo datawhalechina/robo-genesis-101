@@ -115,7 +115,7 @@ def _install_fake_urlopen(monkeypatch, root: Path) -> list[str]:
     return calls
 
 
-def test_repository_manifest_freezes_candidate_and_unavailable_identities() -> None:
+def test_repository_manifest_freezes_release_and_unavailable_identities() -> None:
     manifest = load_artifact_manifest(MANIFEST_PATH)
 
     assert manifest.schema_version == "1.0.0"
@@ -127,11 +127,15 @@ def test_repository_manifest_freezes_candidate_and_unavailable_identities() -> N
     ]
 
     dataset = manifest.find("rg101-fruit-pick", "1.0.0")
-    assert dataset.status == "candidate"
+    assert dataset.status == "release"
     assert dataset.payload is not None
     assert dataset.payload.size == 505_224_976
     assert dataset.payload.manifest_sha256 == (
         "26cb09b621aa43f3abbe39ce2e55a3c161c2f89c9fe174fbd5e317bec4426f23"
+    )
+    assert dataset.source is not None
+    assert dataset.source.revision == (
+        "eab67399248de625506d43fdeb994788874a8492"
     )
 
     act = manifest.find("rg101-fruit-pick-act", "1.0.0")
@@ -139,9 +143,18 @@ def test_repository_manifest_freezes_candidate_and_unavailable_identities() -> N
     assert act.payload is None
     assert act.source is None
     assert "200-step smoke" in str(act.unavailable_reason)
+    assert "20,000-step ACT candidate" in str(act.unavailable_reason)
+    assert "all 5 reference" in str(act.unavailable_reason)
+    assert act.generation.source_revision == (
+        "947c9ee8a92e3b1c94f59b77d5f09006006b84a6"
+    )
 
     smolvla = manifest.find("rg101-fruit-pick-smolvla", "1.0.0")
-    assert smolvla.status == "candidate"
+    assert smolvla.status == "release"
+    assert smolvla.source is not None
+    assert smolvla.source.revision == (
+        "6649cc34576b1bf6a7ed1310251ece8c969dfafe"
+    )
     assert smolvla.payload is not None
     assert smolvla.payload.size == 906_740_620
     assert smolvla.payload.manifest_sha256 == (
