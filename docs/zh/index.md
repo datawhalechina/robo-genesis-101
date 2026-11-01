@@ -69,6 +69,15 @@ features:
 | L13 | [闭环评估与 Capstone](/zh/lessons/l13-closed-loop-evaluation-and-capstone) | 120 分钟 | `gpu-required` | `gpu-verified` |
 | L14 | [可选进阶实践：使用 RoboTwin 数据微调 LingBot-VLA-v2](/zh/lessons/l14-robotwin-lingbot-vla-fine-tuning) | 180 分钟 | `gpu-required` | `gpu-verified` |
 
+## GPU 算力资源
+
+本课程建议学习者全程使用合适的 GPU；策略训练和闭环评估尤其依赖 GPU。课程中记录的
+GPU 验证均在 AMD Radeon 硬件上，使用已记录的 ROCm profiles 完成。
+
+如果没有可用的本地 GPU，可以[注册成为 AMD 开发者](https://developer.amd.com.cn/login?source=eHjyREaw5)，
+查看 AMD 开发者计划当前提供的免费算力资源。资源可用性、额度、开放地区和具体硬件配置由
+AMD 平台管理，可能随时间调整。
+
 ## 辅助材料
 
 - [环境配置与 fallback 路径](/zh/appendix/setup-and-fallbacks)

@@ -78,6 +78,17 @@ features:
 | L13 | [Closed-Loop Evaluation and Capstone](/en/lessons/l13-closed-loop-evaluation-and-capstone) | 120 min | `gpu-required` | `gpu-verified` |
 | L14 | [Optional Advanced Practicum: Fine-Tuning LingBot-VLA-v2 with RoboTwin Data](/en/lessons/l14-robotwin-lingbot-vla-fine-tuning) | 180 min | `gpu-required` | `gpu-verified` |
 
+## GPU compute resources
+
+Learners are encouraged to use a suitable GPU throughout the course; policy training and
+closed-loop evaluation in particular depend on GPU acceleration. The course's recorded GPU
+verification was carried out on AMD Radeon hardware using the documented ROCm profiles.
+
+If you do not have access to a local GPU, you can
+[register as an AMD developer](https://developer.amd.com.cn/login?source=eHjyREaw5) and check
+the free compute resources currently available through the AMD developer program. Resource
+availability, quotas, regions, and hardware profiles are managed by AMD and may change.
+
 ## Supporting materials
 
 - [Setup and Fallback Paths](/en/appendix/setup-and-fallbacks)

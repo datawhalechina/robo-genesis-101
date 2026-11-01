@@ -103,6 +103,15 @@ Alpha，不是因为仍有 `planned` 讲次或 artifact 未发布，而是因为
 Apple Silicon、Windows 和其他 Python 版本尚未验证。精确版本、wheel 校验和、已验证能力和限制见
 [兼容性矩阵](COMPATIBILITY.md)。
 
+### 可选 AMD GPU 算力资源
+
+本课程建议学习者全程使用合适的 GPU；策略训练和闭环评估尤其依赖 GPU。课程中记录的
+GPU 验证均在 AMD Radeon 硬件上，使用上述 ROCm profiles 完成。
+
+如果没有可用的本地 GPU，可以[注册成为 AMD 开发者](https://developer.amd.com.cn/login?source=eHjyREaw5)，
+查看 AMD 开发者计划当前提供的免费算力资源。资源可用性、额度、开放地区和具体硬件配置由
+AMD 平台管理，可能随时间调整。
+
 ## 快速开始
 
 ### 本地阅读文档

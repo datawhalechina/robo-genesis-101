@@ -114,6 +114,17 @@ Statuses progress from `planned` to `draft`, `reviewed`, `cpu-verified` or
 
 GPU/ROCm combinations other than those two recorded AMD profiles, the complete CPU-only training path, Apple Silicon, Windows, and other Python versions have not been verified. See the [compatibility matrix](COMPATIBILITY.md) for exact versions, wheel checksums, verified capabilities, and limitations.
 
+### Optional AMD GPU compute
+
+Learners are encouraged to use a suitable GPU throughout the course; policy training and
+closed-loop evaluation in particular depend on GPU acceleration. The course's recorded GPU
+verification was carried out on AMD Radeon hardware using the ROCm profiles above.
+
+If you do not have access to a local GPU, you can
+[register as an AMD developer](https://developer.amd.com.cn/login?source=eHjyREaw5) and check
+the free compute resources currently available through the AMD developer program. Resource
+availability, quotas, regions, and hardware profiles are managed by AMD and may change.
+
 ## Quick start
 
 ### Read the documentation locally
