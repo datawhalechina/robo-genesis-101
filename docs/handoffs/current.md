@@ -11,7 +11,7 @@
 ## 1. 一句话恢复状态
 
 - M0–M4 已全部完成并通过项目负责人验收。
-- M5.1–M5.7 已完成并通过项目负责人验收；M5.8 正在收尾。
+- M5.1–M5.8 已全部完成并通过项目负责人验收；M5 阶段已经完成。
 - 项目负责人已明确授权把 `rg101-fruit-pick@1.0.0` 与
   `rg101-fruit-pick-smolvla@1.0.0` 从 `candidate` 提升为 `release`，仓库 manifest、双语
   教学材料和测试已同步；ACT 仍为 `unavailable`。
@@ -183,8 +183,7 @@ canonical GitHub URL，不要恢复成 `../../../...`。
 
 ## 9. M5 当前状态与 release 边界
 
-M5.1–M5.7 已逐步完成并验收，M5.8 当前已完成 artifact release promotion 的实现与本地回归，
-等待项目负责人对本步整体结果作最终验收：
+M5.1–M5.8 已逐步完成并验收。M5.8 已完成 artifact release promotion 与完整本地回归：
 
 - dataset：`rg101-fruit-pick@1.0.0`，状态 `release`，固定 revision
   `eab67399248de625506d43fdeb994788874a8492`，9 个文件；
@@ -212,9 +211,9 @@ Release、push、部署 Pages、重新上传 Hugging Face 内容或修改 lesson
    ```
 
 3. 保留第 2 节列出的所有 untracked 文件和目录。
-4. 确认 M5.1–M5.7 已验收、M5.8 正在收尾；artifact 状态为 release/unavailable/release，
+4. 确认 M5.1–M5.8 已全部验收；artifact 状态为 release/unavailable/release，
    lesson canonical 状态仍为 8/6/0/0。
 5. 如需引用 CI 状态，重新查询 GitHub Actions；不要沿用本文件未能联网确认的结果。
-6. 不要重做已完成的 M5 步骤；先完成 M5.8 最终验收，再等待项目负责人明确启动后续阶段。
+6. 不要重做已完成的 M5 步骤；等待项目负责人明确启动后续阶段。
 7. 除非项目负责人明确恢复延期项，不修改 `Robotwin-radeon-cloud` 或应用旧 companion JSONL
    patch。
