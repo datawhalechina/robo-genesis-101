@@ -86,8 +86,12 @@ verification was carried out on AMD Radeon hardware using the documented ROCm pr
 
 If you do not have access to a local GPU, you can
 [register as an AMD developer](https://developer.amd.com.cn/login?source=eHjyREaw5) and check
-the free compute resources currently available through the AMD developer program. Resource
-availability, quotas, regions, and hardware profiles are managed by AMD and may change.
+the free compute resources currently available through the AMD developer program. To help
+learners skip local environment setup, this course has deployed a `robo-genesis-101-beta`
+template on the [AMD Developer Cloud](https://developer.amd.com.cn/radeon/). After registering
+and signing in, find the template under `Templates` and launch it to open and run the course
+notebooks directly. Resource availability, quotas, regions, and hardware profiles are managed
+by AMD and may change.
 
 ## Supporting materials
 

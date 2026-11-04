@@ -75,8 +75,10 @@ features:
 GPU 验证均在 AMD Radeon 硬件上，使用已记录的 ROCm profiles 完成。
 
 如果没有可用的本地 GPU，可以[注册成为 AMD 开发者](https://developer.amd.com.cn/login?source=eHjyREaw5)，
-查看 AMD 开发者计划当前提供的免费算力资源。资源可用性、额度、开放地区和具体硬件配置由
-AMD 平台管理，可能随时间调整。
+查看 AMD 开发者计划当前提供的免费算力资源。为了方便学习者跳过本地环境安装环节，本课程已在
+[AMD 开发者云](https://developer.amd.com.cn/radeon/)部署 `robo-genesis-101-beta` 模板；注册并登录后，
+在 `Templates` 下找到该模板并启动，即可直接打开并运行课程 notebook。资源可用性、额度、开放地区和
+具体硬件配置由 AMD 平台管理，可能随时间调整。
 
 ## 辅助材料
 
